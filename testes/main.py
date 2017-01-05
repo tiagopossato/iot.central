@@ -15,16 +15,18 @@ class Alarme():
 	tempoReconhecido = None
 	mensagemReconhecido = None
 
+	def postAlarme(self):
+		r = requests.post(url, self.__dict__)
+		print(r.status_code)
+		print(r.content)
+	pass
+
+
 def getAlarmes():
 	r = requests.get(url)
 	print(r.content)
 pass
 
-def postAlarme(alarme):
-	r = requests.post(url, alarme.__dict__)
-	print(r.status_code)
-	print(r.content)
-pass
 
 al = Alarme()
 al.id = 2
@@ -32,8 +34,8 @@ al.prioridade = 3
 al.tempoAtivacao = datetime.datetime.fromtimestamp(time.time()).strftime('%d-%m-%Y %H:%M:%S')
 al.mensagem = 'Temperatura da câmara fria 2 acima do estabelecido'
 
-postAlarme(al)
+#postAlarme(al)
 
-getAlarmes()
+#getAlarmes()
 
 
