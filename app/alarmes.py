@@ -66,6 +66,7 @@ def inicializa():
 		session = DBSession()
 		return True
 	except Exception as e:
+		print('Erro alm01')
 		print(e)
 		return False
 
@@ -78,7 +79,7 @@ class newAlarmType():
 			session.add(at)
 			session.commit()
 		except Exception as e:
-			print('excp aqui')
+			print('Erro alm02')
 			print(e)
 			#desfaz as alterações na sessão
 			session.rollback()			
@@ -96,6 +97,7 @@ class alarmTrigger():
 				print('O alarme já está ativo')
 				return True
 		except Exception as e:
+			print('Erro alm03')
 			print(e)
 			session.rollback()
 			return False
@@ -109,6 +111,7 @@ class alarmTrigger():
 			return True
 		except Exception as e:
 			session.rollback()
+			print('Erro alm04')
 			print(e)
 			return False
 
@@ -128,6 +131,7 @@ class alarmTrigger():
 					return True
 				except Exception as e:
 					session.rollback()
+					print('Erro alm05')
 					print(e)
 					return False
 			else:
@@ -135,6 +139,7 @@ class alarmTrigger():
 				print('O alarme não está ativo')
 				return False
 		except Exception as e:
+			print('Erro alm06')
 			print(e)
 			session.rollback()
 			return False
