@@ -26,7 +26,7 @@ def inicializa():
 	if session: return True
 	try:
 		# Cria ou abre o banco
-		engine = create_engine('sqlite:///Banco/logs.sqlite')
+		engine = create_engine('sqlite:////opt/iot.central/Banco/logs.sqlite')
 
 		# Create all tables in the engine. This is equivalent to "Create Table"
 		# statements in raw SQL.

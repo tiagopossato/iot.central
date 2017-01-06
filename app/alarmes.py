@@ -44,7 +44,7 @@ def inicializa():
 	if session: return True
 	try:
 		# Cria ou abre o banco
-		engine = create_engine('sqlite:///Banco/alarmes.sqlite')
+		engine = create_engine('sqlite:////opt/iot.central/Banco/alarmes.sqlite')
 		event.listen(engine, 'connect', _fk_pragma_on_connect)
 
 		# Create all tables in the engine. This is equivalent to "Create Table"
