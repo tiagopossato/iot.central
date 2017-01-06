@@ -7,6 +7,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 import time
 import datetime
+import os
 
 session = None
 
@@ -17,6 +18,7 @@ class Log(Base):
 	# Here we define columns for the table
 	# Notice that each column is also a normal Python instance attribute.
 	id = Column(Integer, primary_key=True)
+	tipo = Column(String(6))
 	mensagem = Column(String(255), nullable=False)
 	sync = Column(Boolean, nullable=False, default=False)
 	tempo = Column(DateTime, nullable=False)
@@ -47,20 +49,40 @@ def inicializa():
 		session = DBSession()
 		return True
 	except Exception as e:
-		print(e)
+		salvaArquivo('LOG01', str(e))
 		return False
 
 class log():
-	def __init__(self,_mensagem):
+	def __init__(self,_tipo, _mensagem):
 		global session
-		if inicializa() == False: return False
+		if inicializa() == False: return None
 		try:
-			lg = Log(mensagem=_mensagem, tempo = datetime.datetime.fromtimestamp(time.time()))
+			lg = Log(mensagem=_mensagem, tipo = _tipo, tempo = datetime.datetime.fromtimestamp(time.time()))
 			session.add(lg)
 			session.commit()
 		except Exception as e:
-			print('Erro log01')
-			print(e)
+			salvaArquivo(_tipo, _mensagem)
+			salvaArquivo('LOG02', str(e))
 			#desfaz as alterações na sessão
 			session.rollback()
 			session = None
+	pass
+
+def salvaArquivo(_tipo, _mensagem):
+	arquivo = open("/opt/iot.central/Banco/logs.csv","+a")
+	arquivo.write('[')
+	arquivo.write(datetime.datetime.fromtimestamp(time.time()).strftime('%d-%m-%Y %H:%M:%S'))
+	arquivo.write('] [')
+	arquivo.write(_tipo)
+	arquivo.write('] [')
+	arquivo.write(_mensagem)
+	arquivo.write(']\n')
+	arquivo.close()
+	print('['+ datetime.datetime.fromtimestamp(time.time()).strftime('%d-%m-%Y %H:%M:%S')\
+	+ '] [' + _tipo + '] [' + _mensagem + ']')
+
+
+
+
+
+

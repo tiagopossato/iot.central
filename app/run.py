@@ -17,7 +17,7 @@ if __name__ == "__main__":
 		print(e)
 		exit()
 
-	log("Iniciando aplicacao")
+	log("RUN01","Iniciando aplicacao")
 	while(True):
 		try:	
 			alarmTrigger.on(1)
@@ -28,6 +28,6 @@ if __name__ == "__main__":
 			time.sleep(60)
 		except (KeyboardInterrupt):
 			print("saindo..")
-			log("Encerrando aplicacao")
+			log("RUN02","Encerrando aplicacao")
 			exit()
 

@@ -8,6 +8,7 @@ from sqlalchemy.orm import sessionmaker
 from sqlalchemy import event
 import time
 import datetime
+from log import log
 
 session = None
 
@@ -66,21 +67,19 @@ def inicializa():
 		session = DBSession()
 		return True
 	except Exception as e:
-		print('Erro alm01')
-		print(e)
+		log('ALM01',str(e))
 		return False
 
 class newAlarmType():
 	def __init__(self, _codigo, _mensagem, _prioridade):
 		global session
-		if inicializa() == False: return False
+		if inicializa() == False: return None
 		try:
 			at = AlarmeTipo(codigo=_codigo, mensagem=_mensagem, prioridade=_prioridade)
 			session.add(at)
 			session.commit()
 		except Exception as e:
-			print('Erro alm02')
-			print(e)
+			log('ALM02',str(e))
 			#desfaz as alterações na sessão
 			session.rollback()			
 			session = None
@@ -88,17 +87,16 @@ class newAlarmType():
 class alarmTrigger():
 	def on(codigo):
 		global session
-		if inicializa() == False: return False
+		if inicializa() == False: return None
 		try:
 			#verifica se o codigo do alarme já está ativo
 			at = session.query(Alarme).filter(Alarme.codigoAlarme == codigo).filter(Alarme.ativo == True).all()
 			if len(at) == 1:
 				#O alarme já está ativo
-				print('O alarme já está ativo')
+				log('ALM03','O alarme já está ativo')
 				return True
 		except Exception as e:
-			print('Erro alm03')
-			print(e)
+			log('ALM04',str(e))
 			session.rollback()
 			return False
 
@@ -106,13 +104,11 @@ class alarmTrigger():
 			#Insere um novo alarme na tabela
 			a = Alarme(codigoAlarme=codigo, ativo=True, tempoAtivacao=datetime.datetime.fromtimestamp(time.time()))
 			session.add(a)
-			session.commit()
-			print('Novo alarme inserido!')
+			session.commit()			
 			return True
 		except Exception as e:
 			session.rollback()
-			print('Erro alm04')
-			print(e)
+			log('ALM05',str(e))
 			return False
 
 	def off(codigo):
@@ -127,19 +123,15 @@ class alarmTrigger():
 					alm[0].tempoInativacao=datetime.datetime.fromtimestamp(time.time())
 					alm[0].ativo = False
 					session.commit()
-					print('Alarme desativado!')
 					return True
 				except Exception as e:
 					session.rollback()
-					print('Erro alm05')
-					print(e)
+					log('ALM06',str(e))
 					return False
 			else:
 				#O alarme não está ativo
-				print('O alarme não está ativo')
 				return False
 		except Exception as e:
-			print('Erro alm06')
-			print(e)
+			log('ALM07',str(e))
 			session.rollback()
 			return False
