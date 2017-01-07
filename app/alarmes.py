@@ -30,9 +30,10 @@ class Alarme(Base):
 	# Notice that each column is also a normal Python instance attribute.
 	id = Column(Integer, primary_key=True)
 	ativo = Column(Boolean, nullable=False)
-	sync = Column(Boolean, nullable=False, default=False)
 	tempoAtivacao = Column(DateTime, nullable=False)
+	syncAtivacao = Column(Boolean, nullable=False, default=False)
 	tempoInativacao = Column(DateTime)
+	syncInativacao = Column(Boolean, nullable=False, default=False)
 
 	codigoAlarme = Column(Integer, ForeignKey('alarmeTipos.codigo'))
 	alarmeTipo = relationship(AlarmeTipo)
@@ -124,9 +125,9 @@ class alarmTrigger():
 					#Altera alarme na tabela
 					alm[0].tempoInativacao=datetime.datetime.fromtimestamp(time.time())
 					alm[0].ativo = False
-					alm[0].sync = False
+					alm[0].syncInativacao = False
 					session.commit()
-					sincronizaAlarmes()
+					sincronizaAlarmes(False)
 					return True
 				except Exception as e:
 					session.rollback()
@@ -140,41 +141,62 @@ class alarmTrigger():
 			session.rollback()
 			return False
 
-def sincronizaAlarmes():
+def sincronizaAlarmes(_completo=True):
 	if inicializa() == False: return False
 	try:
-		alm = session.query(Alarme).filter(Alarme.sync == False).all()
+
+		if _completo:
+			alm = session.query(Alarme).filter(Alarme.syncAtivacao == False).all()
+		else:
+			alm = session.query(Alarme).filter(Alarme.syncAtivacao == True).filter(Alarme.syncInativacao == False).all()
+
 		for x in range(len(alm)):
 			dados = {}
 			
 			dados['id'] = alm[x].id
-
-			if alm[x].alarmeTipo.prioridade:
-				dados['prioridade'] = alm[x].alarmeTipo.prioridade
-
-			if alm[x].alarmeTipo.mensagem:
-				dados['mensagem'] = alm[x].alarmeTipo.mensagem
-			
 			dados['ativo'] = alm[x].ativo
-		
-			if alm[x].tempoAtivacao: 
-				dados['tempoAtivacao'] = alm[x].tempoAtivacao.strftime('%Y-%m-%d %H:%M:%S.%f')
-			
 			if alm[x].tempoInativacao: 
 				dados['tempoInativacao'] = alm[x].tempoInativacao.strftime('%Y-%m-%d %H:%M:%S.%f')
+
+			if _completo:
+				if alm[x].alarmeTipo.prioridade:
+					dados['prioridade'] = alm[x].alarmeTipo.prioridade
+
+				if alm[x].alarmeTipo.mensagem:
+					dados['mensagem'] = alm[x].alarmeTipo.mensagem
 			
-			#print(dados)
-			try:
-				r = requests.post(url, dados)
-				if r.status_code == 201:
-					alm[x].sync = True
-					session.commit()
-				else:
-					log('ALM08',str(r))
-			except Exception as e:
-				log('ALM09',str(e))
-				session.rollback()
+
+				if alm[x].tempoAtivacao: 
+					dados['tempoAtivacao'] = alm[x].tempoAtivacao.strftime('%Y-%m-%d %H:%M:%S.%f')
+			
+				#print(dados)
+				try:
+					r = requests.post(url, dados)
+					if r.status_code == 201:
+						alm[x].syncAtivacao = True
+						alm[x].syncInativacao = True
+						session.commit()
+					else:
+						log('ALM08',str(r))
+				except Exception as e:
+					log('ALM09',str(e))
+					session.rollback()
+			else:
+				print(dados)
+				try:
+					r = requests.put(url, dados)
+					if r.status_code == 201:
+						alm[x].syncInativacao = True
+						session.commit()
+					else:
+						log('ALM10',str(r))
+				except Exception as e:
+					log('ALM11',str(e))
+					session.rollback()
 	except Exception as e:
-		log('ALM09',str(e))
+		log('ALM12',str(e))
 		session.rollback()
 		return False
+
+	if _completo == False:
+		sincronizaAlarmes(True)
