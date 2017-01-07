@@ -13,8 +13,8 @@ from log import log
 session = None
 Base = declarative_base()
 
-url = 'http://localhost:8080/api/alarme'
-
+#url = 'http://localhost:8080/api/alarme'
+url = 'https://138.197.92.5/api/alarme'
 class AlarmeTipo(Base):
 	__tablename__ = 'alarmeTipos'
 	# Here we define columns for the table
@@ -171,7 +171,7 @@ def sincronizaAlarmes(_completo=True):
 			
 				#print(dados)
 				try:
-					r = requests.post(url, dados)
+					r = requests.post(url, dados, verify=False)
 					if r.status_code == 201:
 						alm[x].syncAtivacao = True
 						alm[x].syncInativacao = True
@@ -184,7 +184,7 @@ def sincronizaAlarmes(_completo=True):
 			else:
 				print(dados)
 				try:
-					r = requests.put(url, dados)
+					r = requests.put(url, dados, verify=False)
 					if r.status_code == 201:
 						alm[x].syncInativacao = True
 						session.commit()
