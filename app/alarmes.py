@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-import sqlite3
 from sqlalchemy import Column, ForeignKey, Integer, String, Boolean, DateTime
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
@@ -8,11 +7,13 @@ from sqlalchemy.orm import sessionmaker
 from sqlalchemy import event
 import time
 import datetime
+import requests
 from log import log
 
 session = None
-
 Base = declarative_base()
+
+url = 'http://localhost:8080/api/alarme'
 
 class AlarmeTipo(Base):
 	__tablename__ = 'alarmeTipos'
@@ -104,7 +105,8 @@ class alarmTrigger():
 			#Insere um novo alarme na tabela
 			a = Alarme(codigoAlarme=codigo, ativo=True, tempoAtivacao=datetime.datetime.fromtimestamp(time.time()))
 			session.add(a)
-			session.commit()			
+			session.commit()
+			sincronizaAlarmes()
 			return True
 		except Exception as e:
 			session.rollback()
@@ -122,7 +124,9 @@ class alarmTrigger():
 					#Altera alarme na tabela
 					alm[0].tempoInativacao=datetime.datetime.fromtimestamp(time.time())
 					alm[0].ativo = False
+					alm[0].sync = False
 					session.commit()
+					sincronizaAlarmes()
 					return True
 				except Exception as e:
 					session.rollback()
@@ -135,3 +139,42 @@ class alarmTrigger():
 			log('ALM07',str(e))
 			session.rollback()
 			return False
+
+def sincronizaAlarmes():
+	if inicializa() == False: return False
+	try:
+		alm = session.query(Alarme).filter(Alarme.sync == False).all()
+		for x in range(len(alm)):
+			dados = {}
+			
+			dados['id'] = alm[x].id
+
+			if alm[x].alarmeTipo.prioridade:
+				dados['prioridade'] = alm[x].alarmeTipo.prioridade
+
+			if alm[x].alarmeTipo.mensagem:
+				dados['mensagem'] = alm[x].alarmeTipo.mensagem
+			
+			dados['ativo'] = alm[x].ativo
+		
+			if alm[x].tempoAtivacao: 
+				dados['tempoAtivacao'] = alm[x].tempoAtivacao.strftime('%Y-%m-%d %H:%M:%S.%f')
+			
+			if alm[x].tempoInativacao: 
+				dados['tempoInativacao'] = alm[x].tempoInativacao.strftime('%Y-%m-%d %H:%M:%S.%f')
+			
+			#print(dados)
+			try:
+				r = requests.post(url, dados)
+				if r.status_code == 201:
+					alm[x].sync = True
+					session.commit()
+				else:
+					log('ALM08',str(r))
+			except Exception as e:
+				log('ALM09',str(e))
+				session.rollback()
+	except Exception as e:
+		log('ALM09',str(e))
+		session.rollback()
+		return False

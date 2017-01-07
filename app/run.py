@@ -22,10 +22,10 @@ if __name__ == "__main__":
 		try:	
 			alarmTrigger.on(1)
 			alarmTrigger.off(2)
-			time.sleep(60)
+			time.sleep(10)
 			alarmTrigger.on(2)
 			alarmTrigger.off(1)
-			time.sleep(60)
+			time.sleep(10)
 		except (KeyboardInterrupt):
 			print("saindo..")
 			log("RUN02","Encerrando aplicacao")

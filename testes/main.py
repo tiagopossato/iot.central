@@ -34,7 +34,7 @@ al.prioridade = 3
 al.tempoAtivacao = datetime.datetime.fromtimestamp(time.time()).strftime('%d-%m-%Y %H:%M:%S')
 al.mensagem = 'Temperatura da câmara fria 2 acima do estabelecido'
 
-#postAlarme(al)
+postAlarme(al)
 
 #getAlarmes()
 

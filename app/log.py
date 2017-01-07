@@ -60,6 +60,8 @@ class log():
 			lg = Log(mensagem=_mensagem, tipo = _tipo, tempo = datetime.datetime.fromtimestamp(time.time()))
 			session.add(lg)
 			session.commit()
+			print('['+ datetime.datetime.fromtimestamp(time.time()).strftime('%d-%m-%Y %H:%M:%S')\
+			+ '] [' + _tipo + '] [' + _mensagem + ']')
 		except Exception as e:
 			salvaArquivo(_tipo, _mensagem)
 			salvaArquivo('LOG02', str(e))
