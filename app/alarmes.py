@@ -9,12 +9,11 @@ import time
 import datetime
 import requests
 from log import log
+from configuracao import config
 
 session = None
 Base = declarative_base()
 
-#url = 'http://localhost:8080/api/alarme'
-url = 'https://138.197.92.5/api/alarme'
 class AlarmeTipo(Base):
 	__tablename__ = 'alarmeTipos'
 	# Here we define columns for the table
@@ -171,7 +170,7 @@ def sincronizaAlarmes(_completo=True):
 			
 				#print(dados)
 				try:
-					r = requests.post(url, dados, verify=False)
+					r = requests.post(config['enderecoServidor'] + '/api/alarme', dados, verify=False)
 					if r.status_code == 201:
 						alm[x].syncAtivacao = True
 						alm[x].syncInativacao = True
@@ -184,7 +183,7 @@ def sincronizaAlarmes(_completo=True):
 			else:
 				print(dados)
 				try:
-					r = requests.put(url, dados, verify=False)
+					r = requests.put(config['enderecoServidor'] + '/api/alarme', dados, verify=False)
 					if r.status_code == 201:
 						alm[x].syncInativacao = True
 						session.commit()
@@ -197,6 +196,15 @@ def sincronizaAlarmes(_completo=True):
 		log('ALM12',str(e))
 		session.rollback()
 		return False
-
 	if _completo == False:
 		sincronizaAlarmes(True)
+	apagaAlarmes()
+
+def apagaAlarmes():
+	if inicializa() == False: return False
+	alms = session.query(Alarme).filter(Alarme.syncAtivacao == True).filter(Alarme.syncInativacao == True).all()
+	#apaga a quantidade de registros com id mais antigo já sincronizados
+	for x in range(len(alms)-config['maxAlarmes'], 0, -1):
+		session.delete(alms[x])
+	pass
+	session.commit()
