@@ -141,6 +141,7 @@ class alarmTrigger():
 			return False
 
 def sincronizaAlarmes(_completo=True):
+	return
 	if inicializa() == False: return False
 	try:
 
@@ -199,12 +200,13 @@ def sincronizaAlarmes(_completo=True):
 	if _completo == False:
 		sincronizaAlarmes(True)
 	apagaAlarmes()
+	pass
 
 def apagaAlarmes():
 	if inicializa() == False: return False
-	alms = session.query(Alarme).filter(Alarme.syncAtivacao == True).filter(Alarme.syncInativacao == True).all()
+	alms = session.query(Alarme).filter(Alarme.syncAtivacao == True).filter(Alarme.syncInativacao == True).order_by(Alarme.id.asc()).all()
 	#apaga a quantidade de registros com id mais antigo já sincronizados
-	for x in range(len(alms)-config['maxAlarmes'], 0, -1):
+	for x in range(len(alms)-config['maxAlarmes']):
 		session.delete(alms[x])
-	pass
 	session.commit()
+	pass
