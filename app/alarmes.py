@@ -141,7 +141,6 @@ class alarmTrigger():
 			return False
 
 def sincronizaAlarmes(_completo=True):
-	return
 	if inicializa() == False: return False
 	try:
 
