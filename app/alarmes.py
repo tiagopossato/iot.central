@@ -180,6 +180,8 @@ def sincronizaAlarmes(_completo=True):
 				except Exception as e:
 					log('ALM09',str(e))
 					session.rollback()
+					if type(e).__name__ == "ConnectionError":
+						return
 			else:
 				print(dados)
 				try:
@@ -192,6 +194,9 @@ def sincronizaAlarmes(_completo=True):
 				except Exception as e:
 					log('ALM11',str(e))
 					session.rollback()
+					if type(e).__name__ == "ConnectionError":
+						return
+
 	except Exception as e:
 		log('ALM12',str(e))
 		session.rollback()
