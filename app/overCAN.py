@@ -1,7 +1,9 @@
 ovcComands = { \
-	'SEND_CONFIG' : 1,\
+	'ONLINE' : 1,\
 	'SEND_DATA' : 2,\
+	'IS_ONLINE' : 3,\
 
+	'SEND_CONFIG' : 10,\
 	'CHANGE_ID' : 11,\
 	'CHANGE_READ_TIME' : 12,\
 	'CHANGE_SEND_TIME' : 13,\
