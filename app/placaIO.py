@@ -64,7 +64,7 @@ def updateEntradaDigital(_id, _codigoPlacaExpansaoDigital=None, _numero=None, _c
 		session.rollback()
 	return False
 
-def ioTrigger(_codigoPlacaExpansaoDigital, _numero, _estado):
+def alteraEstadoEntrada(_codigoPlacaExpansaoDigital, _numero, _estado):
 	session = getSession()
 	if session == False: return False
 	
@@ -75,9 +75,9 @@ def ioTrigger(_codigoPlacaExpansaoDigital, _numero, _estado):
 			.one()
 		if(entrada.estado != _estado):
 			entrada.estado = _estado
+			entrada.sync = False
 			entrada.updated_at = datetime.datetime.fromtimestamp(time.time())
-			print(entrada.codigoAlarme)
-			if(entrada.codigoAlarme != None):
+			if(entrada.codigoAlarme != None and entrada.codigoAlarme != ''):
 				if(_estado == True): alarmTrigger.on(entrada.codigoAlarme)
 				if(_estado == False): alarmTrigger.off(entrada.codigoAlarme)
 			session.commit()
@@ -86,3 +86,4 @@ def ioTrigger(_codigoPlacaExpansaoDigital, _numero, _estado):
 		log('PLI05.0',str(e))
 		session.rollback()
 	return False
+

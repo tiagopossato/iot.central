@@ -2,9 +2,16 @@
 import time
 import sys
 import os
-
-from alarmes import alarmTrigger
+from placaBase import PlacaBase
+import serial
+from time import sleep
+from random import randint
 from log import log
+from overCAN import digest
+
+pb = PlacaBase()
+pb.iniciar('/dev/ttyAMA0', 115200, digest)
+tempo = 5
 
 if __name__ == "__main__":
 	try:
@@ -20,15 +27,15 @@ if __name__ == "__main__":
 
 	log("RUN01","Iniciando aplicacao")
 	while(True):
-		try:	
-			alarmTrigger.on(1)
-			alarmTrigger.off(2)
-			time.sleep(10)
-			alarmTrigger.on(2)
-			alarmTrigger.off(1)
-			time.sleep(10)
+		try:
+			#envia valores aleatorios para a placa de expansao
+			pb.enviaComando('3', 'CHANGE_OUTPUT_STATE', (randint(0,8),randint(0,1)))
+			sleep(tempo)
 		except (KeyboardInterrupt):
-			print("saindo..")
+			for x in range(8):
+				pb.enviaComando('3', 'CHANGE_OUTPUT_STATE', (x,0))
+				print("saindo, aguarde!")
+			sleep(1)
+			pb.fechar()
 			log("RUN02","Encerrando aplicacao")
 			exit()
-

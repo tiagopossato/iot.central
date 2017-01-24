@@ -3,15 +3,25 @@ from placaBase import PlacaBase
 import serial
 from time import sleep
 from random import randint
+from overCAN import digest
 
 pb = PlacaBase()
-pb.iniciar('/dev/ttyACM0', 115200, lambda msg: print(msg))
-tempo = 1
-
-def pbTeste():
-	pb.enviaComando('3', 'CHANGE_OUTPUT_STATE', (randint(0,8),randint(0,1)))
+pb.iniciar('/dev/ttyAMA0', 115200, digest)
+tempo = 3
 
 while(True):
+	try:
+		pb.enviaComando('3', 'CHANGE_OUTPUT_STATE', (randint(0,8),randint(0,1)))
+		sleep(tempo)
+	except KeyboardInterrupt:
+		for x in range(8):
+			pb.enviaComando('3', 'CHANGE_OUTPUT_STATE', (x,0))
+		print("saindo, aguarde!")
+		sleep(1)
+		pb.fechar()
+		exit()
+
+while(False):
 	try:
 		entrada = input()
 
@@ -38,31 +48,9 @@ while(True):
 		pb.fechar()
 		exit()
 
-while(True):
-	for x in range(8):
-		try:
-			pb.enviaComando('3', 'CHANGE_OUTPUT_STATE', (randint(0,8),randint(0,1)))
-		except KeyboardInterrupt:
-			for x in range(8):
-				pb.enviaComando('3', 'CHANGE_OUTPUT_STATE', (x,0))
-			pb.join()
-			exit()
-	#sleep(tempo)
+def pbTeste():
+	pb.enviaComando('3', 'CHANGE_OUTPUT_STATE', (randint(0,8),randint(0,1)))
 
 def pbOff():
 	for x in range(8):
 		pb.enviaComando('3', 'CHANGE_OUTPUT_STATE', (x,0))
-		#sleep(0.01)
-
-c = 5
-while(c>0):
-	try:
-		pbTeste()
-		c = c - 1
-		#sleep(0.25)
-	except KeyboardInterrupt:
-		pbOff()
-		exit()
-
-pbOff()
-
