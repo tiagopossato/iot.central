@@ -5,11 +5,12 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm import scoped_session
 import time
 import datetime
 import os
 
-session = None
+Session = None
 
 Base = declarative_base()
 
@@ -23,9 +24,9 @@ class Log(Base):
 	sync = Column(Boolean, nullable=False, default=False)
 	tempo = Column(DateTime, nullable=False)
 
-def inicializa():
-	global session
-	if session: return True
+def _init():
+	global Session
+	if Session != None: return
 	try:
 		# Cria ou abre o banco
 		engine = create_engine('sqlite:////opt/iot.central/Banco/logs.sqlite')
@@ -38,7 +39,7 @@ def inicializa():
 		# declaratives can be accessed through a DBSession instance
 		Base.metadata.bind = engine
 
-		DBSession = sessionmaker(bind=engine)
+		session_factory = sessionmaker(bind=engine)
 		#Uma instância DBSession () estabelece todas as conversas com o banco de dados
 		#e representa uma "zona de teste" para todos os objetos carregados no objeto 
 		#de sessão do banco de dados. 
@@ -46,16 +47,26 @@ def inicializa():
 		#banco de dados até que seja chamado session.commit().
 		#Se você não está feliz com as alterações, você pode reverter todas 
 		#elas de volta para o último commit chamando session.rollback()
-		session = DBSession()
-		return True
+		Session = scoped_session(session_factory)
 	except Exception as e:
 		salvaArquivo('LOG01', str(e))
 		return False
 
+def removeSession():
+	global Session
+	_init()
+	Session.remove()
+
+def getSession():
+	global Session
+	_init()
+	s = Session()
+	return s
+
 class log():
 	def __init__(self,_tipo, _mensagem):
-		global session
-		if inicializa() == False: return None
+		session = getSession()
+		if session == False: return False
 		try:
 			lg = Log(mensagem=_mensagem, tipo = _tipo, tempo = datetime.datetime.fromtimestamp(time.time()))
 			session.add(lg)
@@ -67,8 +78,8 @@ class log():
 			salvaArquivo('LOG02', str(e))
 			#desfaz as alterações na sessão
 			session.rollback()
-			session = None
-	pass
+		finally:
+			removeSession()
 
 def salvaArquivo(_tipo, _mensagem):
 	arquivo = open("/opt/iot.central/Banco/logs.csv","+a")

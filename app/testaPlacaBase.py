@@ -6,8 +6,8 @@ from random import randint
 from overCAN import digest
 
 pb = PlacaBase()
-pb.iniciar('/dev/ttyAMA0', 115200, digest)
-tempo = 3
+pb.iniciar('/dev/ttyACM0', 115200, digest)
+tempo = 1
 
 while(True):
 	try:
@@ -17,7 +17,6 @@ while(True):
 		for x in range(8):
 			pb.enviaComando('3', 'CHANGE_OUTPUT_STATE', (x,0))
 		print("saindo, aguarde!")
-		sleep(1)
 		pb.fechar()
 		exit()
 

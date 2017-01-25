@@ -1,6 +1,5 @@
 #!/usr/bin/python3
 import time
-import sys
 import os
 from placaBase import PlacaBase
 import serial
@@ -10,7 +9,7 @@ from log import log
 from overCAN import digest
 
 pb = PlacaBase()
-pb.iniciar('/dev/ttyAMA0', 115200, digest)
+pb.iniciar('/dev/ttyACM0', 115200, digest)
 tempo = 5
 
 if __name__ == "__main__":
@@ -31,11 +30,10 @@ if __name__ == "__main__":
 			#envia valores aleatorios para a placa de expansao
 			pb.enviaComando('3', 'CHANGE_OUTPUT_STATE', (randint(0,8),randint(0,1)))
 			sleep(tempo)
-		except (KeyboardInterrupt):
+		except KeyboardInterrupt:
 			for x in range(8):
 				pb.enviaComando('3', 'CHANGE_OUTPUT_STATE', (x,0))
-				print("saindo, aguarde!")
-			sleep(1)
+			print("saindo, aguarde!")
 			pb.fechar()
 			log("RUN02","Encerrando aplicacao")
 			exit()

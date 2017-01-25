@@ -67,20 +67,24 @@ def updateEntradaDigital(_id, _codigoPlacaExpansaoDigital=None, _numero=None, _c
 def alteraEstadoEntrada(_codigoPlacaExpansaoDigital, _numero, _estado):
 	session = getSession()
 	if session == False: return False
-	
 	try:
 		entrada = session.query(EntradaDigital)\
 			.filter(EntradaDigital.codigoPlacaExpansaoDigital == _codigoPlacaExpansaoDigital)\
 			.filter(EntradaDigital.numero == _numero)\
 			.one()
-		if(entrada.estado != _estado):
-			entrada.estado = _estado
+		if(int(entrada.estado) != int(_estado)):
+			print("Update no "+entrada.nome+" -> "+str(_estado))
+			print()
+			if(int(_estado)==1):
+				entrada.estado = True
+			else:
+				entrada.estado = False
 			entrada.sync = False
 			entrada.updated_at = datetime.datetime.fromtimestamp(time.time())
+			session.commit()
 			if(entrada.codigoAlarme != None and entrada.codigoAlarme != ''):
 				if(_estado == True): alarmTrigger.on(entrada.codigoAlarme)
 				if(_estado == False): alarmTrigger.off(entrada.codigoAlarme)
-			session.commit()
 		return True
 	except Exception as e:
 		log('PLI05.0',str(e))

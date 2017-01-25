@@ -20,7 +20,6 @@ ovcComands = { \
 }
 
 def digest(mensagem):
-	#print(mensagem)
 	if(mensagem['codigo']==ovcComands['INPUT_1_STATE']):
 		inputState(mensagem['id'], mensagem['msg'][0])
 
@@ -28,11 +27,16 @@ def digest(mensagem):
 Recebe uma mensagem com os estados das entradas digitais
 """
 def inputState(_idRede, _estados):
+	#print(_estados)
 	#converte o valor recebido em um array de bits
-	_estados = list(bin(_estados).split('b')[1][::-1])
+	_estados = list(bin(_estados).split('b')[1])
+	#print(_estados)
 	while(len(_estados)<8):
 		_estados.insert(0,0)
+	_estados.reverse()
+	#print(_estados)
 	for x in range(len(_estados)):
+		#print("["+str(x) + "] : " + str(_estados[x]))
 		alteraEstadoEntrada(_codigoPlacaExpansaoDigital=int(_idRede), _numero=int(x), _estado=int(_estados[x]))
 
 
