@@ -1,11 +1,15 @@
 import os
-os.environ["DJANGO_SETTINGS_MODULE"] = "interface.interface.settings"
+import sys
 import django
-django.setup()
-from interface.logs.models import Log
 import datetime
 import time
-import os
+
+sys.path.insert(0, os.path.abspath('../../interface'))
+os.environ["DJANGO_SETTINGS_MODULE"] = "interface.settings"
+django.setup()
+
+from central.views import Log
+
 class log():
 	def __init__(self,_tipo, _mensagem):
 		try:
@@ -19,7 +23,7 @@ class log():
 			salvaArquivo('LOG02', str(e))
 
 def salvaArquivo(_tipo, _mensagem):
-	arquivo = open("/opt/iot.central/Banco/logs.csv","+a")
+	arquivo = open("/opt/iot.central/banco/logs.csv","+a")
 	arquivo.write('[')
 	arquivo.write(datetime.datetime.fromtimestamp(time.time()).strftime('%d-%m-%Y %H:%M:%S'))
 	arquivo.write('] [')
@@ -30,9 +34,3 @@ def salvaArquivo(_tipo, _mensagem):
 	arquivo.close()
 	print('['+ datetime.datetime.fromtimestamp(time.time()).strftime('%d-%m-%Y %H:%M:%S')\
 	+ '] [' + _tipo + '] [' + _mensagem + ']')
-
-
-
-
-
-

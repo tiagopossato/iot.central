@@ -64,7 +64,7 @@ def _init():
 	if Session != None: return
 	try:
 		# Cria ou abre o banco
-		engine = create_engine('sqlite:////opt/iot.central/Banco/central.sqlite')
+		engine = create_engine('sqlite:////opt/iot.central/banco/central.sqlite')
 		event.listen(engine, 'connect', _fk_pragma_on_connect)
 
 		# Create all tables in the engine. This is equivalent to "Create Table"
@@ -77,11 +77,11 @@ def _init():
 
 		session_factory = sessionmaker(bind=engine)
 		#Uma instância DBSession () estabelece todas as conversas com o banco de dados
-		#e representa uma "zona de teste" para todos os objetos carregados no objeto 
-		#de sessão do banco de dados. 
+		#e representa uma "zona de teste" para todos os objetos carregados no objeto
+		#de sessão do banco de dados.
 		#Qualquer alteração feita nos objetos na sessão não será persistente no
 		#banco de dados até que seja chamado session.commit().
-		#Se você não está feliz com as alterações, você pode reverter todas 
+		#Se você não está feliz com as alterações, você pode reverter todas
 		#elas de volta para o último commit chamando session.rollback()
 		Session = scoped_session(session_factory)
 	except Exception as e:
