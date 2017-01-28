@@ -32,24 +32,27 @@ class PlacaBase():
 
     def iniciar(self,porta,taxa,callback):
         try:
-            self.portaSerial = serial.Serial()
-            self.portaSerial.port = porta
-            self.portaSerial.baudrate = taxa
-            self.portaSerial.parity=serial.PARITY_NONE
-            self.portaSerial.stopbits=serial.STOPBITS_ONE
-            self.portaSerial.bytesize=serial.EIGHTBITS
-            self.portaSerial.timeout=1
-            self.portaSerial.open()
+            print('placaBase.iniciar(),  ignorando a porta serial')
+            self.portaSerial = None
+            # self.portaSerial = serial.Serial()
+            # self.portaSerial.port = porta
+            # self.portaSerial.baudrate = taxa
+            # self.portaSerial.parity=serial.PARITY_NONE
+            # self.portaSerial.stopbits=serial.STOPBITS_ONE
+            # self.portaSerial.bytesize=serial.EIGHTBITS
+            # self.portaSerial.timeout=1
+            # self.portaSerial.open()
+
 
             #Inicia thread para receber as mensagens da placa base
             self._recebe = _RecebeMensagens(self, callback)
             self._recebe.start()
             #inicia thread que envia as mensagens para a placa base
-            self._envia = _EnviaMensagens(self)
-            self._envia.start()
+            #self._envia = _EnviaMensagens(self)
+            #self._envia.start()
             #inicia a thread que monitora se a placa está online
-            self._monitora = _MonitoraPlacaBase(self)
-            self._monitora.start()
+            #self._monitora = _MonitoraPlacaBase(self)
+            #self._monitora.start()
 
         except Exception as e:
             log("PLB02", str(e))
@@ -68,7 +71,7 @@ class PlacaBase():
             else:
                 log("PLB03.1","O parâmetro msg deve ser uma única string ou uma tupla de strings")
                 return False
-            self.bufferEnvio.insert(0, strComando)
+            #self.bufferEnvio.insert(0, strComando)
         except ValueError as e:
             log("PLB03.2",str(e))
         #except KeyError as e:
@@ -85,7 +88,8 @@ class PlacaBase():
 
     def fechar(self):
         try:
-            while(len(self.bufferEnvio) > 0): sleep(self.tempoMinimoEnvio)
+            print("placaBase.fechar() ignorando while")
+            #while(len(self.bufferEnvio) > 0): sleep(self.tempoMinimoEnvio)
             signal.pthread_kill(self._envia.ident, signal.SIGTERM)
             signal.pthread_kill(self._monitora.ident, signal.SIGTERM)
             signal.pthread_kill(self._recebe.ident, signal.SIGTERM)
@@ -105,6 +109,13 @@ class _RecebeMensagens(Thread):
         Thread.__init__(self)
 
     def run(self):
+        print('PlacaBase _RecebeMensagens.run() ignorando aqui tbm')
+        from random import randint
+        while(True):
+            for x in range(8):
+                self.callback({'id':3,'codigo':61, 'msg':[randint(0,1)]})
+                sleep(1)
+            pass
         while(True):
             try:
                 inMsg = self.placaBase.portaSerial.readline().decode("UTF-8")
@@ -121,6 +132,8 @@ class _RecebeMensagens(Thread):
                         continue
                     self.callback(j)
                 except simplejson.scanner.JSONDecodeError as e:
+                    #retira a ultima virgula da string
+                    #inMsg = inMsg[:len(inMsg) - inMsg[::-1].find(',')-1] + inMsg[len(inMsg) - inMsg[::-1].find(','):]
                     log("PLB05.2",str(e) + "["+inMsg+"]")
             except Exception as e:
                 log("PLB05.3",str(e))
@@ -138,6 +151,8 @@ class _EnviaMensagens(Thread):
         Thread.__init__(self)
 
     def run(self):
+        print('_EnviaMensagens.run(), fechando')
+        return
         while(True):
             try:
                 if(len(self.placaBase.bufferEnvio)>0):
@@ -169,6 +184,8 @@ class _MonitoraPlacaBase(Thread):
         Thread.__init__(self)
 
     def run(self):
+        print('Thread monitora.run(), saindo!')
+        return
         while(True):
             try:
                 self.placaBase.isOnline = False

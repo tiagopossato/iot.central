@@ -9,7 +9,7 @@
 # Short-Description:    Aplicativo da central
 # Description:          Aplicativo que controla a central de monitoramento de sensores
 ### END INIT INFO
- 
+
 start() {
 	if ( test -f /var/run/central.pid );then
 		echo "Serviço rodando, utilize restart"
@@ -21,8 +21,8 @@ start() {
 		exit $?
 	fi
 
-	python3 /opt/iot.central/app/app.py &
-	python3 /opt/iot.central/app/sincronizaAlarmes.py &
+	python3 /opt/iot.central/placaBase/app/app.py &
+	python3 /opt/iot.central/placaBase/app/sincronizaAlarmes.py &
 }
 
 stop() {

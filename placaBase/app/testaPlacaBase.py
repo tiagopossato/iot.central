@@ -17,7 +17,7 @@ from placaBase import PlacaBase
 
 
 pb = PlacaBase()
-pb.iniciar('/dev/ttyACM0', 115200, digest)
+pb.iniciar('/dev/ttyAMA0', 115200, digest)
 tempo = 1/8
 
 while(True):

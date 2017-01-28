@@ -8,6 +8,10 @@ from random import randint
 from log import log
 from overCAN import digest
 
+print("app.py, serviço desabilitado")
+exit(1)
+
+
 pb = PlacaBase()
 pb.iniciar('/dev/ttyACM0', 115200, digest)
 tempo = 5
