@@ -8,7 +8,7 @@ sys.path.insert(0, os.path.abspath('../../interface'))
 os.environ["DJANGO_SETTINGS_MODULE"] = "interface.settings"
 django.setup()
 
-from central.views import Log
+from central.log import Log
 
 class log():
 	def __init__(self,_tipo, _mensagem):

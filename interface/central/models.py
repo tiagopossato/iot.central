@@ -20,7 +20,7 @@ class Alarme(models.Model):
     tempoInativacao = models.DateTimeField(null=True)
     syncInativacao = models.BooleanField(default=False, null=False)
 
-    codigoAlarme = models.ForeignKey(AlarmeTipo)
+    alarmeTipo = models.ForeignKey(AlarmeTipo)
 
 class PlacaExpansaoDigital(models.Model):
     idRede = models.IntegerField(null=False, unique=True)
@@ -39,4 +39,4 @@ class EntradaDigital(models.Model):
 
     placaExpansaoDigital = models.ForeignKey(PlacaExpansaoDigital)
 
-    codigoAlarme = models.ForeignKey(AlarmeTipo, blank=True, null=True)
+    alarmeTipo = models.ForeignKey(AlarmeTipo, blank=True, null=True)

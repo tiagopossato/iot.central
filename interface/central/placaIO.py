@@ -1,7 +1,8 @@
 import datetime
 import time
 from central.models import PlacaExpansaoDigital, EntradaDigital
-from central.views import log, alarmTrigger
+from central.log import log
+from central.alarmes import alarmTrigger
 
 def newPlacaExpansaoDigital(_idRede):
     try:
@@ -10,21 +11,21 @@ def newPlacaExpansaoDigital(_idRede):
     except Exception as e:
         log('PLI02',str(e))
 
-def newEntradaDigital(_placaExpansaoDigital, _numero, _codigoAlarme, _nome = ""):
+def newEntradaDigital(_placaExpansaoDigital, _numero, _alarmeTipo, _nome = ""):
     try:
-        entrada = EntradaDigital(numero=_numero, placaExpansaoDigital_id=_placaExpansaoDigital, nome=_nome, codigoAlarme_id = _codigoAlarme)
+        entrada = EntradaDigital(numero=_numero, placaExpansaoDigital_id=_placaExpansaoDigital, nome=_nome, _alarmeTipo = _alarmeTipo)
         entrada.save()
     except Exception as e:
         log('PLI03',str(e))
 
-def updateEntradaDigital(_id, _placaExpansaoDigital=None, _numero=None, _codigoAlarme=-1, _nome=None):
+def updateEntradaDigital(_id, _placaExpansaoDigital=None, _numero=None, _alarmeTipo=-1, _nome=None):
     try:
         entrada = EntradaDigital.objects.get(id = _id)
         try:
             if(_placaExpansaoDigital != None): entrada.placaExpansaoDigital_id = _placaExpansaoDigital
             if(_numero != None): entrada.numero = _numero
-            if(_codigoAlarme != -1): entrada.codigoAlarme_id = _codigoAlarme
-            if(_codigoAlarme == -1): entrada.codigoAlarme_id = None
+            if(_alarmeTipo != -1): entrada.alarmeTipo.id = _alarmeTipo
+            if(_alarmeTipo == -1): entrada.alarmeTipo.id = None
             if(_nome != None): entrada.nome = _nome
             entrada.updated_at = datetime.datetime.fromtimestamp(time.time())
             entrada.save()
@@ -52,9 +53,9 @@ def alteraEstadoEntrada(_codigoPlacaExpansaoDigital, _numero, _estado):
             entrada.sync = False
             entrada.updated_at = datetime.datetime.fromtimestamp(time.time())
             entrada.save()
-            if(entrada.codigoAlarme_id != None and entrada.codigoAlarme_id != ''):
-                if(_estado == True): alarmTrigger.on(entrada.codigoAlarme_id)
-                if(_estado == False): alarmTrigger.off(entrada.codigoAlarme_id)
+            if(entrada.alarmeTipo.id != None and entrada.alarmeTipo.id != ''):
+                if(_estado == True): alarmTrigger.on(_alarmeTipo_id=entrada.alarmeTipo.id)
+                if(_estado == False): alarmTrigger.off(_alarmeTipo_id=entrada.alarmeTipo.id)
         return True
     except Exception as e:
         log('PLI05.0',str(e))

@@ -10,15 +10,15 @@ sys.path.insert(0, os.path.abspath('../../interface'))
 os.environ["DJANGO_SETTINGS_MODULE"] = "interface.settings"
 django.setup()
 
-from central.views import log
+from central.log import log
 
 from overCAN import digest
-from placaBase import PlacaBase
+from placaBaseVirtual import PlacaBase
 
 
 pb = PlacaBase()
-pb.iniciar('/dev/ttyAMA0', 115200, digest)
-tempo = 1/8
+pb.iniciar('/dev/ttyAMA0', 115200, lambda x: print(x))
+tempo = 1
 
 while(True):
     try:

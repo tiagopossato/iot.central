@@ -1,12 +1,13 @@
 from threading import Thread
-import _thread
+from queue import Queue
 import serial
 import simplejson
-from central.views import log
+from central.log import log
 from overCAN import ovcComands
 from time import sleep, time
 import signal
 import sys
+
 try:
     import RPi.GPIO as gpio
 except RuntimeError as e:
@@ -18,7 +19,7 @@ class PlacaBase():
     def __init__(self):
         try:
             self.isOnline = False
-            self.bufferEnvio = []
+            self.bufferEnvio = Queue()
             self.tempoMinimoEnvio = 0.02 #tempo minimo entre uma mensagem e outra
             # Configurando GPIO
             gpio.setwarnings(False)
@@ -68,11 +69,12 @@ class PlacaBase():
             else:
                 log("PLB03.1","O parâmetro msg deve ser uma única string ou uma tupla de strings")
                 return False
-            self.bufferEnvio.insert(0, strComando)
+            self.bufferEnvio.put(strComando)
+            #verifica se a thread está ativa
+            if(self._envia.isAlive() == False):
+                self._envia.run()
         except ValueError as e:
             log("PLB03.2",str(e))
-        #except KeyError as e:
-        #    log("PLB05",str(e))
 
     def resetPlacaBase(self):
         try:
@@ -138,23 +140,22 @@ class _EnviaMensagens(Thread):
         Thread.__init__(self)
 
     def run(self):
-        while(True):
-            try:
-                if(len(self.placaBase.bufferEnvio)>0):
-                    #print("--------------------------------------")
-                    #print("self.placaBase.bufferEnvio: " + str(self.placaBase.bufferEnvio))
-                    mensagem = self.placaBase.bufferEnvio.pop() + '\n'
-                    #print("Thread EnviaMensagens -> " + mensagem)
-                    #print("self.placaBase.bufferEnvio: " + str(self.placaBase.bufferEnvio))
-                    #print("--------------------------------------")
-                    while(self.placaBase.portaSerial.isOpen() == False): pass
-                    self.placaBase.portaSerial.write(bytes(mensagem, 'UTF-8'))
-                    sleep(self.placaBase.tempoMinimoEnvio)
-                sleep(0.0001) #evita que o processador vá a 100%
-            except Exception as e:
-                log("PLB06.0",str(e))
-            except KeyboardInterrupt as e:
-                self.exit()
+        try:
+            while(self.placaBase.bufferEnvio.empty() == False):
+                # print("--------------------------------------")
+                #print("self.placaBase.bufferEnvio: " + str(self.placaBase.bufferEnvio))
+                mensagem = self.placaBase.bufferEnvio.get() + '\n'
+                # print("Thread EnviaMensagens -> " + mensagem)
+                # print("self.placaBase.bufferEnvio: " + str(self.placaBase.bufferEnvio))
+                # print("--------------------------------------")
+                while(self.placaBase.portaSerial.isOpen() == False): pass
+                self.placaBase.portaSerial.write(bytes(mensagem, 'UTF-8'))
+                sleep(self.placaBase.tempoMinimoEnvio)
+            # sleep(0.0001) #evita que o processador vá a 100%
+        except Exception as e:
+            log("PLB06.0",str(e))
+        except KeyboardInterrupt as e:
+            self.exit()
 
 """
 Classe que será chamada via thread para monitorar a comunicação com a placa base
