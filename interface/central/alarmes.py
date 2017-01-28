@@ -99,11 +99,11 @@ class _SincronizaAlarmes(Thread):
         try:
             #primeiro os ativos
             alarmes = Alarme.objects.filter(syncAtivacao = False, ativo = True)
-            print("Enviando novos alarmes ainda ativos")
+            # print("Enviando novos alarmes ainda ativos")
             self._enviaAlarmes(alarmes, True)
 
             alarmes = Alarme.objects.filter(syncAtivacao = False)
-            print("Enviando novos alarmes que já desativaram")
+            # print("Enviando novos alarmes que já desativaram")
             self._enviaAlarmes(alarmes, True)
         except Alarme.DoesNotExist:
             pass
@@ -115,7 +115,7 @@ class _SincronizaAlarmes(Thread):
             #a ordenação dos resultados de forma ascentende já é implícita
             #https://docs.djangoproject.com/en/dev/ref/models/querysets/#order-by
             alarmes = Alarme.objects.filter(syncAtivacao = True, syncInativacao = True).order_by('id')
-            print("Enviando alarmes desativados")
+            # print("Enviando alarmes desativados")
             #apaga a quantidade de registros com id mais antigo já sincronizados
             for x in range(len(alarmes)-config['maxAlarmes']):
                 alarmes[x].delete()
