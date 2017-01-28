@@ -36,8 +36,8 @@ fi
 #Copia os novos arquivos
 echo ".Copiando arquivos"
 mkdir /opt/iot.central/placaBase
-mkdir /opt/iot.central/placaBase/app
-cp -r placaBase/app /opt/iot.central/placaBase/app
+
+cp -r placaBase/app /opt/iot.central/placaBase
 cp -r interface /opt/iot.central/interface
 
 #altera as permissoes dos arquivos
@@ -58,10 +58,12 @@ chmod 755 /etc/init.d/central
 #coloca para inicializar junto ao sistema
 update-rc.d central defaults
 
+
+echo "....Atualizando banco de dados"
 cd /opt/iot.central/interface
 python3 manage.py makemigrations
 python3 manage.py migrate
 
 #Reiniciando serviço
-echo "....Iniciando serviço"
+echo ".....Iniciando serviço"
 service central start

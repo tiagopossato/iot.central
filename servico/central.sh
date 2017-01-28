@@ -16,13 +16,13 @@ start() {
 		exit $?
 	fi
 
-	if ( test -f /var/run/centralSinc.pid );then
-		echo "Serviço rodando, utilize restart"
-		exit $?
-	fi
+#	if ( test -f /var/run/centralSinc.pid );then
+#		echo "Serviço rodando, utilize restart"
+#		exit $?
+#	fi
 
 	python3 /opt/iot.central/placaBase/app/app.py &
-	python3 /opt/iot.central/placaBase/app/sincronizaAlarmes.py &
+#	python3 /opt/iot.central/placaBase/app/sincronizaAlarmes.py &
 }
 
 stop() {
@@ -32,11 +32,11 @@ stop() {
 		rm /var/run/central.pid
 	fi
 
-	if ( test -f /var/run/centralSinc.pid );then
-		pid=$(cat /var/run/centralSinc.pid)
-		kill -9 $pid
-		rm /var/run/centralSinc.pid
-	fi
+#	if ( test -f /var/run/centralSinc.pid );then
+#		pid=$(cat /var/run/centralSinc.pid)
+#		kill -9 $pid
+#		rm /var/run/centralSinc.pid
+#	fi
 }
 
 restart() {
