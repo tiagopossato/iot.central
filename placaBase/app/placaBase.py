@@ -87,7 +87,7 @@ class PlacaBase():
 
     def fechar(self):
         try:
-            while(len(self.bufferEnvio) > 0): sleep(self.tempoMinimoEnvio)
+            while(self.bufferEnvio.empty() == False): sleep(self.tempoMinimoEnvio)
             signal.pthread_kill(self._envia.ident, signal.SIGTERM)
             signal.pthread_kill(self._monitora.ident, signal.SIGTERM)
             signal.pthread_kill(self._recebe.ident, signal.SIGTERM)

@@ -15,12 +15,11 @@ from central.log import log
 from overCAN import digest
 from placaBaseVirtual import PlacaBase
 
-
 pb = PlacaBase()
-pb.iniciar('/dev/ttyAMA0', 115200, lambda x: print(x))
+pb.iniciar('/dev/ttyAMA0', 115200, digest)
 tempo = 1
 
-while(True):
+while(False):
     try:
         #pb.enviaComando('3', 'CHANGE_OUTPUT_STATE', (randint(0,8),randint(0,1)))
         for x in range(8):

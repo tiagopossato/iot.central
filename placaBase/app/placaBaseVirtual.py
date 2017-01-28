@@ -7,6 +7,7 @@ from overCAN import ovcComands
 from time import sleep, time
 import signal
 import sys
+from random import randint
 try:
     import RPi.GPIO as gpio
 except RuntimeError as e:
@@ -19,7 +20,7 @@ class PlacaBase():
         try:
             self.isOnline = False
             self.bufferEnvio = Queue()
-            self.tempoMinimoEnvio = 1 #tempo minimo entre uma mensagem e outra
+            self.tempoMinimoEnvio = 0.02 #tempo minimo entre uma mensagem e outra
             # Configurando GPIO
             gpio.setwarnings(False)
             gpio.cleanup()
@@ -32,9 +33,24 @@ class PlacaBase():
 
     def iniciar(self,porta,taxa,callback):
         try:
+            # self.portaSerial = serial.Serial()
+            # self.portaSerial.port = porta
+            # self.portaSerial.baudrate = taxa
+            # self.portaSerial.parity=serial.PARITY_NONE
+            # self.portaSerial.stopbits=serial.STOPBITS_ONE
+            # self.portaSerial.bytesize=serial.EIGHTBITS
+            # self.portaSerial.timeout=1
+            # self.portaSerial.open()
+
+            #Inicia thread para receber as mensagens da placa base
+            self._recebe = _RecebeMensagens(self, callback)
+            self._recebe.start()
             #inicia thread que envia as mensagens para a placa base
-            self._envia = _EnviaMensagens(self)
-            self._envia.start()
+            # self._envia = _EnviaMensagens(self)
+            # self._envia.start()
+            #inicia a thread que monitora se a placa está online
+            # self._monitora = _MonitoraPlacaBase(self)
+            # self._monitora.start()
 
         except Exception as e:
             log("PLB02", str(e))
@@ -55,13 +71,10 @@ class PlacaBase():
                 return False
             self.bufferEnvio.put(strComando)
             #verifica se a thread está ativa
-            if(self._envia.isAlive() == False):
-                self._envia.run()
-
+            # if(self._envia.isAlive() == False):
+            #     self._envia.run()
         except ValueError as e:
             log("PLB03.2",str(e))
-        #except KeyError as e:
-        #    log("PLB05",str(e))
 
     def resetPlacaBase(self):
         try:
@@ -74,10 +87,48 @@ class PlacaBase():
 
     def fechar(self):
         try:
-            sys.exit(0)
+            while(self.bufferEnvio.empty() == False): sleep(self.tempoMinimoEnvio)
+            signal.pthread_kill(self._envia.ident, signal.SIGTERM)
+            signal.pthread_kill(self._monitora.ident, signal.SIGTERM)
+            signal.pthread_kill(self._recebe.ident, signal.SIGTERM)
+            sleep(1)
+            self.portaSerial.close()
         except Exception as e:
             print(e)
             sys.exit(0)
+
+"""
+Classe que será chamada via thread para receber as mensagens da porta serial
+"""
+class _RecebeMensagens(Thread):
+    def __init__ (self, _placaBase, _callback):
+        self.placaBase = _placaBase
+        self.callback = _callback
+        Thread.__init__(self)
+
+    def run(self):
+        print("Recebe")
+        while(True):
+            try:
+                # inMsg = self.placaBase.portaSerial.readline().decode("UTF-8")
+                # if(len(inMsg) == 0 ):
+                #     continue
+                # try:
+                #     j = simplejson.loads(inMsg)
+                #     try:
+                #         if(j['id']==CENTRAL_ID and j['codigo'] == ovcComands['ONLINE']):
+                #             self.placaBase.isOnline = True
+                #             continue
+                #     except Exception as e:
+                #         log("PLB05.1",str(e) + "["+inMsg+"]")
+                #         continue
+                self.callback({'id':3, 'codigo':61, 'msg':[randint(0,255)]})
+                sleep(1)
+            except Exception as e:
+                log("PLB05.3",str(e))
+            except KeyboardInterrupt as e:
+                self.exit()
+
 """
 Classe que será chamada via thread para enviar as mensagens para porta serial
 Esta classe envia as mensagens do bufferEnvio do objeto placaBase respeitando
@@ -89,7 +140,6 @@ class _EnviaMensagens(Thread):
         Thread.__init__(self)
 
     def run(self):
-        print("Thread EnviaMensagens iniciou!")
         try:
             while(self.placaBase.bufferEnvio.empty() == False):
                 # print("--------------------------------------")
@@ -102,8 +152,37 @@ class _EnviaMensagens(Thread):
                 # self.placaBase.portaSerial.write(bytes(mensagem, 'UTF-8'))
                 sleep(self.placaBase.tempoMinimoEnvio)
             # sleep(0.0001) #evita que o processador vá a 100%
-            print("Thread EnviaMensagens terminou!")
         except Exception as e:
             log("PLB06.0",str(e))
         except KeyboardInterrupt as e:
             self.exit()
+
+"""
+Classe que será chamada via thread para monitorar a comunicação com a placa base
+"""
+class _MonitoraPlacaBase(Thread):
+
+    def __init__ (self, _placaBase):
+        self.placaBase = _placaBase
+        self.intervaloVerificacao = 1
+        self.tentativas = 2
+        self.count = 0
+        Thread.__init__(self)
+
+    def run(self):
+        while(True):
+            try:
+                self.placaBase.isOnline = False
+                self.placaBase.enviaComando(CENTRAL_ID, 'IS_ONLINE')
+                sleep(self.intervaloVerificacao)
+                if(self.count < self.tentativas and self.placaBase.isOnline == False):
+                    self.count = self.count + 1
+                elif(self.count == self.tentativas and self.placaBase.isOnline == False):
+                    self.placaBase.resetPlacaBase()
+                    self.count = 0
+                elif(self.placaBase.isOnline):
+                    self.count = 0
+            except Exception as e:
+                log("PLB07.1",str(e))
+            except KeyboardInterrupt as e:
+                self.exit()

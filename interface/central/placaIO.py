@@ -2,7 +2,9 @@ import datetime
 import time
 from central.models import PlacaExpansaoDigital, EntradaDigital
 from central.log import log
-from central.alarmes import alarmTrigger
+from central.alarmes import AlarmTrigger
+
+alarmTrigger = AlarmTrigger()
 
 def newPlacaExpansaoDigital(_idRede):
     try:
