@@ -1,20 +1,19 @@
 #!/usr/bin/python3
-import time
 import os
-from placaBase import PlacaBase
-import serial
+import sys
+import django
 from time import sleep
 from random import randint
-from log import log
+import serial
+
+sys.path.insert(0, os.path.abspath('../../interface'))
+os.environ["DJANGO_SETTINGS_MODULE"] = "interface.settings"
+django.setup()
+
+from central.log import log
+
 from overCAN import digest
-
-print("app.py, serviço desabilitado")
-exit(1)
-
-
-pb = PlacaBase()
-pb.iniciar('/dev/ttyACM0', 115200, digest)
-tempo = 5
+from placaBase import PlacaBase
 
 if __name__ == "__main__":
     try:
@@ -29,15 +28,23 @@ if __name__ == "__main__":
         exit()
 
     log("RUN01","Iniciando aplicacao")
+
+    pb = PlacaBase()
+    pb.iniciar('/dev/ttyAMA0', 115200, digest)
+    tempo = 1
+
     while(True):
         try:
-            #envia valores aleatorios para a placa de expansao
             pb.enviaComando('3', 'CHANGE_OUTPUT_STATE', (randint(0,8),randint(0,1)))
+            # for x in range(8):
+            #     pb.enviaComando('3', 'CHANGE_OUTPUT_STATE', (x,1))
+            #     sleep(tempo)
+            # for x in range(8):
+            #     pb.enviaComando('3', 'CHANGE_OUTPUT_STATE', (x,0))
             sleep(tempo)
         except KeyboardInterrupt:
             for x in range(8):
                 pb.enviaComando('3', 'CHANGE_OUTPUT_STATE', (x,0))
             print("saindo, aguarde!")
             pb.fechar()
-            log("RUN02","Encerrando aplicacao")
             exit()
