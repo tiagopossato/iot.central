@@ -20,9 +20,9 @@ start() {
 #		echo "Serviço rodando, utilize restart"
 #		exit $?
 #	fi
-
-	python3 /opt/iot.central/placaBase/app/app.py &
-#	python3 /opt/iot.central/placaBase/app/sincronizaAlarmes.py &
+	cd /opt/iot.central/placaBase/app
+	python3 app.py &
+#	python3 sincronizaAlarmes.py &
 }
 
 stop() {

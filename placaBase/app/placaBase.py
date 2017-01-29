@@ -92,6 +92,10 @@ class PlacaBase():
             signal.pthread_kill(self._monitora.ident, signal.SIGTERM)
             signal.pthread_kill(self._recebe.ident, signal.SIGTERM)
             sleep(1)
+            print("Aguardando threads terminarem")
+            self._envia.join()
+            self._monitora.join()
+            self._recebe.join()
             self.portaSerial.close()
         except Exception as e:
             print(e)

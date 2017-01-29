@@ -9,7 +9,11 @@ if [ "$(id -u)" != "0" ]; then
 fi
 
 #para o servico caso estiver rodando
-service central stop
+#echo "Parando o serviço"
+#service central stop
+
+echo "Desinstalando versão instalada"
+sh uninstall.sh
 
 #verifica se já existe uma instalação
 if [ -d /opt/iot.central ]; then
@@ -36,17 +40,11 @@ fi
 #Copia os novos arquivos
 echo ".Copiando arquivos"
 mkdir /opt/iot.central/placaBase
+#mkdir /opt/iot.central/interface
 
 cp -r placaBase/app /opt/iot.central/placaBase
-cp -r interface /opt/iot.central/interface
+cp -r interface /opt/iot.central/
 
-#altera as permissoes dos arquivos
-echo "..Alterando as permissões"
-chown root:root -R /opt/iot.central
-chmod 777 -R /opt/iot.central/placaBase # 554 dono e grupo le e executa, outros leem
-chmod 777 -R /opt/iot.central/interface # 554 dono e grupo le e executa, outros leem
-chmod 777 -R /opt/iot.central/banco # 604 dono le e escreve, outros leem
-echo "ATENÇÃO! REVER AS PERMISSOES DOS ARQUIVOS QUANDO COLOCAR EM PRODUÇÃO"
 
 #copia arquivo do serviço
 echo "...Instalando serviço"
@@ -58,12 +56,19 @@ chmod 755 /etc/init.d/central
 #coloca para inicializar junto ao sistema
 update-rc.d central defaults
 
-
 echo "....Atualizando banco de dados"
 cd /opt/iot.central/interface
 python3 manage.py makemigrations
 python3 manage.py migrate
 
+#altera as permissoes dos arquivos
+echo "..Alterando as permissões"
+chown root:root -R /opt/iot.central
+chmod 777 -R /opt/iot.central/placaBase # 554 dono e grupo le e executa, outros leem
+chmod 777 -R /opt/iot.central/interface # 554 dono e grupo le e executa, outros leem
+chmod 777 -R /opt/iot.central/banco # 604 dono le e escreve, outros leem
+echo "ATENÇÃO! REVER AS PERMISSOES DOS ARQUIVOS QUANDO COLOCAR EM PRODUÇÃO"
+
 #Reiniciando serviço
 echo ".....Iniciando serviço"
-service central start
+#service central start

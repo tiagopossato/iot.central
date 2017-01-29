@@ -15,7 +15,7 @@ def newPlacaExpansaoDigital(_idRede):
 
 def newEntradaDigital(_placaExpansaoDigital, _numero, _alarmeTipo, _nome = ""):
     try:
-        entrada = EntradaDigital(numero=_numero, placaExpansaoDigital_id=_placaExpansaoDigital, nome=_nome, _alarmeTipo = _alarmeTipo)
+        entrada = EntradaDigital(numero=_numero, placaExpansaoDigital_id=_placaExpansaoDigital, nome=_nome, alarmeTipo_id = _alarmeTipo)
         entrada.save()
     except Exception as e:
         log('PLI03',str(e))
