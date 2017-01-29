@@ -47,11 +47,7 @@ def alteraEstadoEntrada(_codigoPlacaExpansaoDigital, _numero, _estado):
             numero = _numero)
         if(int(entrada.estado) != int(_estado)):
             print("Update no "+entrada.nome+" -> "+str(_estado))
-            print()
-            if(int(_estado)==1):
-                entrada.estado = True
-            else:
-                entrada.estado = False
+            entrada.estado = int(_estado) == 1
             entrada.sync = False
             entrada.updated_at = datetime.datetime.fromtimestamp(time.time())
             entrada.save()

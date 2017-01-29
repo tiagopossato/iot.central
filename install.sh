@@ -74,5 +74,5 @@ chmod 777 -R /opt/iot.central/banco # 604 dono le e escreve, outros leem
 echo "ATENÇÃO! REVER AS PERMISSOES DOS ARQUIVOS QUANDO COLOCAR EM PRODUÇÃO"
 
 #Reiniciando serviço
-echo ".....Iniciando serviço"
-service central start
+echo ".....Reiniciando serviço"
+service central restart

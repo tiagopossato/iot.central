@@ -31,6 +31,8 @@ def inputState(_idRede, _estados):
     #converte o valor recebido em um array de bits
     _estados = list(bin(_estados).split('b')[1])
     #print(_estados)
+    #Caso o valor seja menor que 128
+    #completa o array com os 8 bits
     while(len(_estados)<8):
         _estados.insert(0,0)
     _estados.reverse()

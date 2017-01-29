@@ -43,19 +43,23 @@ class AlarmTrigger():
                     alm[x].save()
                     if(self.sincronizador.isAlive() == False):
                         self.sincronizador.run()
+                return True
         except Exception as e:
             print(e)
-            log('ALM03',str(e))
+            log('ALM02.2',str(e))
             return False
-        #Insere um novo alarme na tabela
+
+        #Caso nenhum problema aconteceu, insere um novo alarme na tabela
         try:
-            a = Alarme(alarmeTipo_id=_alarmeTipo_id, ativo=True, syncAtivacao=False, tempoAtivacao=datetime.datetime.fromtimestamp(time.time()))
+            a = Alarme(alarmeTipo_id=_alarmeTipo_id, \
+                ativo=True, syncAtivacao=False, \
+                tempoAtivacao=datetime.datetime.fromtimestamp(time.time()))
             a.save()
             if(self.sincronizador.isAlive() == False):
                 self.sincronizador.run()
             return True
         except Exception as e:
-            log('ALM04',str(e))
+            log('ALM02.3',str(e))
             return False
 
     def off(self, _alarmeTipo_id):
@@ -67,8 +71,12 @@ class AlarmTrigger():
             #O alarme já está ativo, desativa
             try:
                 if(len(alm)>1):
-                    log('ALM05.0','Erro, existe mais de um alarme do tipo: '\
+                    log('ALM03.0','Erro, existe mais de um alarme do tipo: '\
                     + str(_alarmeTipo_id) + ' ativo, inativando todos')
+                if(len(alm)==0):
+                    log('ALM03.1','Não existe alarme do tipo: '\
+                    + str(_alarmeTipo_id) + ' ativo!')
+                    return False
                 for x in range(len(alm)):
                     #Altera alarme na tabela
                     alm[x].tempoInativacao=datetime.datetime.fromtimestamp(time.time())
@@ -79,13 +87,10 @@ class AlarmTrigger():
                         self.sincronizador.run()
                 return True
             except Exception as e:
-                log('ALM05.2',str(e))
+                log('ALM03.2',str(e))
                 return False
-        except Alarme.DoesNotExist:
-            #O alarme não está ativo
-            return False
         except Exception as e:
-            log('ALM06',str(e))
+            log('ALM03.3',str(e))
             return False
 
 class _SincronizaAlarmes(Thread):
@@ -93,7 +98,6 @@ class _SincronizaAlarmes(Thread):
         Thread.__init__(self)
 
     def run(self):
-        # def sincronizaAlarmes():
         #pega os alarmes novos, que ainda não foram criados
         #no banco de dados do servidor
         try:
@@ -101,38 +105,34 @@ class _SincronizaAlarmes(Thread):
             alarmes = Alarme.objects.filter(syncAtivacao = False, ativo = True)
             # print("Enviando novos alarmes ainda ativos")
             self._enviaAlarmes(alarmes, True)
+        except Exception as e:
+            log('ALM04.0',str(e))
 
+        try:
             alarmes = Alarme.objects.filter(syncAtivacao = False)
             # print("Enviando novos alarmes que já desativaram")
             self._enviaAlarmes(alarmes, True)
-        except Alarme.DoesNotExist:
-            pass
         except Exception as e:
-            log('ALM07',str(e))
+            log('ALM04.1',str(e))
 
         try:
             #Apaga os alarmes mais antigos
             #a ordenação dos resultados de forma ascentende já é implícita
             #https://docs.djangoproject.com/en/dev/ref/models/querysets/#order-by
             alarmes = Alarme.objects.filter(syncAtivacao = True, syncInativacao = True).order_by('id')
-            # print("Enviando alarmes desativados")
             #apaga a quantidade de registros com id mais antigo já sincronizados
             for x in range(len(alarmes)-config['maxAlarmes']):
                 alarmes[x].delete()
-        except Alarme.DoesNotExist:
-            pass
         except Exception as e:
-            log('ALM08',str(e))
+            log('ALM04.2',str(e))
 
         #pega os alarmes que já foram criados, mas existem alterações para
         #serem feitas
         try:
             alarmes = Alarme.objects.filter(syncAtivacao = True, syncInativacao= False)
             self._enviaAlarmes(alarmes, False)
-        except Alarme.DoesNotExist:
-            pass
         except Exception as e:
-            log('ALM09',str(e))
+            log('ALM04.3',str(e))
 
         try:
             #Apaga os alarmes mais antigos
@@ -142,14 +142,12 @@ class _SincronizaAlarmes(Thread):
             #apaga a quantidade de registros com id mais antigo já sincronizados
             for x in range(len(alarmes)-config['maxAlarmes']):
                 alarmes[x].delete()
-        except Alarme.DoesNotExist:
-            pass
         except Exception as e:
-            log('ALM08',str(e))
-
+            log('ALM05.3',str(e))
 
     def _enviaAlarmes(self, alarmes, novo):
         try:
+            #monta uma mensagem com cada alarme
             for x in range(len(alarmes)):
                 dados = {}
 
@@ -177,9 +175,9 @@ class _SincronizaAlarmes(Thread):
                             alarmes[x].syncInativacao = True
                             alarmes[x].save()
                         else:
-                            log('ALM10',str(r))
+                            log('ALM6.0',str(r))
                     except Exception as e:
-                        log('ALM11',str(e))
+                        log('ALM6.1',str(e))
                         if type(e).__name__ == "ConnectionError":
                             return
                 else:
@@ -190,12 +188,12 @@ class _SincronizaAlarmes(Thread):
                             alarmes[x].syncInativacao = True
                             alarmes[x].save()
                         else:
-                            log('ALM12',str(r))
+                            log('ALM6.2',str(r))
                     except Exception as e:
-                        log('ALM12',str(e))
+                        log('ALM6.3',str(e))
                         if type(e).__name__ == "ConnectionError":
                             return
 
         except Exception as e:
-            log('ALM13',str(e))
+            log('ALM6.4',str(e))
             return False
