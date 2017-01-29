@@ -61,6 +61,10 @@ cd /opt/iot.central/interface
 python3 manage.py makemigrations
 python3 manage.py migrate
 
+echo "update central_entradadigital set estado=0;" > /tmp/tmp.sql
+sqlite3 /opt/iot.central/banco/db.sqlite3 < /tmp/tmp.sql
+rm /tmp/tmp.sql
+
 #altera as permissoes dos arquivos
 echo "..Alterando as permissões"
 chown root:root -R /opt/iot.central
@@ -71,4 +75,4 @@ echo "ATENÇÃO! REVER AS PERMISSOES DOS ARQUIVOS QUANDO COLOCAR EM PRODUÇÃO"
 
 #Reiniciando serviço
 echo ".....Iniciando serviço"
-#service central start
+service central start
