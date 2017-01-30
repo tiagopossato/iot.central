@@ -10,6 +10,7 @@ class LogAdmin(admin.ModelAdmin):
     readonly_fields = ('tipo','mensagem','sync','tempo',)
     list_display = ('tipo','mensagem','tempo','sync',)
     ordering = ('-tempo',)
+    list_filter = ('tipo',)
 
 class AlarmeAdmin(admin.ModelAdmin):
     readonly_fields = ('tempoAtivacao','ativo','syncAtivacao','tempoInativacao','syncInativacao','alarmeTipo',)
