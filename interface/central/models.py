@@ -49,8 +49,7 @@ class EntradaDigital(models.Model):
     sync = models.BooleanField(default=False, null=False)
 
     placaExpansaoDigital = models.ForeignKey(PlacaExpansaoDigital, to_field='idRede')
-
-    alarmeTipo = models.ForeignKey(AlarmeTipo, blank=True, null=True)
+    alarmeTipo = models.ForeignKey(AlarmeTipo, blank=True, null=True, to_field='codigo')
 
     def __str__(self):
         return str(self.placaExpansaoDigital.descricao) + " [ " + str(self.numero) + " ]"
