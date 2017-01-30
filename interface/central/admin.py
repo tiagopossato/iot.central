@@ -15,8 +15,8 @@ class AlarmeAdmin(admin.ModelAdmin):
     readonly_fields = ('tempoAtivacao','ativo','syncAtivacao','tempoInativacao','syncInativacao','alarmeTipo',)
     list_display = ('ativo','alarmeTipo','tempoAtivacao','syncAtivacao','tempoInativacao','syncInativacao',)
     list_filter = ('ativo','tempoAtivacao',)
-    ordering = ('-ativo', 'tempoAtivacao',)
-    list_per_page = 15
+    ordering = ('-ativo', '-tempoAtivacao',)
+    list_per_page = AlarmeTipo.objects.count()
 
 class AlarmeTipoAdmin(admin.ModelAdmin):
     list_display = ('codigo','mensagem','prioridade',)
