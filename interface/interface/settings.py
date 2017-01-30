@@ -25,7 +25,10 @@ SECRET_KEY = '4o)bvoht37onw0*l(+@*m5cm7k0m@320ct0*7y19_-5c$bbf+#'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    '7a73657971.dataplicity.io',
+    '127.0.0.1',
+]
 
 
 # Application definition
