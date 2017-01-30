@@ -24,7 +24,7 @@ class Alarme(models.Model):
     tempoInativacao = models.DateTimeField(null=True)
     syncInativacao = models.BooleanField(default=False, null=False)
 
-    alarmeTipo = models.ForeignKey(AlarmeTipo)
+    alarmeTipo = models.ForeignKey(AlarmeTipo, on_delete=models.PROTECT)
     def __str__(self):
         return self.alarmeTipo.mensagem
 
@@ -48,8 +48,10 @@ class EntradaDigital(models.Model):
     updated_at =  models.DateTimeField(auto_now=True)
     sync = models.BooleanField(default=False, null=False)
 
-    placaExpansaoDigital = models.ForeignKey(PlacaExpansaoDigital, to_field='idRede')
-    alarmeTipo = models.ForeignKey(AlarmeTipo, blank=True, null=True, to_field='codigo')
+    placaExpansaoDigital = models.ForeignKey(PlacaExpansaoDigital,\
+        to_field='idRede', on_delete=models.PROTECT)
+    alarmeTipo = models.ForeignKey(AlarmeTipo, blank=True, null=True,\
+    to_field='codigo', on_delete=models.PROTECT)
 
     def __str__(self):
         return str(self.placaExpansaoDigital.descricao) + " [ " + str(self.numero) + " ]"
