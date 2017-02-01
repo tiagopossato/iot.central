@@ -7,13 +7,13 @@ from central.models import PlacaExpansaoDigital
 from central.models import EntradaDigital
 
 class LogAdmin(admin.ModelAdmin):
-    readonly_fields = ('tipo','mensagem','sync','tempo',)
+    readonly_fields = ('tipo','mensagem','tempo',)
     list_display = ('tipo','mensagem','tempo','sync',)
     ordering = ('-tempo',)
     list_filter = ('tipo',)
 
 class AlarmeAdmin(admin.ModelAdmin):
-    readonly_fields = ('tempoAtivacao','ativo','syncAtivacao','tempoInativacao','syncInativacao','alarmeTipo',)
+    readonly_fields = ('tempoAtivacao','ativo','tempoInativacao','alarmeTipo',)
     list_display = ('ativo','alarmeTipo','tempoAtivacao','syncAtivacao','tempoInativacao','syncInativacao',)
     list_filter = ('ativo','tempoAtivacao',)
     ordering = ('-ativo', '-tempoAtivacao',)
