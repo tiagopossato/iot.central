@@ -7,14 +7,14 @@ from central.models import PlacaExpansaoDigital
 from central.models import EntradaDigital
 
 class LogAdmin(admin.ModelAdmin):
-    readonly_fields = ('tipo','mensagem','tempo',)
-    list_display = ('tipo','mensagem','tempo','sync',)
+    readonly_fields = ('tipo','mensagem','tempo','sync',)
+    list_display = ('tipo','mensagem','tempo',)
     ordering = ('-tempo',)
     list_filter = ('tipo',)
 
 class AlarmeAdmin(admin.ModelAdmin):
-    readonly_fields = ('tempoAtivacao','ativo','tempoInativacao','alarmeTipo',)
-    list_display = ('ativo','alarmeTipo','tempoAtivacao','syncAtivacao','tempoInativacao','syncInativacao',)
+    readonly_fields = ('ativo','alarmeTipo','tempoAtivacao','syncAtivacao','tempoInativacao','syncInativacao',)
+    list_display = ('ativo','alarmeTipo','tempoAtivacao','tempoInativacao',)
     list_filter = ('ativo','tempoAtivacao',)
     ordering = ('-ativo', '-tempoAtivacao',)
     list_per_page = AlarmeTipo.objects.count()
