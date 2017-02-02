@@ -9,6 +9,30 @@ class Log(models.Model):
     tempo = models.DateTimeField(auto_now=True)
     def __str__(self):
         return self.mensagem
+    class Meta:
+        verbose_name = 'Log'
+        verbose_name_plural = 'Logs'
+
+class Configuracoes(models.Model):
+    apiKey = models.CharField(max_length=255, null=False)
+    authDomain = models.CharField(max_length=255, null=False)
+    databaseURL = models.CharField(max_length=255, null=False)
+    storageBucket = models.CharField(max_length=255, null=False)
+    email = models.CharField(max_length=255, null=False)
+    senha = models.CharField(max_length=255, null=False)
+    uidCentral = models.CharField(max_length=48, null=False)
+    class Meta:
+        verbose_name = 'Configuração'
+        verbose_name_plural = 'Configuração'
+               
+class Ambiente(models.Model):
+    nome = models.CharField(max_length=255, null=False)
+    uid = models.CharField(max_length=48, null=True, blank=True)
+    def __str__(self):
+        return self.nome
+    class Meta:
+        verbose_name = 'Ambiente'
+        verbose_name_plural = 'Ambientes'
 
 class AlarmeTipo(models.Model):
     codigo = models.IntegerField(unique=True, null=False)
@@ -16,6 +40,9 @@ class AlarmeTipo(models.Model):
     prioridade = models.IntegerField(null=False)
     def __str__(self):
         return self.mensagem
+    class Meta:
+        verbose_name = 'Tipo de Alarme'
+        verbose_name_plural = 'Tipos de Alarme'
 
 class Alarme(models.Model):
     ativo =models.BooleanField(default=False, null=False)
@@ -27,6 +54,9 @@ class Alarme(models.Model):
     alarmeTipo = models.ForeignKey(AlarmeTipo, on_delete=models.PROTECT)
     def __str__(self):
         return self.alarmeTipo.mensagem
+    class Meta:
+        verbose_name = 'Alarme'
+        verbose_name_plural = 'Alarmes'
 
 class PlacaExpansaoDigital(models.Model):
     idRede = models.IntegerField(null=False, unique=True)
@@ -37,6 +67,9 @@ class PlacaExpansaoDigital(models.Model):
             return str(self.idRede) + " - " + self.descricao
         else:
             return str(self.idRede) + " - "
+    class Meta:
+        verbose_name = 'Placa de expansão digital'
+        verbose_name_plural = 'Placas de expansão digital'
 
 class EntradaDigital(models.Model):
     class Meta:
@@ -52,6 +85,10 @@ class EntradaDigital(models.Model):
         to_field='idRede', on_delete=models.PROTECT)
     alarmeTipo = models.ForeignKey(AlarmeTipo, blank=True, null=True,\
     to_field='codigo', on_delete=models.PROTECT)
+    ambiente = models.ForeignKey(Ambiente, on_delete=models.PROTECT)
 
     def __str__(self):
         return str(self.placaExpansaoDigital.descricao) + " [ " + str(self.numero) + " ]"
+    class Meta:
+        verbose_name = 'Entrada digital'
+        verbose_name_plural = 'Entradas digitais'

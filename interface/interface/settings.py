@@ -28,6 +28,7 @@ DEBUG = True
 ALLOWED_HOSTS = [
     '7a73657971.dataplicity.io',
     '127.0.0.1',
+    '192.168.5.103',
 ]
 
 
