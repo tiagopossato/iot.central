@@ -1,5 +1,3 @@
-#from __future__ import str_literals
-
 from django.db import models
 
 class Log(models.Model):
@@ -25,15 +23,6 @@ class Configuracoes(models.Model):
     class Meta:
         verbose_name = 'Configuração'
         verbose_name_plural = 'Configuração'
-               
-class Ambiente(models.Model):
-    nome = models.CharField(max_length=255, null=False)
-    uid = models.CharField(max_length=48, null=True, blank=True)
-    def __str__(self):
-        return self.nome
-    class Meta:
-        verbose_name = 'Ambiente'
-        verbose_name_plural = 'Ambientes'
 
 class AlarmeTipo(models.Model):
     codigo = models.IntegerField(unique=True, null=False)
@@ -44,6 +33,15 @@ class AlarmeTipo(models.Model):
     class Meta:
         verbose_name = 'Tipo de Alarme'
         verbose_name_plural = 'Tipos de Alarme'
+        
+class Ambiente(models.Model):
+    nome = models.CharField(max_length=255, null=False)
+    uid = models.CharField(max_length=48, null=True, blank=True)
+    def __str__(self):
+        return self.nome
+    class Meta:
+        verbose_name = 'Ambiente'
+        verbose_name_plural = 'Ambientes'
 
 class Alarme(models.Model):
     uid = models.CharField(max_length=48, null=True, blank=True)

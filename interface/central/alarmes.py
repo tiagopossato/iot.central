@@ -53,10 +53,9 @@ class AlarmTrigger():
 
         #Caso nenhum problema aconteceu, insere um novo alarme na tabela
         try:
-            ambiente = Ambiente.objects.only('id').get(id=_ambiente)
             a = Alarme(alarmeTipo_id=_alarmeTipo_id, \
                 ativo=True, syncAtivacao=False, \
-                ambiente=ambiente,\
+                ambiente_id=_ambiente,\
                 tempoAtivacao=datetime.datetime.fromtimestamp(time.time()))
             a.save()
 

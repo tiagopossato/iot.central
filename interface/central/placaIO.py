@@ -13,9 +13,13 @@ def newPlacaExpansaoDigital(_idRede):
     except Exception as e:
         log('PLI02',str(e))
 
-def newEntradaDigital(_placaExpansaoDigital, _numero, _alarmeTipo, _nome = ""):
+def newEntradaDigital(_placaExpansaoDigital, _numero, _alarmeTipo, _ambiente_id, _nome = ""):
     try:
-        entrada = EntradaDigital(numero=_numero, placaExpansaoDigital_id=_placaExpansaoDigital, nome=_nome, alarmeTipo_id = _alarmeTipo)
+        entrada = EntradaDigital(numero=_numero, 
+            placaExpansaoDigital_id=_placaExpansaoDigital, 
+            ambiente_id = _ambiente_id,
+            nome=_nome, 
+            alarmeTipo_id = _alarmeTipo)
         entrada.save()
     except Exception as e:
         log('PLI03',str(e))

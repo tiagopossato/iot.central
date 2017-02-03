@@ -4,7 +4,7 @@
 # MAIN
 #
 if [ "$(id -u)" != "0" ]; then
-	echo "Este programa precisa ser executado com permissões de super-usuário (root)!"
+	echo "Este script precisa ser executado com permissões de super-usuário (root)!"
 	exit 1
 fi
 
@@ -45,7 +45,7 @@ mkdir /opt/iot.central/placaBase
 cp -r placaBase/app /opt/iot.central/placaBase
 cp -r interface /opt/iot.central/
 
-
+:<<'INATIVO'
 #copia arquivo do serviço
 echo "...Instalando serviço"
 cp servico/central.sh /etc/init.d/central
@@ -55,11 +55,20 @@ chown root:root /etc/init.d/central
 chmod 755 /etc/init.d/central
 #coloca para inicializar junto ao sistema
 update-rc.d central defaults
+INATIVO
 
 echo "....Atualizando banco de dados"
 cd /opt/iot.central/interface
 python3 manage.py makemigrations
 python3 manage.py migrate
+
+echo -n "Criar Super Usuario? 1->s , 2->n  "
+read resp
+
+if [ $resp -eq 1 ]; then
+python3 manage.py createsuperuser
+fi
+   
 
 echo "update central_entradadigital set estado=0;" > /tmp/tmp.sql
 sqlite3 /opt/iot.central/banco/db.sqlite3 < /tmp/tmp.sql
@@ -75,4 +84,4 @@ echo "ATENÇÃO! REVER AS PERMISSOES DOS ARQUIVOS QUANDO COLOCAR EM PRODUÇÃO"
 
 #Reiniciando serviço
 echo ".....Reiniciando serviço"
-service central restart
+#service central restart

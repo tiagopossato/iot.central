@@ -4,7 +4,7 @@
 # MAIN
 #
 if [ "$(id -u)" != "0" ]; then
-	echo "Este programa precisa ser executado com permissões de super-usuário (root)!"
+	echo "Este script precisa ser executado com permissões de super-usuário (root)!"
 	exit 1
 fi
 
