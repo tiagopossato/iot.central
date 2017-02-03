@@ -52,7 +52,7 @@ def alteraEstadoEntrada(_codigoPlacaExpansaoDigital, _numero, _estado):
             entrada.updated_at = datetime.datetime.fromtimestamp(time.time())
             entrada.save()
             if(entrada.alarmeTipo.id != None and entrada.alarmeTipo.id != ''):
-                if(_estado == True): alarmTrigger.on(_alarmeTipo_id=entrada.alarmeTipo.id)
+                if(_estado == True): alarmTrigger.on(_alarmeTipo_id=entrada.alarmeTipo.id, _ambiente=entrada.ambiente.id)
                 if(_estado == False): alarmTrigger.off(_alarmeTipo_id=entrada.alarmeTipo.id)
         return True
     except Exception as e:

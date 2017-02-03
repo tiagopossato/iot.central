@@ -15,6 +15,12 @@ from central.log import log
 from overCAN import digest
 from placaBaseVirtual import PlacaBase
 
+# from central.firebase.alarmesFirebase import SincronizaAlarmes
+# sincronizador = SincronizaAlarmes()
+# sincronizador.start()
+# sincronizador.join()
+# exit()
+
 pb = PlacaBase()
 pb.iniciar('/dev/ttyAMA0', 115200, digest)
 tempo = 1

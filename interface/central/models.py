@@ -21,6 +21,7 @@ class Configuracoes(models.Model):
     email = models.CharField(max_length=255, null=False)
     senha = models.CharField(max_length=255, null=False)
     uidCentral = models.CharField(max_length=48, null=False)
+    maxAlarmes =  models.IntegerField(null=False)
     class Meta:
         verbose_name = 'Configuração'
         verbose_name_plural = 'Configuração'
@@ -45,6 +46,7 @@ class AlarmeTipo(models.Model):
         verbose_name_plural = 'Tipos de Alarme'
 
 class Alarme(models.Model):
+    uid = models.CharField(max_length=48, null=True, blank=True)
     ativo =models.BooleanField(default=False, null=False)
     tempoAtivacao = models.DateTimeField(null=False)
     syncAtivacao = models.BooleanField(default=False, null=False)
@@ -52,6 +54,7 @@ class Alarme(models.Model):
     syncInativacao = models.BooleanField(default=False, null=False)
 
     alarmeTipo = models.ForeignKey(AlarmeTipo, on_delete=models.PROTECT)
+    ambiente = models.ForeignKey(Ambiente, on_delete=models.PROTECT)
     def __str__(self):
         return self.alarmeTipo.mensagem
     class Meta:
@@ -85,7 +88,7 @@ class EntradaDigital(models.Model):
         to_field='idRede', on_delete=models.PROTECT)
     alarmeTipo = models.ForeignKey(AlarmeTipo, blank=True, null=True,\
     to_field='codigo', on_delete=models.PROTECT)
-    ambiente = models.ForeignKey(Ambiente, on_delete=models.PROTECT)
+    ambiente = models.ForeignKey(Ambiente, to_field='id', on_delete=models.PROTECT)
 
     def __str__(self):
         return str(self.placaExpansaoDigital.descricao) + " [ " + str(self.numero) + " ]"

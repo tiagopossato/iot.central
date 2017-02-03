@@ -94,8 +94,16 @@ class _RecebeMensagens(Thread):
         print("Recebe")
         while(True):
             try:
-                self.callback({'id':3, 'codigo':61, 'msg':[randint(0,255)]})
+                #self.callback({'id':3, 'codigo':61, 'msg':[randint(0,255)]})
+                for i in range(255):
+                    self.callback({'id':3, 'codigo':61, 'msg':[i]})
+                    sleep(0.2)
                 sleep(1)
+                for i in range(255,-1,-1):
+                    self.callback({'id':3, 'codigo':61, 'msg':[i]})
+                    sleep(0.2)
+                sleep(1)
+                print('----------')
             except Exception as e:
                 log("PLB05.3",str(e))
             except KeyboardInterrupt as e:
