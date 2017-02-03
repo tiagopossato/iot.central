@@ -169,7 +169,7 @@ class _MonitoraPlacaBase(Thread):
     def __init__ (self, _placaBase):
         self.placaBase = _placaBase
         self.intervaloVerificacao = 1
-        self.tentativas = 2
+        self.tentativas = 5
         self.count = 0
         Thread.__init__(self)
 
