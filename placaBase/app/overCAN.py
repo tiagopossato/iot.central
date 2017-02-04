@@ -19,7 +19,7 @@ ovcComands = { \
     'INPUT_1_STATE' : 61,\
 }
 
-def digest(mensagem):
+def processaMensagem(mensagem):
     if(mensagem['codigo']==ovcComands['INPUT_1_STATE']):
         inputState(mensagem['id'], mensagem['msg'][0])
 

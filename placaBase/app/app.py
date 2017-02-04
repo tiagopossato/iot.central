@@ -13,7 +13,7 @@ django.setup()
 
 from central.log import log
 
-from overCAN import digest
+from overCAN import processaMensagem
 from placaBase import PlacaBase
 pb = PlacaBase()
 tempo = 1
@@ -41,7 +41,7 @@ if __name__ == "__main__":
 
     log("RUN01","Iniciando aplicacao")
     
-    pb.iniciar('/dev/ttyACM0', 115200, lambda x: print(x))
+    pb.iniciar('/dev/ttyACM0', 115200, processaMensagem)
 
     while(True):
         try:
