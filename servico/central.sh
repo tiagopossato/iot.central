@@ -22,7 +22,8 @@ start() {
 #	fi
 	cd /opt/iot.central/placaBase/app
 	python3 app.py &
-#	python3 sincronizaAlarmes.py &
+	cd /opt/iot.central/interface
+	python3 manage.py runserver &
 }
 
 stop() {

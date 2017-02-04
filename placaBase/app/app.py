@@ -21,7 +21,7 @@ tempo = 1
 def encerrar(arg1=0, arg2=0):
     for x in range(8):
         pb.enviaComando('3', 'CHANGE_OUTPUT_STATE', (x,0))
-    print("saindo, aguarde!")
+    log("RUN02","Encerrando aplicacao")
     pb.fechar()
     exit()
 

@@ -17,7 +17,7 @@ class LogAdmin(admin.ModelAdmin):
 
 class AlarmeAdmin(admin.ModelAdmin):
     readonly_fields = ('uid','ativo','alarmeTipo','ambiente','tempoAtivacao','syncAtivacao','tempoInativacao','syncInativacao',)
-    list_display = ('ativo','alarmeTipo','ambiente', 'tempoAtivacao','tempoInativacao',)
+    list_display = ('alarmeTipo','ativo','ambiente', 'tempoAtivacao','tempoInativacao',)
     list_filter = ('ativo','tempoAtivacao',)
     ordering = ('-ativo', '-tempoAtivacao',)
     list_per_page = AlarmeTipo.objects.count()
