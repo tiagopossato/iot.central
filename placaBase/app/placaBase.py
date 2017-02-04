@@ -87,17 +87,34 @@ class PlacaBase():
 
     def fechar(self):
         try:
-            while(self.bufferEnvio.empty() == False): sleep(self.tempoMinimoEnvio)
-            signal.pthread_kill(self._envia.ident, signal.SIGTERM)
-            signal.pthread_kill(self._monitora.ident, signal.SIGTERM)
-            signal.pthread_kill(self._recebe.ident, signal.SIGTERM)
-            sleep(1)
+            while(self.bufferEnvio.empty() == False): sleep(self.tempoMinimoEnvio)                                
             print("Aguardando threads terminarem")
-            self._envia.join()
-            self._monitora.join()
-            self._recebe.join()
+            
+            try:
+                signal.pthread_kill(self._envia.ident, signal.SIGKILL)
+                self._envia.join()
+            except Exception as e:
+                print("_envia")
+                print(e)               
+            
+            try:
+                signal.pthread_kill(self._monitora.ident, signal.SIGKILL)
+                self._monitora.join() 
+            except Exception as e:
+                print("_monitora")
+                print(e)
+
+            try:
+                signal.pthread_kill(self._recebe.ident, signal.SIGKILL)
+                self._recebe.join()
+            except Exception as e:
+                print("_recebe")
+                print(e)
+
             self.portaSerial.close()
+
         except Exception as e:
+            print("Fechando placa base")
             print(e)
             sys.exit(0)
 
@@ -168,7 +185,7 @@ class _MonitoraPlacaBase(Thread):
 
     def __init__ (self, _placaBase):
         self.placaBase = _placaBase
-        self.intervaloVerificacao = 1
+        self.intervaloVerificacao = 2
         self.tentativas = 5
         self.count = 0
         Thread.__init__(self)
@@ -177,7 +194,7 @@ class _MonitoraPlacaBase(Thread):
         while(True):
             try:
                 self.placaBase.isOnline = False
-                self.placaBase.enviaComando(CENTRAL_ID, 'IS_ONLINE')
+                #self.placaBase.enviaComando(CENTRAL_ID, 'IS_ONLINE')
                 sleep(self.intervaloVerificacao)
                 if(self.count < self.tentativas and self.placaBase.isOnline == False):
                     self.count = self.count + 1

@@ -45,7 +45,7 @@ mkdir /opt/iot.central/placaBase
 cp -r placaBase/app /opt/iot.central/placaBase
 cp -r interface /opt/iot.central/
 
-:<<'INATIVO'
+#:<<'INATIVO'
 #copia arquivo do serviço
 echo "...Instalando serviço"
 cp servico/central.sh /etc/init.d/central
@@ -55,7 +55,7 @@ chown root:root /etc/init.d/central
 chmod 755 /etc/init.d/central
 #coloca para inicializar junto ao sistema
 update-rc.d central defaults
-INATIVO
+#INATIVO
 
 echo "....Atualizando banco de dados"
 cd /opt/iot.central/interface
@@ -84,4 +84,4 @@ echo "ATENÇÃO! REVER AS PERMISSOES DOS ARQUIVOS QUANDO COLOCAR EM PRODUÇÃO"
 
 #Reiniciando serviço
 echo ".....Reiniciando serviço"
-#service central restart
+service central restart

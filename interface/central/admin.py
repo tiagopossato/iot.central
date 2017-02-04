@@ -12,7 +12,7 @@ class LogAdmin(admin.ModelAdmin):
     readonly_fields = ('tipo','mensagem','tempo','sync',)
     list_display = ('tipo','mensagem','tempo',)
     ordering = ('-tempo',)
-    list_filter = ('tipo',)
+    list_filter = ('tipo','tempo',)
     list_per_page = 50
 
 class AlarmeAdmin(admin.ModelAdmin):

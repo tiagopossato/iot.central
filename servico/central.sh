@@ -28,7 +28,8 @@ start() {
 stop() {
 	if ( test -f /var/run/central.pid );then
 		pid=$(cat /var/run/central.pid)
-		kill -9 $pid
+    #envia SIGTERM para o processo
+		kill -15 $pid
 		rm /var/run/central.pid
 	fi
 

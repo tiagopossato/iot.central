@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 import os
 import sys
+import signal
 import django
 from time import sleep
 from random import randint
@@ -14,6 +15,17 @@ from central.log import log
 
 from overCAN import digest
 from placaBase import PlacaBase
+pb = PlacaBase()
+tempo = 1
+
+def encerrar(arg1=0, arg2=0):
+    for x in range(8):
+        pb.enviaComando('3', 'CHANGE_OUTPUT_STATE', (x,0))
+    print("saindo, aguarde!")
+    pb.fechar()
+    exit()
+
+signal.signal(signal.SIGTERM, encerrar)
 
 if __name__ == "__main__":
     try:
@@ -28,23 +40,17 @@ if __name__ == "__main__":
         exit()
 
     log("RUN01","Iniciando aplicacao")
-
-    pb = PlacaBase()
-    pb.iniciar('/dev/ttyAMA0', 115200, digest)
-    tempo = 1
+    
+    pb.iniciar('/dev/ttyACM0', 115200, lambda x: print(x))
 
     while(True):
         try:
-            pb.enviaComando('3', 'CHANGE_OUTPUT_STATE', (randint(0,8),randint(0,1)))
-            # for x in range(8):
-            #     pb.enviaComando('3', 'CHANGE_OUTPUT_STATE', (x,1))
-            #     sleep(tempo)
-            # for x in range(8):
-            #     pb.enviaComando('3', 'CHANGE_OUTPUT_STATE', (x,0))
-            sleep(tempo)
-        except KeyboardInterrupt:
+            #pb.enviaComando('3', 'CHANGE_OUTPUT_STATE', (randint(0,8),randint(0,1)))
+            for x in range(8):
+                pb.enviaComando('3', 'CHANGE_OUTPUT_STATE', (x,1))
+                sleep(tempo)
             for x in range(8):
                 pb.enviaComando('3', 'CHANGE_OUTPUT_STATE', (x,0))
-            print("saindo, aguarde!")
-            pb.fechar()
-            exit()
+                sleep(tempo)
+        except KeyboardInterrupt:
+            encerrar()
