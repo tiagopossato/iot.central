@@ -9,27 +9,42 @@ from central.models import Configuracoes
 from configuracao import config
 
 class SincronizaAlarmes(Thread):
-    def __init__ (self):
-        self.cfg = Configuracoes.objects.get()
-        config = {
-            "apiKey": self.cfg.apiKey,
-            "authDomain": self.cfg.authDomain,
-            "databaseURL": self.cfg.databaseURL,
-            "storageBucket": self.cfg.storageBucket
-        }
-        self.firebase = pyrebase.initialize_app(config)
-        # Get a reference to the auth service
-        self.auth = self.firebase.auth()
-         # Get a reference to the database service
-        self.db = self.firebase.database()
-
+    def __init__ (self): 
+        self.conectaFirebase()
         Thread.__init__(self)
 
-    def run(self):
-        # Log the user in
-        self.user = self.auth.sign_in_with_email_and_password(self.cfg.email, self.cfg.senha)
-       
+    def conectaFirebase(self):
+        try:
+            self.cfg = Configuracoes.objects.get()
+            config = {
+                "apiKey": self.cfg.apiKey,
+                "authDomain": self.cfg.authDomain,
+                "databaseURL": self.cfg.databaseURL,
+                "storageBucket": self.cfg.storageBucket
+            }
+            self.firebase = pyrebase.initialize_app(config)
+            # Get a reference to the auth service
+            self.auth = self.firebase.auth()
+            # Get a reference to the database service
+            self.db = self.firebase.database()
+        except Exception as e:
+            print('conectaFirebase')
+            print(e)
 
+        try:
+            # Log the user in
+            self.user = self.auth.sign_in_with_email_and_password(self.cfg.email, self.cfg.senha)
+        except requests.exceptions.HTTPError as e:
+            e = eval(e.strerror)
+            log('AFB01.0',e['error']['message'])
+                                
+    def run(self):
+        try:
+            self.user = self.auth.refresh(self.user['refreshToken'])            
+        except Exception as e:
+            log('AFB02.0',str(e))
+            self.conectaFirebase()
+       
         #pega os alarmes novos, que ainda não foram criados
         #no banco de dados do servidor
         try:
@@ -38,7 +53,7 @@ class SincronizaAlarmes(Thread):
             # print("Enviando novos alarmes ainda ativos")
             self._enviaAlarmes(alarmes)
         except Exception as e:
-            log('AFB01.0',str(e))
+            log('AFB02.1',str(e))
 
         # try:
         #     alarmes = Alarme.objects.filter()
@@ -56,7 +71,7 @@ class SincronizaAlarmes(Thread):
             for x in range(len(alarmes)-self.cfg.maxAlarmes):
                 alarmes[x].delete()
         except Exception as e:
-            log('AFB01.2',str(e))
+            log('AFB02.2',str(e))
 
     def _enviaAlarmes(self, alarmes):
         try:
@@ -95,5 +110,5 @@ class SincronizaAlarmes(Thread):
                     alarmes[x].save()
 
         except Exception as e:
-            log('AFB02.0',str(e))
+            log('AFB03.0',str(e))
             return False
