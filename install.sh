@@ -21,9 +21,9 @@ if [ -d /opt/iot.central ]; then
 	if [ -d /opt/iot.central/interface/ ]; then
 		rm -r /opt/iot.central/interface
 	fi
-	if [ -d /opt/iot.central/placaBase/ ]; then
-		rm -r /opt/iot.central/placaBase
-	fi
+	# if [ -d /opt/iot.central/placaBase/ ]; then
+	# 	rm -r /opt/iot.central/placaBase
+	# fi
 else
 	mkdir /opt/iot.central
 fi
@@ -39,10 +39,10 @@ fi
 
 #Copia os novos arquivos
 echo ".Copiando arquivos"
-mkdir /opt/iot.central/placaBase
-#mkdir /opt/iot.central/interface
+# mkdir /opt/iot.central/placaBase
+# mkdir /opt/iot.central/interface
 
-cp -r placaBase/app /opt/iot.central/placaBase
+# cp -r placaBase/app /opt/iot.central/placaBase
 cp -r interface /opt/iot.central/
 
 #:<<'INATIVO'
@@ -58,26 +58,28 @@ update-rc.d central defaults
 #INATIVO
 
 echo "....Atualizando banco de dados"
+#muda nome do arquivo para evitar conflitos
+cp /opt/iot.central/interface/central/admin.py /opt/iot.central/interface/central/2admin.py
 cd /opt/iot.central/interface
 python3 manage.py makemigrations
 python3 manage.py migrate
 
 echo -n "Criar Super Usuario? 1->s , 2->n  "
 read resp
-
 if [ $resp -eq 1 ]; then
-python3 manage.py createsuperuser
-fi
-   
+	python3 manage.py createsuperuser
+fi   
 
 echo "update central_entradadigital set estado=0;" > /tmp/tmp.sql
 sqlite3 /opt/iot.central/banco/db.sqlite3 < /tmp/tmp.sql
 rm /tmp/tmp.sql
 
+cp /opt/iot.central/interface/central/2admin.py /opt/iot.central/interface/central/admin.py
+
 #altera as permissoes dos arquivos
 echo "..Alterando as permissões"
 chown root:root -R /opt/iot.central
-chmod 777 -R /opt/iot.central/placaBase # 554 dono e grupo le e executa, outros leem
+# chmod 777 -R /opt/iot.central/placaBase # 554 dono e grupo le e executa, outros leem
 chmod 777 -R /opt/iot.central/interface # 554 dono e grupo le e executa, outros leem
 chmod 777 -R /opt/iot.central/banco # 604 dono le e escreve, outros leem
 echo "ATENÇÃO! REVER AS PERMISSOES DOS ARQUIVOS QUANDO COLOCAR EM PRODUÇÃO"

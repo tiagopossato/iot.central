@@ -20,8 +20,8 @@ start() {
 #		echo "Serviço rodando, utilize restart"
 #		exit $?
 #	fi
-	cd /opt/iot.central/placaBase/app
-	python3 app.py &
+	# cd /opt/iot.central/placaBase/app
+	# python3 app.py &
 	cd /opt/iot.central/interface
 	python3 manage.py runserver &
 }
