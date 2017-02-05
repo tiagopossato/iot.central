@@ -19,3 +19,13 @@ from django.contrib import admin
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
 ]
+
+
+import sys
+import os
+sys.path.insert(0, os.path.abspath('../placaBase/app'))
+print(sys.path)
+
+from app import app
+
+app()
