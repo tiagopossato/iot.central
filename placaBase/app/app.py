@@ -40,8 +40,8 @@ if __name__ == "__main__":
         exit()
 
     log("RUN01","Iniciando aplicacao")
-    
-    pb.iniciar('/dev/ttyACM0', 115200, processaMensagem)
+   
+    pb.iniciar('/dev/ttyAMA0', 115200, processaMensagem)
 
     while(True):
         try:

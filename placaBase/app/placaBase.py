@@ -20,6 +20,7 @@ class PlacaBase():
         try:
             self.isOnline = False
             self.bufferEnvio = Queue()
+            self.bufferRecebimento = Queue()
             self.tempoMinimoEnvio = 0.02 #tempo minimo entre uma mensagem e outra
             # Configurando GPIO
             gpio.setwarnings(False)
@@ -39,18 +40,23 @@ class PlacaBase():
             self.portaSerial.parity=serial.PARITY_NONE
             self.portaSerial.stopbits=serial.STOPBITS_ONE
             self.portaSerial.bytesize=serial.EIGHTBITS
-            self.portaSerial.timeout=1
+            self.portaSerial.xonxoff = True
+            self.portaSerial.timeout=None
             self.portaSerial.open()
+            self.callback = callback
 
             #Inicia thread para receber as mensagens da placa base
-            self._recebe = _RecebeMensagens(self, callback)
-            self._recebe.start()
+            self._thRecebe = _RecebeMensagens(self)
+            self._thRecebe.start()
+            #Inicia thread para tratar as mensagens recebidas da placa base
+            self._thCallback = _CallbackRecebe(self)
+            self._thCallback.start()
             #inicia thread que envia as mensagens para a placa base
-            self._envia = _EnviaMensagens(self)
-            self._envia.start()
+            self._thEnvia = _EnviaMensagens(self)
+            self._thEnvia.start()
             #inicia a thread que monitora se a placa está online
-            self._monitora = _MonitoraPlacaBase(self)
-            self._monitora.start()
+            self._thMonitora = _MonitoraPlacaBase(self)
+            self._thMonitora.start()
 
         except Exception as e:
             log("PLB02", str(e))
@@ -71,8 +77,8 @@ class PlacaBase():
                 return False
             self.bufferEnvio.put(strComando)
             #verifica se a thread está ativa
-            if(self._envia.isAlive() == False):
-                self._envia.run()
+            if(self._thEnvia.isAlive() == False):
+                self._thEnvia.run()
         except ValueError as e:
             log("PLB03.2",str(e))
 
@@ -91,24 +97,31 @@ class PlacaBase():
             print("Aguardando threads terminarem")
             
             try:
-                signal.pthread_kill(self._envia.ident, signal.SIGKILL)
-                self._envia.join()
+                signal.pthread_kill(self._thEnvia.ident, signal.SIGKILL)
+                self._thEnvia.join()
             except Exception as e:
-                print("_envia")
+                print("_thEnvia")
                 print(e)               
             
             try:
-                signal.pthread_kill(self._monitora.ident, signal.SIGKILL)
-                self._monitora.join() 
+                signal.pthread_kill(self._thMonitora.ident, signal.SIGKILL)
+                self._thMonitora.join() 
             except Exception as e:
-                print("_monitora")
+                print("_thMonitora")
                 print(e)
 
             try:
-                signal.pthread_kill(self._recebe.ident, signal.SIGKILL)
-                self._recebe.join()
+                signal.pthread_kill(self._thRecebe.ident, signal.SIGKILL)
+                self._thRecebe.join()
             except Exception as e:
-                print("_recebe")
+                print("_thRecebe")
+                print(e)
+
+            try:
+                signal.pthread_kill(self._thCallback.ident, signal.SIGKILL)
+                self._thCallback.join()
+            except Exception as e:
+                print("_thCallback")
                 print(e)
 
             self.portaSerial.close()
@@ -122,17 +135,31 @@ class PlacaBase():
 Classe que será chamada via thread para receber as mensagens da porta serial
 """
 class _RecebeMensagens(Thread):
-    def __init__ (self, _placaBase, _callback):
+    def __init__ (self, _placaBase):
         self.placaBase = _placaBase
-        self.callback = _callback
         Thread.__init__(self)
 
     def run(self):
-        while(True):
-            try:
-                inMsg = self.placaBase.portaSerial.readline().decode("UTF-8")
-                if(len(inMsg) == 0 ):
-                    continue
+        try:
+            while(True):
+                try:
+                    # inMsg = ''
+                    # while(True):
+                    #     print(self.placaBase.portaSerial.read(1).decode('utf-8'))
+                    #     if(data == '\n'):
+                    #         break
+                    #     if(data):
+                    #         inMsg += data.decode()
+                    # #inMsg = self.placaBase.portaSerial.readline().decode("UTF-8")
+                    # print(str(inMsg))
+                    inMsg = self.placaBase.portaSerial.readline()
+                    inMsg = inMsg.decode("UTF-8")
+                    #print(inMsg)
+                    if(len(inMsg) == 0 ):
+                        continue
+                except Exception as e:
+                    log("PLB05.0",str(e))
+                
                 try:
                     j = simplejson.loads(inMsg)
                     try:
@@ -142,14 +169,33 @@ class _RecebeMensagens(Thread):
                     except Exception as e:
                         log("PLB05.1",str(e) + "["+inMsg+"]")
                         continue
-                    self.callback(j)
+                    
+                    self.placaBase.bufferRecebimento.put(j)
+                    #verifica se a thread está ativa
+                    if(self.placaBase._thCallback.isAlive() == False):
+                        self.placaBase._thCallback.run()
+
                 except simplejson.scanner.JSONDecodeError as e:
                     log("PLB05.2",str(e) + "["+inMsg+"]")
-            except Exception as e:
-                log("PLB05.3",str(e))
-            except KeyboardInterrupt as e:
-                self.exit()
+        except KeyboardInterrupt as e:
+            self.exit()
 
+"""
+Thread para processar as mensagens recebidas
+"""
+class _CallbackRecebe(Thread):
+    def __init__ (self, _placaBase):
+        self.placaBase = _placaBase
+        Thread.__init__(self)
+
+    def run(self):
+        try:
+            while(self.placaBase.bufferRecebimento.empty() == False):
+                self.placaBase.callback(self.placaBase.bufferRecebimento.get())
+        except Exception as e:
+            log("PLB06.0",str(e))
+        except KeyboardInterrupt as e:
+            self.exit()
 """
 Classe que será chamada via thread para enviar as mensagens para porta serial
 Esta classe envia as mensagens do bufferEnvio do objeto placaBase respeitando
@@ -171,12 +217,13 @@ class _EnviaMensagens(Thread):
                 # print("--------------------------------------")
                 while(self.placaBase.portaSerial.isOpen() == False): pass
                 self.placaBase.portaSerial.write(bytes(mensagem, 'UTF-8'))
+                self.placaBase.portaSerial.flushOutput()
                 sleep(self.placaBase.tempoMinimoEnvio)
             # sleep(0.0001) #evita que o processador vá a 100%
         except Exception as e:
-            log("PLB06.0",str(e))
+            log("PLB07.0",str(e))
         except KeyboardInterrupt as e:
-            self.exit()
+            return
 
 """
 Classe que será chamada via thread para monitorar a comunicação com a placa base
@@ -204,6 +251,6 @@ class _MonitoraPlacaBase(Thread):
                 elif(self.placaBase.isOnline):
                     self.count = 0
             except Exception as e:
-                log("PLB07.1",str(e))
+                log("PLB08.0",str(e))
             except KeyboardInterrupt as e:
                 self.exit()
