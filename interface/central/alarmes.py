@@ -3,7 +3,7 @@ import time
 import requests
 from threading import Thread
 
-from configuracao import config
+from placaBase.configuracao import config
 from central.models import AlarmeTipo, Alarme, Ambiente
 from central.log import log
 

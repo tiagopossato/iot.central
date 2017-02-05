@@ -12,11 +12,11 @@ django.setup()
 
 from central.log import log
 
-from overCAN import digest
-from placaBase import PlacaBase
+from placaBase.overCAN import processaMensagem
+from placaBase.placaBase import PlacaBase
 
 pb = PlacaBase()
-pb.iniciar('/dev/ttyAMA0', 115200, digest)
+pb.iniciar('/dev/ttyAMA0', 115200, processaMensagem)
 tempo = 1
 
 while(True):

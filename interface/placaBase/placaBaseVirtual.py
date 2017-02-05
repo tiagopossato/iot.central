@@ -3,7 +3,7 @@ from queue import Queue
 import serial
 import simplejson
 from central.log import log
-from overCAN import ovcComands
+from placaBase.overCAN import ovcComands
 from time import sleep, time
 import signal
 import sys

@@ -3,7 +3,7 @@ from queue import Queue
 import serial
 import simplejson
 from central.log import log
-from overCAN import ovcComands
+from placaBase.overCAN import ovcComands
 from time import sleep, time
 import signal
 import sys
@@ -138,9 +138,11 @@ class _RecebeMensagens(Thread):
     def __init__ (self, _placaBase):
         self.placaBase = _placaBase
         Thread.__init__(self)
+        Thread.__name__ = "_RecebeMensagens"
 
     def run(self):
         try:
+            #print(Thread.__name__)
             while(True):
                 try:
                     # inMsg = ''
@@ -154,7 +156,7 @@ class _RecebeMensagens(Thread):
                     # print(str(inMsg))
                     inMsg = self.placaBase.portaSerial.readline()
                     inMsg = inMsg.decode("UTF-8")
-                    #print(inMsg)
+                    print(inMsg)
                     if(len(inMsg) == 0 ):
                         continue
                 except Exception as e:
@@ -177,6 +179,8 @@ class _RecebeMensagens(Thread):
 
                 except simplejson.scanner.JSONDecodeError as e:
                     log("PLB05.2",str(e) + "["+inMsg+"]")
+                except Exception as e:
+                    log("PLB05.3",str(e))
         except KeyboardInterrupt as e:
             self.exit()
 
@@ -187,9 +191,11 @@ class _CallbackRecebe(Thread):
     def __init__ (self, _placaBase):
         self.placaBase = _placaBase
         Thread.__init__(self)
+        Thread.__name__ = "_CallbackRecebe"
 
     def run(self):
         try:
+            print(Thread.__name__)
             while(self.placaBase.bufferRecebimento.empty() == False):
                 self.placaBase.callback(self.placaBase.bufferRecebimento.get())
         except Exception as e:
@@ -205,6 +211,8 @@ class _EnviaMensagens(Thread):
     def __init__ (self, _placaBase):
         self.placaBase = _placaBase
         Thread.__init__(self)
+        Thread.__name__ = "_EnviaMensagens"
+        print(Thread.__name__)
 
     def run(self):
         try:
@@ -236,8 +244,10 @@ class _MonitoraPlacaBase(Thread):
         self.tentativas = 5
         self.count = 0
         Thread.__init__(self)
+        Thread.__name__ = "_MonitoraPlacaBase"      
 
     def run(self):
+        print(Thread.__name__)
         while(True):
             try:
                 self.placaBase.isOnline = False

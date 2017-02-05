@@ -6,7 +6,7 @@ from threading import Thread
 from central.models import AlarmeTipo, Alarme
 from central.log import log
 from central.models import Configuracoes
-from configuracao import config
+from placaBase.configuracao import config
 
 class SincronizaAlarmes(Thread):
     def __init__ (self): 
@@ -30,6 +30,7 @@ class SincronizaAlarmes(Thread):
         except Exception as e:
             print('conectaFirebase')
             print(e)
+            return
 
         try:
             # Log the user in
@@ -37,6 +38,8 @@ class SincronizaAlarmes(Thread):
         except requests.exceptions.HTTPError as e:
             e = eval(e.strerror)
             log('AFB01.0',e['error']['message'])
+        except Exception as e:            
+            log('AFB01.1',str(e))
                                 
     def run(self):
         try:
@@ -49,18 +52,18 @@ class SincronizaAlarmes(Thread):
         #no banco de dados do servidor
         try:
             #primeiro os ativos
-            alarmes = Alarme.objects.all().order_by('-ativo')
+            alarmes = Alarme.objects.filter(syncAtivacao = False, syncInativacao = False).order_by('-ativo')
             # print("Enviando novos alarmes ainda ativos")
             self._enviaAlarmes(alarmes)
         except Exception as e:
             log('AFB02.1',str(e))
 
-        # try:
-        #     alarmes = Alarme.objects.filter()
-        #     # print("Enviando novos alarmes que já desativaram")
-        #     self._enviaAlarmes(alarmes, True)
-        # except Exception as e:
-        #     log('AFB01.1',str(e))
+        try:
+            alarmes = Alarme.objects.filter(syncInativacao = False)
+            # print("Enviando novos alarmes que já desativaram")
+            self._enviaAlarmes(alarmes)
+        except Exception as e:
+            log('AFB02.2',str(e))
 
         try:
             #Apaga os alarmes mais antigos
@@ -71,7 +74,7 @@ class SincronizaAlarmes(Thread):
             for x in range(len(alarmes)-self.cfg.maxAlarmes):
                 alarmes[x].delete()
         except Exception as e:
-            log('AFB02.2',str(e))
+            log('AFB02.3',str(e))
 
     def _enviaAlarmes(self, alarmes):
         try:

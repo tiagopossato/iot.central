@@ -12,8 +12,8 @@ django.setup()
 
 from central.log import log
 
-from overCAN import digest
-from placaBaseVirtual import PlacaBase
+from placaBase.overCAN import processaMensagem
+from placaBase.placaBaseVirtual import PlacaBase
 
 # from central.firebase.alarmesFirebase import SincronizaAlarmes
 # sincronizador = SincronizaAlarmes()
@@ -22,7 +22,7 @@ from placaBaseVirtual import PlacaBase
 # exit()
 
 pb = PlacaBase()
-pb.iniciar('/dev/ttyAMA0', 115200, digest)
+pb.iniciar('/dev/ttyAMA0', 115200, processaMensagem)
 tempo = 1
 
 while(False):
