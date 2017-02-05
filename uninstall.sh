@@ -15,9 +15,9 @@ service central stop
 #verifica se existe uma instalação
 if [ -d /opt/iot.central ]; then
 	#remove os arquivos do app existente
-	if [ -d /opt/iot.central/placaBase/app/ ]; then
-		rm -rf /opt/iot.central/placaBase/app
-	fi
+	# if [ -d /opt/iot.central/placaBase/app/ ]; then
+	# 	rm -rf /opt/iot.central/placaBase/app
+	# fi
 	#remove os arquivos do app existente
 	if [ -d /opt/iot.central/interface/ ]; then
 		rm -rf /opt/iot.central/interface

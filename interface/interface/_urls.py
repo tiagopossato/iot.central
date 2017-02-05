@@ -19,23 +19,3 @@ from django.contrib import admin
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
 ]
-
-try:
-    from placaBase.app import app, encerrar
-    import signal
-    import os
-    arquivo = open("/var/run/central.pid","w")
-    pid = os.getpid()
-    arquivo.write(str(pid))
-    print(pid)
-    arquivo.close()
-    #signal.signal(signal.SIGTERM, encerrar)
-    app()
-except PermissionError as e:
-    print("Executar como root!")
-    print(e)
-    exit()
-except Exception as e:
-    print(e)
-    encerrar()    
-    exit()
