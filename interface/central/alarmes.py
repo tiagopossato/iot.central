@@ -3,11 +3,12 @@ import time
 import requests
 from threading import Thread
 
-from placaBase.configuracao import config
+from central.placaBase.configuracao import config
 from central.models import AlarmeTipo, Alarme, Ambiente
 from central.log import log
 
 from central.firebase.alarmesFirebase import SincronizaAlarmes
+# from central.servidor.alarmesServidor import SincronizaAlarmes
 
 """
 Cria um novo tipo de alarme

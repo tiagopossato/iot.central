@@ -21,7 +21,7 @@ urlpatterns = [
 ]
 
 try:
-    from placaBase.app import app, encerrar
+    from central.placaBase.app import app, encerrar
     import signal
     import os
     arquivo = open("/var/run/central.pid","w")

@@ -9,8 +9,8 @@ from threading import Thread
 
 from central.log import log
 
-from placaBase.overCAN import processaMensagem
-from placaBase.placaBase import PlacaBase
+from central.placaBase.overCAN import processaMensagem
+from central.placaBase.placaBase import PlacaBase
 
 tempo = 1
 

@@ -3,10 +3,12 @@ import requests
 import time
 import datetime
 from threading import Thread
+from django.db.models import Q
 from central.models import AlarmeTipo, Alarme
 from central.log import log
 from central.models import Configuracoes
-from placaBase.configuracao import config
+#from central.placaBase.configuracao import config
+from central.util import check_host
 
 class SincronizaAlarmes(Thread):
     def __init__ (self): 
@@ -14,7 +16,10 @@ class SincronizaAlarmes(Thread):
         Thread.__init__(self)
 
     def conectaFirebase(self):
-        try:
+        try:            
+            if(check_host()==False):
+                print("Sem conexão")
+                return
             self.cfg = Configuracoes.objects.get()
             config = {
                 "apiKey": self.cfg.apiKey,
@@ -33,7 +38,7 @@ class SincronizaAlarmes(Thread):
             return
 
         try:
-            # Log the user in
+            # Log the user in            
             self.user = self.auth.sign_in_with_email_and_password(self.cfg.email, self.cfg.senha)
         except requests.exceptions.HTTPError as e:
             e = eval(e.strerror)
@@ -43,23 +48,27 @@ class SincronizaAlarmes(Thread):
                                 
     def run(self):
         try:
+            if(check_host()==False):
+                print("Sem conexão")
+                return
             self.user = self.auth.refresh(self.user['refreshToken'])            
         except Exception as e:
             log('AFB02.0',str(e))
             self.conectaFirebase()
+            return
        
         #pega os alarmes novos, que ainda não foram criados
         #no banco de dados do servidor
         try:
             #primeiro os ativos
-            alarmes = Alarme.objects.filter(syncAtivacao = False, syncInativacao = False).order_by('-ativo')
-            # print("Enviando novos alarmes ainda ativos")
+            alarmes = Alarme.objects.filter(syncAtivacao = False, syncInativacao = False).exclude(ambiente__uid = '').order_by('-ativo')
+            #print("Enviando novos alarmes ainda ativos")
             self._enviaAlarmes(alarmes)
         except Exception as e:
             log('AFB02.1',str(e))
 
         try:
-            alarmes = Alarme.objects.filter(syncInativacao = False)
+            alarmes = Alarme.objects.filter(syncInativacao = False).exclude(ambiente__uid = '')
             # print("Enviando novos alarmes que já desativaram")
             self._enviaAlarmes(alarmes)
         except Exception as e:

@@ -3,7 +3,7 @@ from queue import Queue
 import serial
 import simplejson
 from central.log import log
-from placaBase.overCAN import ovcComands
+from central.placaBase.overCAN import ovcComands
 from time import sleep, time
 import signal
 import sys
@@ -156,7 +156,7 @@ class _RecebeMensagens(Thread):
                     # print(str(inMsg))
                     inMsg = self.placaBase.portaSerial.readline()
                     inMsg = inMsg.decode("UTF-8")
-                    print(inMsg)
+                    # print(inMsg)
                     if(len(inMsg) == 0 ):
                         continue
                 except Exception as e:
@@ -195,7 +195,6 @@ class _CallbackRecebe(Thread):
 
     def run(self):
         try:
-            print(Thread.__name__)
             while(self.placaBase.bufferRecebimento.empty() == False):
                 self.placaBase.callback(self.placaBase.bufferRecebimento.get())
         except Exception as e:
