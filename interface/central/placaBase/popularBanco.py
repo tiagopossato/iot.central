@@ -17,7 +17,9 @@ Configuracoes(
     email = 'tiago.possato@yahoo.com.br',
     senha = '123456',
     uidCentral = '-KbztEuoaYejBSl-nyFx',
-    maxAlarmes = 20
+    maxAlarmes = 20,
+    portaSerial = '/dev/ttyACM0',
+    taxa = 115200
 ).save()
 
 Ambiente(nome='Estufa de enraizamento', uid='-KbztEo7iVuSWveDg3Ge').save()

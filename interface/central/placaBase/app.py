@@ -8,6 +8,7 @@ import serial
 from threading import Thread
 
 from central.log import log
+from central.models import Configuracoes
 
 from central.placaBase.overCAN import processaMensagem
 from central.placaBase.placaBase import PlacaBase
@@ -27,14 +28,14 @@ def app():
 
 class _testaPlaca(Thread):
     def __init__ (self):
-        Thread.__init__(self)
-        Thread.__name__ = "Testa placa Base"
+        Thread.__init__(self, name="Testa placa Base")
 
     def run(self):        
         log("RUN01","Iniciando aplicacao")
         
         pb = PlacaBase()
-        pb.iniciar('/dev/ttyACM0', 115200, processaMensagem)
+        cfg = Configuracoes.objects.get()
+        pb.iniciar(cfg.portaSerial, cfg.taxa, processaMensagem)
 
         while(True):
             try:

@@ -13,7 +13,7 @@ from central.util import check_host
 class SincronizaAlarmes(Thread):
     def __init__ (self): 
         self.conectaFirebase()
-        Thread.__init__(self)
+        Thread.__init__(self, name="SincronizaAlarmes")
 
     def conectaFirebase(self):
         try:            
@@ -47,6 +47,7 @@ class SincronizaAlarmes(Thread):
             log('AFB01.1',str(e))
                                 
     def run(self):
+        print(Thread.getName(self))
         try:
             if(check_host()==False):
                 print("Sem conexão")
@@ -89,8 +90,6 @@ class SincronizaAlarmes(Thread):
         try:
             #monta uma mensagem com cada alarme
             for x in range(len(alarmes)):
-                #se o ambiente do alarme não possuir uid, não envia o alarme para o servidor
-                if(alarmes[x].ambiente.uid==None or alarmes[x].ambiente.uid == ''): continue
 
                 dados = {}
 

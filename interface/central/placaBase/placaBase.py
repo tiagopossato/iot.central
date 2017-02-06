@@ -137,12 +137,11 @@ Classe que será chamada via thread para receber as mensagens da porta serial
 class _RecebeMensagens(Thread):
     def __init__ (self, _placaBase):
         self.placaBase = _placaBase
-        Thread.__init__(self)
-        Thread.__name__ = "_RecebeMensagens"
+        Thread.__init__(self, name="_RecebeMensagens")
 
     def run(self):
         try:
-            #print(Thread.__name__)
+            print(Thread.getName(self))
             while(True):
                 try:
                     # inMsg = ''
@@ -190,11 +189,11 @@ Thread para processar as mensagens recebidas
 class _CallbackRecebe(Thread):
     def __init__ (self, _placaBase):
         self.placaBase = _placaBase
-        Thread.__init__(self)
-        Thread.__name__ = "_CallbackRecebe"
+        Thread.__init__(self, name="_CallbackRecebe")       
 
     def run(self):
         try:
+            print(Thread.getName(self))
             while(self.placaBase.bufferRecebimento.empty() == False):
                 self.placaBase.callback(self.placaBase.bufferRecebimento.get())
         except Exception as e:
@@ -209,12 +208,11 @@ o tempo mínimo da placaBase
 class _EnviaMensagens(Thread):
     def __init__ (self, _placaBase):
         self.placaBase = _placaBase
-        Thread.__init__(self)
-        Thread.__name__ = "_EnviaMensagens"
-        print(Thread.__name__)
+        Thread.__init__(self, name="_EnviaMensagens")
 
     def run(self):
         try:
+            print(Thread.getName(self))
             while(self.placaBase.bufferEnvio.empty() == False):
                 # print("--------------------------------------")
                 #print("self.placaBase.bufferEnvio: " + str(self.placaBase.bufferEnvio))
@@ -242,11 +240,10 @@ class _MonitoraPlacaBase(Thread):
         self.intervaloVerificacao = 2
         self.tentativas = 5
         self.count = 0
-        Thread.__init__(self)
-        Thread.__name__ = "_MonitoraPlacaBase"      
+        Thread.__init__(self, name="_MonitoraPlacaBase")      
 
     def run(self):
-        print(Thread.__name__)
+        print(Thread.getName(self))
         while(True):
             try:
                 self.placaBase.isOnline = False

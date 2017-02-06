@@ -20,9 +20,12 @@ class Configuracoes(models.Model):
     senha = models.CharField(max_length=255, null=False)
     uidCentral = models.CharField(max_length=48, null=False)
     maxAlarmes =  models.IntegerField(null=False)
+    portaSerial =  models.CharField(max_length=20, null=False)
+    taxa = models.IntegerField(null=False)
+
     class Meta:
         verbose_name = 'Configuração'
-        verbose_name_plural = 'Configuração'
+        verbose_name_plural = 'Configurações'
 
 class AlarmeTipo(models.Model):
     codigo = models.IntegerField(unique=True, null=False)

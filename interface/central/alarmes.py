@@ -21,9 +21,9 @@ def newAlarmeTipo(_codigo, _mensagem, _prioridade):
         log('ALM01',str(e))
 
 class AlarmTrigger():
-    def __init__(self):
-        self.sincronizador = SincronizaAlarmes()
-        self.sincronizador.start()
+    # def __init__(self):
+        # self.sincronizador = SincronizaAlarmes()
+        # self.sincronizador.start()
 
     def on(self, _alarmeTipo_id, _ambiente):
         try:
@@ -44,8 +44,8 @@ class AlarmTrigger():
                     alm[x].ativo = False
                     alm[x].syncInativacao = False
                     alm[x].save()
-                    if(self.sincronizador.isAlive() == False):
-                        self.sincronizador.run()
+                    # if(self.sincronizador.isAlive() == False):
+                    #     self.sincronizador.run()
                 return True
         except Exception as e:
             print(e)
@@ -60,8 +60,8 @@ class AlarmTrigger():
                 tempoAtivacao=datetime.datetime.fromtimestamp(time.time()))
             a.save()
 
-            if(self.sincronizador.isAlive() == False):
-                self.sincronizador.run()
+            # if(self.sincronizador.isAlive() == False):
+            #     self.sincronizador.run()
             return True
         except Exception as e:
             log('ALM02.3',str(e))
@@ -88,8 +88,8 @@ class AlarmTrigger():
                     alm[x].ativo = False
                     alm[x].syncInativacao = False
                     alm[x].save()
-                    if(self.sincronizador.isAlive() == False):
-                        self.sincronizador.run()
+                    # if(self.sincronizador.isAlive() == False):
+                    #     self.sincronizador.run()
                 return True
             except Exception as e:
                 log('ALM03.2',str(e))
