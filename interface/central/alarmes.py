@@ -31,13 +31,17 @@ class AlarmTrigger():
             alm = Alarme.objects.\
                 filter(alarmeTipo_id = _alarmeTipo_id, ativo = True)\
                 .order_by('id').all()
-
+        except Exception as e:
+            log('ALM02.0',str(e))
+            return False
+        
+        try:
             if(len(alm)==1):
                 #O alarme já está ativo
-                log('ALM02.0','O alarme já está ativo')
+                log('ALM02.1','O alarme '+ str(_alarmeTipo_id) + ' já está ativo')
                 return True
             if(len(alm)>1):
-                log('ALM02.1','Erro, existe mais de um alarme do tipo: '\
+                log('ALM02.2','Erro, existe mais de um alarme do tipo: '\
                 + str(_alarmeTipo_id) + ' ativo, inativando os mais velhos')
                 for x in range(len(alm)-1):
                     alm[x].tempoInativacao=int(time.time())
@@ -48,8 +52,7 @@ class AlarmTrigger():
                     #     self.sincronizador.run()
                 return True
         except Exception as e:
-            print(e)
-            log('ALM02.2',str(e))
+            log('ALM02.3',str(e))
             return False
 
         #Caso nenhum problema aconteceu, insere um novo alarme na tabela
@@ -64,7 +67,7 @@ class AlarmTrigger():
             #     self.sincronizador.run()
             return True
         except Exception as e:
-            log('ALM02.3',str(e))
+            log('ALM02.4',str(e))
             return False
 
     def off(self, _alarmeTipo_id):

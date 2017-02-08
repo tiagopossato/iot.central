@@ -20,8 +20,8 @@ class Configuracoes(models.Model):
     senha = models.CharField(max_length=255, null=False)
     uidCentral = models.CharField(max_length=48, null=False)
     maxAlarmes =  models.IntegerField(null=False)
-    portaSerial =  models.CharField(max_length=20, null=False)
-    taxa = models.IntegerField(null=False)
+    portaSerial =  models.CharField(max_length=20, null=False, default='/dev/ttyAMA0')
+    taxa = models.IntegerField(null=False, default=115200)
 
     class Meta:
         verbose_name = 'Configuração'

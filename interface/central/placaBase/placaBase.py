@@ -189,11 +189,11 @@ Thread para processar as mensagens recebidas
 class _CallbackRecebe(Thread):
     def __init__ (self, _placaBase):
         self.placaBase = _placaBase
-        Thread.__init__(self, name="_CallbackRecebe")       
+        Thread.__init__(self, name="_CallbackRecebe")
+        print(Thread.getName(self))
 
     def run(self):
-        try:
-            print(Thread.getName(self))
+        try:            
             while(self.placaBase.bufferRecebimento.empty() == False):
                 self.placaBase.callback(self.placaBase.bufferRecebimento.get())
         except Exception as e:
@@ -209,10 +209,11 @@ class _EnviaMensagens(Thread):
     def __init__ (self, _placaBase):
         self.placaBase = _placaBase
         Thread.__init__(self, name="_EnviaMensagens")
+        print(Thread.getName(self))
 
     def run(self):
         try:
-            print(Thread.getName(self))
+            #print(Thread.getName(self))
             while(self.placaBase.bufferEnvio.empty() == False):
                 # print("--------------------------------------")
                 #print("self.placaBase.bufferEnvio: " + str(self.placaBase.bufferEnvio))

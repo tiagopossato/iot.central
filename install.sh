@@ -60,10 +60,12 @@ update-rc.d central defaults
 
 echo "....Atualizando banco de dados"
 #muda nome do arquivo para evitar conflitos
-cp /opt/iot.central/interface/central/admin.py /opt/iot.central/interface/central/2admin.py
-cd /opt/iot.central/interface
+mv /opt/iot.central/interface/central/admin.py /opt/iot.central/interface/central/2admin.py
+
 mv /opt/iot.central/interface/interface/urls.py /opt/iot.central/interface/interface/2urls.py
 mv /opt/iot.central/interface/interface/_urls.py /opt/iot.central/interface/interface/urls.py
+
+cd /opt/iot.central/interface
 
 python3 manage.py makemigrations
 python3 manage.py migrate
@@ -79,7 +81,7 @@ echo "update central_entradadigital set estado=0;" > /tmp/tmp.sql
 sqlite3 /opt/iot.central/banco/db.sqlite3 < /tmp/tmp.sql
 rm /tmp/tmp.sql
 
-cp /opt/iot.central/interface/central/2admin.py /opt/iot.central/interface/central/admin.py
+mv /opt/iot.central/interface/central/2admin.py /opt/iot.central/interface/central/admin.py
 mv /opt/iot.central/interface/interface/urls.py /opt/iot.central/interface/interface/_urls.py
 mv /opt/iot.central/interface/interface/2urls.py /opt/iot.central/interface/interface/urls.py
 

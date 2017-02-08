@@ -37,5 +37,5 @@ except PermissionError as e:
     exit()
 except Exception as e:
     print(e)
-    encerrar()    
+    encerrar()
     exit()

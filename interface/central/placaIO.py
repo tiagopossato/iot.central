@@ -51,13 +51,13 @@ def alteraEstadoEntrada(_codigoPlacaExpansaoDigital, _numero, _estado):
             numero = _numero)
         if(int(entrada.estado) != int(_estado)):
             print("Update no "+entrada.nome+" -> "+str(_estado))
-            entrada.estado = int(_estado) == 1
+            entrada.estado = bool(int(_estado))
             entrada.sync = False
             entrada.updated_at = datetime.datetime.fromtimestamp(time.time())
             entrada.save()
             if(entrada.alarmeTipo.id != None and entrada.alarmeTipo.id != ''):
-                if(_estado == True): alarmTrigger.on(_alarmeTipo_id=entrada.alarmeTipo.id, _ambiente=entrada.ambiente.id)
-                if(_estado == False): alarmTrigger.off(_alarmeTipo_id=entrada.alarmeTipo.id)
+                if(int(_estado) == True): alarmTrigger.on(_alarmeTipo_id=entrada.alarmeTipo.id, _ambiente=entrada.ambiente.id)
+                if(int(_estado) == False): alarmTrigger.off(_alarmeTipo_id=entrada.alarmeTipo.id)
         return True
     except Exception as e:
         log('PLI05.0',str(e))
