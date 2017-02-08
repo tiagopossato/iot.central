@@ -58,3 +58,6 @@ admin.site.register(PlacaExpansaoDigital, PlacaExpansaoDigitalAdmin)
 admin.site.register(EntradaDigital, EntradaDigitalAdmin)
 admin.site.register(Ambiente, AmbienteAdmin)
 admin.site.register(Configuracoes, ConfiguracoesAdmin)
+
+admin.site.site_header = 'Administração da Central'
+admin.site.site_title = 'Central'
