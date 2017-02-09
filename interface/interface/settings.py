@@ -26,8 +26,9 @@ SECRET_KEY = '4o)bvoht37onw0*l(+@*m5cm7k0m@320ct0*7y19_-5c$bbf+#'
 DEBUG = True
 
 ALLOWED_HOSTS = [
-    '7a73657971.dataplicity.io',
+    '.dataplicity.io',
     '127.0.0.1',
+    '192.168.5.102',
     '192.168.5.103',
 ]
 
