@@ -105,21 +105,24 @@ class Grandeza(models.Model):
     sync = models.BooleanField(default=False, null=False)
     
     def __str__(self):
-        return str(self.nome)
+        return str(self.unidade)
+
     class Meta:
         verbose_name = 'Grandeza'
         verbose_name_plural = 'Grandezas'
 
 class Sensor(models.Model):
     idRede = models.IntegerField(null=False, unique=True)
-    nome = models.CharField(max_length=255, null=True)
+    descricao = models.CharField(max_length=255, unique=True, default='')
     intervaloAtualizacao = models.IntegerField(null=False, default=2)
     updated_at =  models.DateTimeField(auto_now=True)
-    
+    sync = models.BooleanField(default=False, null=False)
+
+    ambiente = models.ForeignKey(Ambiente, to_field='id', on_delete=models.PROTECT, default=0)
     grandezas = models.ManyToManyField(Grandeza, through='SensorGrandeza')
 
     def __str__(self):
-        return str(self.nome) + " [ " + str(self.idRede) + " ]"
+        return str(self.descricao) + " [ " + str(self.idRede) + " ]"
 
     class Meta:
         verbose_name = 'Sensor'
@@ -130,6 +133,8 @@ class SensorGrandeza(models.Model):
     obs = models.CharField(max_length=255, blank=True, null=True)
     updated_at =  models.DateTimeField(auto_now=True)
     curvaCalibracao = models.CharField(max_length=255, null=False)
+    sync = models.BooleanField(default=False, null=False)
+
     grandeza = models.ForeignKey(Grandeza, to_field='codigo', on_delete=models.PROTECT)
     sensor = models.ForeignKey(Sensor, to_field='idRede', on_delete=models.PROTECT)
 
@@ -143,3 +148,21 @@ class SensorGrandeza(models.Model):
     class Meta:
         verbose_name = 'Grandeza do Sensor'
         verbose_name_plural = 'Grandezas dos Sensores'
+#ver aqui: https://simpleisbetterthancomplex.com/tutorial/2016/07/28/how-to-create-django-signals.html
+
+
+class Leitura(models.Model):
+    valor = models.FloatField()
+    created_at =  models.DateTimeField(auto_now=True)
+    sync = models.BooleanField(default=False, null=False)
+
+    ambiente = models.ForeignKey(Ambiente, to_field='id', on_delete=models.PROTECT, default=0)
+    grandeza = models.ForeignKey(Grandeza, to_field='codigo', on_delete=models.PROTECT)
+    sensor = models.ForeignKey(Sensor, to_field='idRede', on_delete=models.PROTECT)
+
+    def __str__(self):
+        return str(self.valor) + " " + str(self.grandeza.unidade)
+        
+    class Meta:
+        verbose_name = 'Leitura'
+        verbose_name_plural = 'Leituras'
