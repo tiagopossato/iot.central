@@ -67,7 +67,7 @@ mv /opt/iot.central/interface/interface/_urls.py /opt/iot.central/interface/inte
 
 cd /opt/iot.central/interface
 
-python3 manage.py makemigrations
+#python3 manage.py makemigrations
 python3 manage.py migrate
 
 echo -n "Criar Super Usuario? 1->s , 2->n  "

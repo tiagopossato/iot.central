@@ -76,9 +76,6 @@ class PlacaExpansaoDigital(models.Model):
         verbose_name_plural = 'Placas de expansão digital'
 
 class EntradaDigital(models.Model):
-    class Meta:
-        unique_together = (('placaExpansaoDigital', 'numero'),)
-
     numero = models.IntegerField(null=False)
     nome = models.CharField(max_length=255, null=False)
     estado = models.BooleanField(default=False, null=False)
@@ -91,8 +88,58 @@ class EntradaDigital(models.Model):
     to_field='codigo', on_delete=models.PROTECT)
     ambiente = models.ForeignKey(Ambiente, to_field='id', on_delete=models.PROTECT)
 
+    class Meta:
+        unique_together = (('placaExpansaoDigital', 'numero'),)
+
     def __str__(self):
         return str(self.placaExpansaoDigital.descricao) + " [ " + str(self.numero) + " ]"
     class Meta:
         verbose_name = 'Entrada digital'
         verbose_name_plural = 'Entradas digitais'
+
+class Grandeza(models.Model):
+    codigo = models.IntegerField(null=False, unique=True)
+    nome = models.CharField(max_length=255, null=False, unique=True)
+    unidade = models.CharField(max_length=15, null=False, unique=True)
+    updated_at =  models.DateTimeField(auto_now=True)
+    sync = models.BooleanField(default=False, null=False)
+    
+    def __str__(self):
+        return str(self.nome)
+    class Meta:
+        verbose_name = 'Grandeza'
+        verbose_name_plural = 'Grandezas'
+
+class Sensor(models.Model):
+    idRede = models.IntegerField(null=False, unique=True)
+    nome = models.CharField(max_length=255, null=True)
+    intervaloAtualizacao = models.IntegerField(null=False, default=2)
+    updated_at =  models.DateTimeField(auto_now=True)
+    
+    grandezas = models.ManyToManyField(Grandeza, through='SensorGrandeza')
+
+    def __str__(self):
+        return str(self.nome) + " [ " + str(self.idRede) + " ]"
+
+    class Meta:
+        verbose_name = 'Sensor'
+        verbose_name_plural = 'Sensores'
+
+
+class SensorGrandeza(models.Model):
+    obs = models.CharField(max_length=255, blank=True, null=True)
+    updated_at =  models.DateTimeField(auto_now=True)
+    curvaCalibracao = models.CharField(max_length=255, null=False)
+    grandeza = models.ForeignKey(Grandeza, to_field='codigo', on_delete=models.PROTECT)
+    sensor = models.ForeignKey(Sensor, to_field='idRede', on_delete=models.PROTECT)
+
+    #define combinacao unica
+    class Meta:
+        unique_together = (('grandeza', 'sensor'),)
+
+    def __str__(self):
+        return str(self.sensor.idRede) + " [ " + str(self.grandeza.unidade) + " ]"
+        
+    class Meta:
+        verbose_name = 'Grandeza do Sensor'
+        verbose_name_plural = 'Grandezas dos Sensores'

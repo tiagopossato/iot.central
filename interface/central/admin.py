@@ -7,6 +7,9 @@ from central.models import PlacaExpansaoDigital
 from central.models import EntradaDigital
 from central.models import Ambiente
 from central.models import Configuracoes
+from central.models import Grandeza
+from central.models import Sensor
+from central.models import SensorGrandeza
 
 class LogAdmin(admin.ModelAdmin):
     readonly_fields = ('tipo','mensagem','tempo','sync',)
@@ -51,6 +54,19 @@ class ConfiguracoesAdmin(admin.ModelAdmin):
         else:
             return True
 
+class GrandezaAdmin(admin.ModelAdmin):
+    list_display = ('unidade', 'nome','codigo',)
+    ordering = ('codigo',)
+
+class SensorAdmin(admin.ModelAdmin):
+    list_display = ('nome', 'idRede','intervaloAtualizacao',)
+    ordering = ('idRede',)
+
+class SensorGrandezaAdmin(admin.ModelAdmin):
+    list_display = ('sensor', 'grandeza','curvaCalibracao','obs',)
+    ordering = ('sensor',)
+
+
 admin.site.register(Log, LogAdmin)
 admin.site.register(AlarmeTipo, AlarmeTipoAdmin)
 admin.site.register(Alarme, AlarmeAdmin)
@@ -58,6 +74,8 @@ admin.site.register(PlacaExpansaoDigital, PlacaExpansaoDigitalAdmin)
 admin.site.register(EntradaDigital, EntradaDigitalAdmin)
 admin.site.register(Ambiente, AmbienteAdmin)
 admin.site.register(Configuracoes, ConfiguracoesAdmin)
-
+admin.site.register(Grandeza, GrandezaAdmin)
+admin.site.register(Sensor,SensorAdmin)
+admin.site.register(SensorGrandeza, SensorGrandezaAdmin)
 admin.site.site_header = 'Administração da Central'
 admin.site.site_title = 'Central'
