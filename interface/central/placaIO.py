@@ -6,9 +6,9 @@ from central.alarmes import AlarmTrigger
 
 alarmTrigger = AlarmTrigger()
 
-def newPlacaExpansaoDigital(_idRede):
+def newPlacaExpansaoDigital(_idRede,_descricao=""):
     try:
-        pli = PlacaExpansaoDigital(idRede=_idRede)
+        pli = PlacaExpansaoDigital(idRede=_idRede, descricao=_descricao)
         pli.save()
     except Exception as e:
         log('PLI02',str(e))

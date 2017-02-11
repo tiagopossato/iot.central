@@ -86,7 +86,7 @@ class SensorGrandezaAdmin(admin.ModelAdmin):
 
 class LeituraAdmin(admin.ModelAdmin):
     readonly_fields = ('valor','created_at','sync','ambiente','grandeza','sensor',)
-    list_display = ('valor','grandeza','created_at','sensor','ambiente',)
+    list_display = ('sensor','valor','grandeza','created_at','ambiente',)
     list_filter = ('created_at','sensor','ambiente',)
     ordering = ('-created_at','-sensor')
     list_per_page = 20

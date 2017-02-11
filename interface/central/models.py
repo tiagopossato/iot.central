@@ -12,13 +12,13 @@ class Log(models.Model):
         verbose_name_plural = 'Logs'
 
 class Configuracoes(models.Model):
-    apiKey = models.CharField(max_length=255, null=False)
-    authDomain = models.CharField(max_length=255, null=False)
-    databaseURL = models.CharField(max_length=255, null=False)
-    storageBucket = models.CharField(max_length=255, null=False)
+    apiKey = models.CharField(max_length=255, null=False, unique=True)
+    authDomain = models.CharField(max_length=255, null=False, unique=True)
+    databaseURL = models.CharField(max_length=255, null=False, unique=True)
+    storageBucket = models.CharField(max_length=255, null=False, unique=True)
     email = models.CharField(max_length=255, null=False)
     senha = models.CharField(max_length=255, null=False)
-    uidCentral = models.CharField(max_length=48, null=False)
+    uidCentral = models.CharField(max_length=48, null=False, unique=True)
     maxAlarmes =  models.IntegerField(null=False)
     portaSerial =  models.CharField(max_length=20, null=False, default='/dev/ttyAMA0')
     taxa = models.IntegerField(null=False, default=115200)
@@ -105,7 +105,7 @@ class Grandeza(models.Model):
     sync = models.BooleanField(default=False, null=False)
     
     def __str__(self):
-        return str(self.unidade)
+        return str(self.unidade) + ' (' + str(self.nome) + ')'
 
     class Meta:
         verbose_name = 'Grandeza'
@@ -132,18 +132,18 @@ class Sensor(models.Model):
 class SensorGrandeza(models.Model):
     obs = models.CharField(max_length=255, blank=True, null=True)
     updated_at =  models.DateTimeField(auto_now=True)
-    curvaCalibracao = models.CharField(max_length=255, null=False)
+    curvaCalibracao = models.CharField(max_length=255)
     sync = models.BooleanField(default=False, null=False)
 
     grandeza = models.ForeignKey(Grandeza, to_field='codigo', on_delete=models.PROTECT)
     sensor = models.ForeignKey(Sensor, to_field='idRede', on_delete=models.PROTECT)
 
-    #define combinacao unica
+    #define combinacao unica    
     class Meta:
         unique_together = (('grandeza', 'sensor'),)
 
     def __str__(self):
-        return str(self.sensor.idRede) + " [ " + str(self.grandeza.unidade) + " ]"
+        return str(self.sensor.idRede) + " - " + str(self.grandeza)
         
     class Meta:
         verbose_name = 'Grandeza do Sensor'
