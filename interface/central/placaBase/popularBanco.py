@@ -18,7 +18,7 @@ Configuracoes(
     senha = '123456',
     uidCentral = '-KbztEuoaYejBSl-nyFx',
     maxAlarmes = 20,
-    portaSerial = '/dev/ttyACM0',
+    portaSerial = '/dev/ttyAMA0',
     taxa = 115200
 ).save()
 

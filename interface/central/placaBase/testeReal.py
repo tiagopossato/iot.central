@@ -6,22 +6,26 @@ from time import sleep
 from random import randint
 import serial
 
-sys.path.insert(0, os.path.abspath('../../interface'))
+sys.path.insert(0, os.path.abspath('../../../interface'))
 os.environ["DJANGO_SETTINGS_MODULE"] = "interface.settings"
 django.setup()
 
 from central.log import log
 
-from placaBase.overCAN import processaMensagem
-from placaBase.placaBase import PlacaBase
+from central.placaBase.overCAN import processaMensagem
+from central.placaBase.placaBase import PlacaBase
 
 pb = PlacaBase()
 pb.iniciar('/dev/ttyAMA0', 115200, processaMensagem)
 tempo = 1
 
+pb.enviaComando('3', 'CHANGE_OUTPUT_STATE', (256,))
+pb.fechar()
+exit()
+
 while(True):
     try:
-        pb.enviaComando('3', 'CHANGE_OUTPUT_STATE', (randint(0,8),randint(0,1)))
+        pb.enviaComando('3', 'CHANGE_OUTPUT_STATE', (randint(0,255),))
         # for x in range(8):
         #     pb.enviaComando('3', 'CHANGE_OUTPUT_STATE', (x,1))
         #     sleep(tempo)
@@ -29,8 +33,9 @@ while(True):
         #     pb.enviaComando('3', 'CHANGE_OUTPUT_STATE', (x,0))
         sleep(tempo)
     except KeyboardInterrupt:
-        for x in range(8):
-            pb.enviaComando('3', 'CHANGE_OUTPUT_STATE', (x,0))
+        pb.enviaComando('3', 'CHANGE_OUTPUT_STATE', (0,))
+#        for x in range(8):
+#            pb.enviaComando('3', 'CHANGE_OUTPUT_STATE', (x,0))
         print("saindo, aguarde!")
         pb.fechar()
         exit()

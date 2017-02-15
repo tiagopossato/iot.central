@@ -16,8 +16,8 @@ from central.placaBase.placaBase import PlacaBase
 tempo = 1
 
 def encerrar(arg1=0, arg2=0):
-    for x in range(8):
-        pb.enviaComando('3', 'CHANGE_OUTPUT_STATE', (x,0))
+#    for x in range(8):
+    pb.enviaComando('3', 'CHANGE_OUTPUT_STATE', (0,))
     log("RUN02","Encerrando aplicacao")
     pb.fechar()
     exit()
@@ -41,10 +41,10 @@ class _testaPlaca(Thread):
             try:
             #pb.enviaComando('3', 'CHANGE_OUTPUT_STATE', (randint(0,8),randint(0,1)))
                 for x in range(8):
-                    pb.enviaComando('3', 'CHANGE_OUTPUT_STATE', (x,1))
+                    pb.enviaComando('3', 'CHANGE_OUTPUT_STATE', (2**x,))
                     sleep(tempo)
-                for x in range(8):
-                    pb.enviaComando('3', 'CHANGE_OUTPUT_STATE', (x,0))
+                for x in range(8,-1,-1):
+                    pb.enviaComando('3', 'CHANGE_OUTPUT_STATE', (2**x,))
                     sleep(tempo)
             except KeyboardInterrupt:
                 encerrar()

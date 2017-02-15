@@ -67,7 +67,7 @@ mv /opt/iot.central/interface/interface/_urls.py /opt/iot.central/interface/inte
 
 cd /opt/iot.central/interface
 
-#python3 manage.py makemigrations
+python3 manage.py makemigrations
 python3 manage.py migrate
 
 echo -n "Criar Super Usuario? 1->s , 2->n  "
@@ -76,6 +76,13 @@ if [ $resp -eq 1 ]; then
 	python3 manage.py createsuperuser
 fi
 
+
+echo -n "Popular o banco? 1->s , 2->n  "
+read resp
+if [ $resp -eq 1 ]; then
+	cd /opt/iot.central/interface/central/placaBase
+	python3 popularBanco.py
+fi
 
 echo "update central_entradadigital set estado=0;" > /tmp/tmp.sql
 sqlite3 /opt/iot.central/banco/db.sqlite3 < /tmp/tmp.sql
