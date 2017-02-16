@@ -68,20 +68,21 @@ class ConfiguracoesAdmin(admin.ModelAdmin):
         else:
             return True
 
-class GrandezaAdmin(admin.ModelAdmin):
-    readonly_fields = ('sync',)
-    list_display = ('nome','unidade','codigo',)
-    ordering = ('codigo',)
+# class GrandezaAdmin(admin.ModelAdmin):
+#     readonly_fields = ('sync',)
+#     list_display = ('nome','unidade','codigo',)
+#     ordering = ('codigo',)
 
 class SensorAdmin(admin.ModelAdmin):
     readonly_fields = ('sync',)
-    list_display = ('descricao', 'idRede','intervaloAtualizacao',)
+    list_display = ('descricao', 'idRede','intervaloAtualizacao','intervaloLeitura',)
     ordering = ('idRede',)
 
 class SensorGrandezaAdmin(admin.ModelAdmin):
     readonly_fields = ('sync',)
     list_display = ('sensor', 'grandeza','curvaCalibracao','obs',)
     ordering = ('sensor',)
+    list_filter = ('sensor','grandeza',)
 
 
 class LeituraAdmin(admin.ModelAdmin):
@@ -104,7 +105,7 @@ admin.site.register(PlacaExpansaoDigital, PlacaExpansaoDigitalAdmin)
 admin.site.register(EntradaDigital, EntradaDigitalAdmin)
 admin.site.register(Ambiente, AmbienteAdmin)
 admin.site.register(Configuracoes, ConfiguracoesAdmin)
-admin.site.register(Grandeza, GrandezaAdmin)
+#admin.site.register(Grandeza, GrandezaAdmin)
 admin.site.register(Sensor,SensorAdmin)
 admin.site.register(SensorGrandeza, SensorGrandezaAdmin)
 admin.site.register(Leitura, LeituraAdmin)

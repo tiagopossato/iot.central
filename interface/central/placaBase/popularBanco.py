@@ -25,14 +25,14 @@ Configuracoes(
 Ambiente(nome='Estufa de enraizamento', uid='-KbztEo7iVuSWveDg3Ge').save()
 Ambiente(nome='Estufa de cultivo de flores').save()
 
-Grandeza(codigo=10, nome='Temperatura', unidade='°C').save()
-Grandeza(codigo=11, nome='Umidade do ar', unidade='%uR').save()
-Grandeza(codigo=12, nome='Umidade do solo', unidade='%').save()
+Grandeza(codigo=71, nome='Temperatura', unidade='°C').save()
+Grandeza(codigo=72, nome='Umidade do ar', unidade='%uR').save()
+Grandeza(codigo=73, nome='Umidade do solo', unidade='%').save()
 
 Sensor(idRede=1, ambiente_id=1, descricao='Sensor de Temperatura e Umidade do ar').save()
 
-SensorGrandeza(grandeza_id=10, sensor_id=1).save()
-SensorGrandeza(grandeza_id=11, sensor_id=1).save()
+SensorGrandeza(grandeza_id=71, sensor_id=1).save()
+SensorGrandeza(grandeza_id=72, sensor_id=1).save()
 
 from central.alarmes import newAlarmeTipo
 from central.placaIO import newEntradaDigital, newPlacaExpansaoDigital

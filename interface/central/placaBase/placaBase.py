@@ -34,6 +34,7 @@ class PlacaBase():
 
     def iniciar(self,porta,taxa,callback):
         try:
+            self.__init__(self)
             self.portaSerial = serial.Serial()
             self.portaSerial.port = porta
             self.portaSerial.baudrate = taxa
@@ -193,7 +194,7 @@ class _CallbackRecebe(Thread):
         print(Thread.getName(self))
 
     def run(self):
-        try:            
+        try:
             while(self.placaBase.bufferRecebimento.empty() == False):
                 self.placaBase.callback(self.placaBase.bufferRecebimento.get())
         except Exception as e:

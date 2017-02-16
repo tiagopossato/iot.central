@@ -19,10 +19,11 @@ ovcComands = {
 
     'INPUT_1_STATE' : 61,
 
-    'ANALOG_VALUE' : 71,
+    'ANALOG_VALUE' : 70,
 }
 
 def processaMensagem(mensagem):
+    # print(mensagem)
     if(mensagem['codigo']==ovcComands['INPUT_1_STATE']):
         inputState(_idRede=mensagem['id'], _estados=mensagem['msg'][0])
         return True
@@ -52,6 +53,10 @@ def inputState(_idRede, _estados):
 Recebe uma mensagem com um valor analógico
 """
 def analogValue(_idRede, _mensagem):
-    print(_mensagem)
-    valor = float(str(_mensagem[1])+'.'+ str(_mensagem[2]))
-    newLeitura(_idRedeSensor=_idRede,_grandeza=_mensagem[0], _valor=valor)   
+    try:
+        # print(_mensagem)
+        valor = float(str(_mensagem[1])+'.'+ str(_mensagem[2]))
+    except Exception as e:
+        print(e)
+        return False
+    newLeitura(_idRedeSensor=_idRede,_grandeza=_mensagem[0], _valor=valor)
