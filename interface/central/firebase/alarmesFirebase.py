@@ -1,61 +1,33 @@
 import pyrebase
-import requests
 import time
 import datetime
 from threading import Thread
-from django.db.models import Q
 from central.models import AlarmeTipo, Alarme
 from central.log import log
 from central.models import Configuracoes
-#from central.placaBase.configuracao import config
+from central.firebase.conectaFirebase import ConectaFirebase
 from central.util import check_host
 
 class SincronizaAlarmes(Thread):
-    def __init__ (self): 
-        self.conectaFirebase()
+    def __init__ (self):        
+        self.cfg = Configuracoes.objects.get()    
+        ConectaFirebase()
+        self.user = ConectaFirebase.user()
+        self.db = ConectaFirebase.db
         Thread.__init__(self, name="SincronizaAlarmes")
 
-    def conectaFirebase(self):
-        try:            
-            if(check_host()==False):
-                print("Sem conexão")
-                return
-            self.cfg = Configuracoes.objects.get()
-            config = {
-                "apiKey": self.cfg.apiKey,
-                "authDomain": self.cfg.authDomain,
-                "databaseURL": self.cfg.databaseURL,
-                "storageBucket": self.cfg.storageBucket
-            }
-            self.firebase = pyrebase.initialize_app(config)
-            # Get a reference to the auth service
-            self.auth = self.firebase.auth()
-            # Get a reference to the database service
-            self.db = self.firebase.database()
-        except Exception as e:
-            print('conectaFirebase')
-            print(e)
-            return
-
-        try:
-            # Log the user in            
-            self.user = self.auth.sign_in_with_email_and_password(self.cfg.email, self.cfg.senha)
-        except requests.exceptions.HTTPError as e:
-            e = eval(e.strerror)
-            log('AFB01.0',e['error']['message'])
-        except Exception as e:            
-            log('AFB01.1',str(e))
-                                
     def run(self):
         print(Thread.getName(self))
         try:
             if(check_host()==False):
                 print("Sem conexão")
                 return
-            self.user = self.auth.refresh(self.user['refreshToken'])            
+            self.user = ConectaFirebase.auth.refresh(self.user['refreshToken'])
         except Exception as e:
             log('AFB02.0',str(e))
-            self.conectaFirebase()
+            ConectaFirebase()
+            self.user = ConectaFirebase.user()
+            self.db = ConectaFirebase.db
             return
        
         #pega os alarmes novos, que ainda não foram criados

@@ -1,6 +1,5 @@
 import datetime
 import time
-import requests
 from threading import Thread
 
 from central.placaBase.configuracao import config

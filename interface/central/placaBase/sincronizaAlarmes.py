@@ -29,6 +29,7 @@ if __name__ == "__main__":
 				sincronizador.run()
 			sleep(0.1)
 	except Exception as e:
+		print("Sincronizador...")
 		print(e)
 	except KeyboardInterrupt:
 		print("Saindo...")
