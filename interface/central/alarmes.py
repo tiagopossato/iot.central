@@ -37,7 +37,8 @@ class alarmTrigger():
         try:
             if(len(alm)==1):
                 #O alarme já está ativo
-                log('ALM02.1','O alarme '+ str(_alarmeTipo_id) + ' já está ativo')
+                # log('ALM02.1','O alarme '+ str(_alarmeTipo_id) + ' já está ativo')
+                print('ALM02.1: O alarme '+ str(_alarmeTipo_id) + ' já está ativo')
                 return True
             if(len(alm)>1):
                 log('ALM02.2','Erro, existe mais de um alarme do tipo: '\
@@ -78,11 +79,11 @@ class alarmTrigger():
             #O alarme já está ativo, desativa
             try:
                 if(len(alm)>1):
-                    log('ALM03.0','Erro, existe mais de um alarme do tipo: '\
+                    log('ALM03.0','Erro, existe mais de um alarme do tipo: '
                     + str(_alarmeTipo_id) + ' ativo, inativando todos')
                 if(len(alm)==0):
-                    log('ALM03.1','Não existe alarme do tipo: '\
-                    + str(_alarmeTipo_id) + ' ativo!')
+                    # log('ALM03.1','Não existe alarme do tipo: '+ str(_alarmeTipo_id) + ' ativo!')
+                    print('ALM03.1: Não existe alarme do tipo: '+ str(_alarmeTipo_id) + ' ativo!')
                     return False
                 for x in range(len(alm)):
                     #Altera alarme na tabela

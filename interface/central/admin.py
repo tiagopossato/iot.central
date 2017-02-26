@@ -50,7 +50,7 @@ class PlacaExpansaoDigitalAdmin(admin.ModelAdmin):
     list_per_page = 50
 
 class EntradaDigitalAdmin(admin.ModelAdmin):
-    list_display = ('nome','numero','placaExpansaoDigital','estado','ambiente','alarmeTipo',)
+    list_display = ('nome','numero','placaExpansaoDigital','estado','ambiente','alarmeTipo','triggerAlarme',)
     ordering = ('placaExpansaoDigital', 'numero',)
     list_per_page = 50
 

@@ -81,6 +81,8 @@ class EntradaDigital(models.Model):
     numero = models.IntegerField(null=False)
     nome = models.CharField(max_length=255, null=False)
     estado = models.BooleanField(default=False, null=False)
+    #define em qual estado o alarme será disparado
+    triggerAlarme = models.BooleanField(default=False, null=False)
     updated_at =  models.DateTimeField(auto_now=True)
     sync = models.BooleanField(default=False, null=False)
 

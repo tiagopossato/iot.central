@@ -11,13 +11,14 @@ def newPlacaExpansaoDigital(_idRede,_descricao=""):
     except Exception as e:
         log('PLI02',str(e))
 
-def newEntradaDigital(_placaExpansaoDigital, _numero, _alarmeTipo, _ambiente_id, _nome = ""):
+def newEntradaDigital(_placaExpansaoDigital, _numero, _alarmeTipo, _triggerAlarme, _ambiente_id, _nome = ""):
     try:
         entrada = EntradaDigital(numero=_numero, 
             placaExpansaoDigital_id=_placaExpansaoDigital, 
             ambiente_id = _ambiente_id,
             nome=_nome, 
-            alarmeTipo_id = _alarmeTipo)
+            alarmeTipo_id = _alarmeTipo,
+            triggerAlarme = _triggerAlarme)
         entrada.save()
     except Exception as e:
         log('PLI03',str(e))
@@ -53,9 +54,11 @@ def alteraEstadoEntrada(_codigoPlacaExpansaoDigital, _numero, _estado):
             entrada.sync = False
             entrada.updated_at = datetime.datetime.fromtimestamp(time.time())
             entrada.save()
-            if(entrada.alarmeTipo.id != None and entrada.alarmeTipo.id != ''):
-                if(int(_estado) == True): alarmTrigger.on(_alarmeTipo_id=entrada.alarmeTipo.id, _ambiente=entrada.ambiente.id)
-                if(int(_estado) == False): alarmTrigger.off(_alarmeTipo_id=entrada.alarmeTipo.id)
+        if(entrada.alarmeTipo.id != None and entrada.alarmeTipo.id != ''):
+            if(int(_estado) == entrada.triggerAlarme):
+                alarmTrigger.on(_alarmeTipo_id=entrada.alarmeTipo.id, _ambiente=entrada.ambiente.id)
+            else:
+                alarmTrigger.off(_alarmeTipo_id=entrada.alarmeTipo.id)
         return True
     except Exception as e:
         log('PLI05.0',str(e))
