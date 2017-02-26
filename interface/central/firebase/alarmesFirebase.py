@@ -1,6 +1,7 @@
 import pyrebase
 import time
 import datetime
+import asyncio
 from threading import Thread
 from central.models import AlarmeTipo, Alarme
 from central.log import log
@@ -32,20 +33,42 @@ class SincronizaAlarmes(Thread):
        
         #pega os alarmes novos, que ainda não foram criados
         #no banco de dados do servidor
+        try:        
+            loop = asyncio.get_event_loop()
+        except Exception as e:
+            print("get_event_loop: " + str(e))
+            return
+            
         try:
             #primeiro os ativos
             alarmes = Alarme.objects.filter(syncAtivacao = False, syncInativacao = False).exclude(ambiente__uid = '').order_by('-ativo')
             #print("Enviando novos alarmes ainda ativos")
-            self._enviaAlarmes(alarmes)
+            loop = asyncio.get_event_loop()
+            for x in range(len(alarmes)):
+                loop.call_soon(self._enviaAlarmes, loop, alarmes[x])
+                loop.run_forever()
+        except AssertionError as e:
+            print(e)
         except Exception as e:
             log('AFB02.1',str(e))
 
+        
         try:
             alarmes = Alarme.objects.filter(syncInativacao = False).exclude(ambiente__uid = '')
             # print("Enviando novos alarmes que já desativaram")
-            self._enviaAlarmes(alarmes)
+            for x in range(len(alarmes)):
+                loop.call_soon(self._enviaAlarmes, loop, alarmes[x])
+                loop.run_forever()
+        except AssertionError as e:
+            print(e)
         except Exception as e:
             log('AFB02.2',str(e))
+        
+        try:        
+            loop.close()
+        except Exception as e:
+            print("loop.close:" + str(e))
+       
 
         try:
             #Apaga os alarmes mais antigos
@@ -58,40 +81,39 @@ class SincronizaAlarmes(Thread):
         except Exception as e:
             log('AFB02.3',str(e))
 
-    def _enviaAlarmes(self, alarmes):
+    def _enviaAlarmes(self, loop, alarme):
         try:
-            #monta uma mensagem com cada alarme
-            for x in range(len(alarmes)):
+            dados = {}
 
-                dados = {}
+            dados['ativo'] = alarme.ativo
 
-                dados['ativo'] = alarmes[x].ativo
+            if alarme.tempoInativacao:
+                dados['tempoInativacao'] = alarme.tempoInativacao.strftime('%Y-%m-%d %H:%M:%S.%f')
 
-                if alarmes[x].tempoInativacao:
-                    dados['tempoInativacao'] = alarmes[x].tempoInativacao.strftime('%Y-%m-%d %H:%M:%S.%f')
+            if alarme.alarmeTipo.prioridade:
+                dados['prioridade'] = alarme.alarmeTipo.prioridade
+            else:
+                dados['prioridade'] = 0
 
-                if alarmes[x].alarmeTipo.prioridade:
-                    dados['prioridade'] = alarmes[x].alarmeTipo.prioridade
-                else:
-                    dados['prioridade'] = 0
+            dados['mensagem'] = alarme.alarmeTipo.mensagem
 
-                dados['mensagem'] = alarmes[x].alarmeTipo.mensagem
-
-                dados['tempoAtivacao'] = alarmes[x].tempoAtivacao.strftime('%Y-%m-%d %H:%M:%S.%f')
-               
-                #verifica se o alarme já foi cadastrado no banco 
-                if(alarmes[x].uid):
-                    alm = self.db.child("alarmes").child(alarmes[x].uid).set(dados, self.user['idToken'])
-                    alarmes[x].syncAtivacao = True
-                    alarmes[x].syncInativacao = True
-                    alarmes[x].save()
-                else:
-                    alm = self.db.child("alarmes").push(dados, self.user['idToken'])
-                    self.db.child("ambientes").child(alarmes[x].ambiente.uid).child("alarmes").child(alm['name']).set(True, self.user['idToken'])
-                    alarmes[x].uid = alm['name']
-                    alarmes[x].syncAtivacao = True
-                    alarmes[x].save()
-
+            dados['tempoAtivacao'] = alarme.tempoAtivacao.strftime('%Y-%m-%d %H:%M:%S.%f')
+            
+            #verifica se o alarme já foi cadastrado no banco 
+            if(alarme.uid):
+                alm = self.db.child("alarmes").child(alarme.uid).set(dados, self.user['idToken'])
+                alarme.syncAtivacao = True
+                alarme.syncInativacao = True
+                alarme.save()
+            else:
+                alm = self.db.child("alarmes").push(dados, self.user['idToken'])
+                self.db.child("ambientes").child(alarme.ambiente.uid).child("alarmes").child(alm['name']).set(True, self.user['idToken'])
+                alarme.uid = alm['name']
+                alarme.syncAtivacao = True
+                alarme.save()
+            
+            #para este loop
+            loop.stop()
         except Exception as e:
             log('AFB03.0',str(e))
-            return False
+            loop.stop()            

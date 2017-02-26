@@ -56,7 +56,7 @@ class Alarme(models.Model):
     tempoInativacao = models.DateTimeField(null=True)
     syncInativacao = models.BooleanField(default=False, null=False)
 
-    alarmeTipo = models.ForeignKey(AlarmeTipo, on_delete=models.PROTECT)
+    alarmeTipo = models.ForeignKey(AlarmeTipo, to_field='codigo', on_delete=models.PROTECT)
     ambiente = models.ForeignKey(Ambiente, on_delete=models.PROTECT)
     def __str__(self):
         return self.alarmeTipo.mensagem

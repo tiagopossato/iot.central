@@ -19,12 +19,12 @@ def newAlarmeTipo(_codigo, _mensagem, _prioridade):
     except Exception as e:
         log('ALM01',str(e))
 
-class AlarmTrigger():
+class alarmTrigger():
     # def __init__(self):
         # self.sincronizador = SincronizaAlarmes()
         # self.sincronizador.start()
 
-    def on(self, _alarmeTipo_id, _ambiente):
+    def on(_alarmeTipo_id, _ambiente):
         try:
             #verifica se o codigo do alarme já está ativo
             alm = Alarme.objects.\
@@ -69,7 +69,7 @@ class AlarmTrigger():
             log('ALM02.4',str(e))
             return False
 
-    def off(self, _alarmeTipo_id):
+    def off(_alarmeTipo_id):
         try:
             #verifica se o codigo do alarme está ativo
             alm = Alarme.objects.\
