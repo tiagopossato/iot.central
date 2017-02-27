@@ -186,3 +186,15 @@ class Leitura(models.Model):
     class Meta:
         verbose_name = 'Leitura'
         verbose_name_plural = 'Leituras'
+
+class AlarmesAnalogicos(models.Model):
+    valorAlarmeOn = models.FloatField('Valor para ativar o alarme')
+    valorAlarmeOff = models.FloatField('Valor para desativar o alarme')
+    ambiente = models.ForeignKey(Ambiente, to_field='id', on_delete=models.PROTECT, default=0)
+    grandeza = models.ForeignKey(Grandeza, to_field='codigo', on_delete=models.PROTECT)
+    alarmeTipo = models.ForeignKey(AlarmeTipo, blank=True, null=True,
+    to_field='codigo', on_delete=models.PROTECT, verbose_name="Tipo do alarme",)
+    
+    class Meta:
+        verbose_name = 'Alarme Analógico'
+        verbose_name_plural = 'Alarmes Analógicos'

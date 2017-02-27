@@ -11,6 +11,7 @@ from central.models import Grandeza
 from central.models import Sensor
 from central.models import SensorGrandeza
 from central.models import Leitura
+from central.models import AlarmesAnalogicos
 
 class LogAdmin(admin.ModelAdmin):
     readonly_fields = ('tipo','mensagem','tempo','sync',)
@@ -98,6 +99,11 @@ class LeituraAdmin(admin.ModelAdmin):
         else:
             return True
 
+class AlarmesAnalogicosAdmin(admin.ModelAdmin):
+    list_display = ('alarmeTipo','ambiente','valorAlarmeOn', 'valorAlarmeOff','grandeza',)
+    ordering = ('ambiente',)
+    list_filter = ('ambiente','grandeza','alarmeTipo',)
+
 admin.site.register(Log, LogAdmin)
 admin.site.register(AlarmeTipo, AlarmeTipoAdmin)
 admin.site.register(Alarme, AlarmeAdmin)
@@ -109,5 +115,6 @@ admin.site.register(Configuracoes, ConfiguracoesAdmin)
 admin.site.register(Sensor,SensorAdmin)
 admin.site.register(SensorGrandeza, SensorGrandezaAdmin)
 admin.site.register(Leitura, LeituraAdmin)
+admin.site.register(AlarmesAnalogicos, AlarmesAnalogicosAdmin)
 admin.site.site_header = 'Administração da Central'
 admin.site.site_title = 'Central'
