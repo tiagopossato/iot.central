@@ -178,7 +178,7 @@ class Leitura(models.Model):
     sensor = models.ForeignKey(Sensor, to_field='idRede', on_delete=models.PROTECT)
 
     def __str__(self):
-        return str(self.valor) + " " + str(self.grandeza.unidade)
+        return str(self.valor) + " " + str(self.grandeza.unidade) + " Sensor:" + str(self.sensor_id)
         
     class Meta:
         verbose_name = 'Leitura'
@@ -201,3 +201,6 @@ class AlarmeAnalogico(models.Model):
     class Meta:
         verbose_name = 'Alarme Analógico'
         verbose_name_plural = 'Alarmes Analógicos'
+    
+    def __str__(self):
+        return str(self.mensagemAlarme) + " [on:" + str(self.valorAlarmeOn) + ", off:" + str(self.valorAlarmeOff) + "]"

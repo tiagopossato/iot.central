@@ -72,7 +72,7 @@ class ConfiguracoesAdmin(admin.ModelAdmin):
 
 class SensorAdmin(admin.ModelAdmin):
     readonly_fields = ('sync',)
-    list_display = ('descricao', 'idRede','intervaloAtualizacao','intervaloLeitura',)
+    list_display = ('descricao', 'idRede','ambiente','intervaloAtualizacao','intervaloLeitura',)
     ordering = ('idRede',)
 
 class SensorGrandezaAdmin(admin.ModelAdmin):

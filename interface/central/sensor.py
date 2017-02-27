@@ -3,10 +3,7 @@ import time
 from central.models import Sensor, Leitura
 from central.log import log
 from django.core.exceptions import ObjectDoesNotExist
-# valor
-# ambiente
-# Grandeza
-# Sensor
+from central.alarmeAnalogico import triggerAlarmeAnalogico
 
 def newLeitura(_idRedeSensor,_grandeza, _valor):
     # sensor = Sensor.objects.get(idRede=_idRedeSensor, grandezas__codigo=_grandeza)
@@ -24,10 +21,13 @@ def newLeitura(_idRedeSensor,_grandeza, _valor):
         return False
     
     try:
-        Leitura(valor=_valor, sensor=sensor, grandeza=grandeza, ambiente=sensor.ambiente).save()
+        _valor = format(_valor, '.2f')
+        l = Leitura(valor=_valor, sensor=sensor, grandeza=grandeza, ambiente=sensor.ambiente)
+        l.save()
+        print(str(sensor) + ': '+ str(_valor) + ' ' + str(grandeza) + '[' + str(l.created_at) + ']')
+        triggerAlarmeAnalogico(_grandeza=grandeza, _ambiente=sensor.ambiente)
     except Exception as e:
         log('SEN01.2','Nova leitura: ' + str(e))
         return False
-    
-    print(str(sensor) + ': '+ str(_valor) + ' ' + str(grandeza))
+
     return True
