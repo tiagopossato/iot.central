@@ -3,7 +3,7 @@ import time
 import datetime
 import asyncio
 from threading import Thread
-from central.models import AlarmeTipo, Alarme
+from central.models import Alarme
 from central.log import log
 from central.models import Configuracoes
 from central.firebase.conectaFirebase import ConectaFirebase

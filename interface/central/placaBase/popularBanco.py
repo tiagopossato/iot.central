@@ -14,8 +14,6 @@ Configuracoes(
     authDomain = 'testes-apisensores.firebaseapp.com',
     databaseURL = 'https://testes-apiSensores.firebaseio.com',
     storageBucket = 'testes-apiSensores.appspot.com',
-    email = 'tiago.possato@yahoo.com.br',
-    senha = '123456',
     uidCentral = '-KbztEuoaYejBSl-nyFx',
     maxAlarmes = 20,
     portaSerial = '/dev/ttyAMA0',
@@ -34,24 +32,15 @@ Sensor(idRede=1, ambiente_id=1, descricao='Sensor de Temperatura e Umidade do ar
 SensorGrandeza(grandeza_id=71, sensor_id=1).save()
 SensorGrandeza(grandeza_id=72, sensor_id=1).save()
 
-from central.alarmes import newAlarmeTipo
 from central.placaIO import newEntradaDigital, newPlacaExpansaoDigital
 
-newAlarmeTipo(1,"Disjuntor 1 desarmado", 3)
-newAlarmeTipo(2,"Disjuntor 2 desarmado", 3)
-newAlarmeTipo(3,"Disjuntor 3 desarmado", 3)
-newAlarmeTipo(4,"Disjuntor 4 desarmado", 3)
-newAlarmeTipo(5,"Disjuntor 5 desarmado", 3)
-newAlarmeTipo(6,"Disjuntor 6 desarmado", 3)
-newAlarmeTipo(7,"Disjuntor 7 desarmado", 3)
-newAlarmeTipo(8,"Disjuntor 8 desarmado", 3)
 newPlacaExpansaoDigital(_idRede=3, _descricao="Placa de acionamento das bombas")
 newPlacaExpansaoDigital(_idRede=2)
-newEntradaDigital(_placaExpansaoDigital=3, _numero=0, _alarmeTipo = 1, _triggerAlarme=True, _ambiente_id=1, _nome = "Disjuntor 1")
-newEntradaDigital(_placaExpansaoDigital=3, _numero=1, _alarmeTipo = 2, _triggerAlarme=True, _ambiente_id=1, _nome = "Disjuntor 2")
-newEntradaDigital(_placaExpansaoDigital=3, _numero=2, _alarmeTipo = 3, _triggerAlarme=True, _ambiente_id=1, _nome = "Disjuntor 3")
-newEntradaDigital(_placaExpansaoDigital=3, _numero=3, _alarmeTipo = 4, _triggerAlarme=True, _ambiente_id=1, _nome = "Disjuntor 4")
-newEntradaDigital(_placaExpansaoDigital=3, _numero=4, _alarmeTipo = 5, _triggerAlarme=True, _ambiente_id=1, _nome = "Disjuntor 5")
-newEntradaDigital(_placaExpansaoDigital=3, _numero=5, _alarmeTipo = 6, _triggerAlarme=False, _ambiente_id=1, _nome = "Disjuntor 6")
-newEntradaDigital(_placaExpansaoDigital=3, _numero=6, _alarmeTipo = 7, _triggerAlarme=True, _ambiente_id=1, _nome = "Disjuntor 7")
-newEntradaDigital(_placaExpansaoDigital=3, _numero=7, _alarmeTipo = 8, _triggerAlarme=False, _ambiente_id=1, _nome = "Disjuntor 8")
+newEntradaDigital(_placaExpansaoDigital=3, _numero=0, _triggerAlarme=True, _mensagemAlarme="Disjuntor 1 desarmado", _prioridadeAlarme=3, _ambiente_id=1, _nome = "Disjuntor 1")
+newEntradaDigital(_placaExpansaoDigital=3, _numero=1, _triggerAlarme=True, _mensagemAlarme="Disjuntor 2 desarmado", _prioridadeAlarme=3, _ambiente_id=1, _nome = "Disjuntor 2")
+newEntradaDigital(_placaExpansaoDigital=3, _numero=2, _triggerAlarme=True, _mensagemAlarme="Disjuntor 3 desarmado", _prioridadeAlarme=3, _ambiente_id=1, _nome = "Disjuntor 3")
+newEntradaDigital(_placaExpansaoDigital=3, _numero=3, _triggerAlarme=True, _mensagemAlarme="Disjuntor 4 desarmado", _prioridadeAlarme=3, _ambiente_id=1, _nome = "Disjuntor 4")
+newEntradaDigital(_placaExpansaoDigital=3, _numero=4, _triggerAlarme=True, _mensagemAlarme="Disjuntor 5 desarmado", _prioridadeAlarme=3, _ambiente_id=1, _nome = "Disjuntor 5")
+newEntradaDigital(_placaExpansaoDigital=3, _numero=5, _triggerAlarme=True, _mensagemAlarme="Disjuntor 6 desarmado", _prioridadeAlarme=3, _ambiente_id=1, _nome = "Disjuntor 6")
+newEntradaDigital(_placaExpansaoDigital=3, _numero=6, _triggerAlarme=True, _mensagemAlarme="Disjuntor 7 desarmado", _prioridadeAlarme=3, _ambiente_id=1, _nome = "Disjuntor 7")
+newEntradaDigital(_placaExpansaoDigital=3, _numero=7, _triggerAlarme=True, _mensagemAlarme="Disjuntor 8 desarmado", _prioridadeAlarme=3, _ambiente_id=1, _nome = "Disjuntor 8")

@@ -1,7 +1,7 @@
 from django.contrib import admin
 
 from central.models import Log
-from central.models import AlarmeTipo
+# from central.models import AlarmeTipo
 from central.models import Alarme
 from central.models import PlacaExpansaoDigital
 from central.models import EntradaDigital
@@ -27,11 +27,11 @@ class LogAdmin(admin.ModelAdmin):
             return True
 
 class AlarmeAdmin(admin.ModelAdmin):
-    readonly_fields = ('uid','ativo','alarmeTipo','ambiente','tempoAtivacao','syncAtivacao','tempoInativacao','syncInativacao',)
-    list_display = ('alarmeTipo','ativo','ambiente', 'tempoAtivacao','tempoInativacao',)
-    list_filter = ('ativo','tempoAtivacao','ambiente','alarmeTipo',)
+    readonly_fields = ('uid','codigoAlarme','ativo','mensagemAlarme','prioridadeAlarme','ambiente','tempoAtivacao','syncAtivacao','tempoInativacao','syncInativacao',)
+    list_display = ('mensagemAlarme','ativo','prioridadeAlarme','ambiente', 'tempoAtivacao','tempoInativacao',)
+    list_filter = ('ativo','tempoAtivacao','ambiente','mensagemAlarme',)
     ordering = ('-ativo', '-tempoAtivacao',)
-    list_per_page = AlarmeTipo.objects.count()
+    list_per_page = EntradaDigital.objects.count() + AlarmesAnalogicos.objects.count()
     
     def has_add_permission(self, request):
         num_objects = self.model.objects.count()
@@ -40,10 +40,10 @@ class AlarmeAdmin(admin.ModelAdmin):
         else:
             return True
  
-class AlarmeTipoAdmin(admin.ModelAdmin):
-    list_display = ('codigo','mensagem','prioridade',)
-    ordering = ('codigo',)
-    list_per_page = 50
+# class AlarmeTipoAdmin(admin.ModelAdmin):
+#     list_display = ('codigo','mensagem','prioridade',)
+#     ordering = ('codigo',)
+#     list_per_page = 50
 
 class PlacaExpansaoDigitalAdmin(admin.ModelAdmin):
     list_display = ('descricao','idRede',)
@@ -51,7 +51,8 @@ class PlacaExpansaoDigitalAdmin(admin.ModelAdmin):
     list_per_page = 50
 
 class EntradaDigitalAdmin(admin.ModelAdmin):
-    list_display = ('nome','numero','placaExpansaoDigital','estado','ambiente','alarmeTipo','triggerAlarme',)
+    list_display = ('nome','numero','placaExpansaoDigital','estado','ambiente','triggerAlarme',)
+    readonly_fields = ('estado','codigoAlarme','sync',)
     ordering = ('placaExpansaoDigital', 'numero',)
     list_per_page = 50
 
@@ -61,7 +62,7 @@ class AmbienteAdmin(admin.ModelAdmin):
 
 class ConfiguracoesAdmin(admin.ModelAdmin):
     list_display = ('apiKey','authDomain','databaseURL',\
-                    'storageBucket','email','senha','uidCentral')
+                    'storageBucket','uidCentral')
     def has_add_permission(self, request):
         num_objects = self.model.objects.count()
         if num_objects >= 1:
@@ -99,13 +100,13 @@ class LeituraAdmin(admin.ModelAdmin):
         else:
             return True
 
-class AlarmesAnalogicosAdmin(admin.ModelAdmin):
-    list_display = ('alarmeTipo','ambiente','valorAlarmeOn', 'valorAlarmeOff','grandeza',)
-    ordering = ('ambiente',)
-    list_filter = ('ambiente','grandeza','alarmeTipo',)
+# class AlarmesAnalogicosAdmin(admin.ModelAdmin):
+#     list_display = ('alarmeTipo','ambiente','valorAlarmeOn', 'valorAlarmeOff','grandeza',)
+#     ordering = ('ambiente',)
+#     list_filter = ('ambiente','grandeza','alarmeTipo',)
 
 admin.site.register(Log, LogAdmin)
-admin.site.register(AlarmeTipo, AlarmeTipoAdmin)
+# admin.site.register(AlarmeTipo, AlarmeTipoAdmin)
 admin.site.register(Alarme, AlarmeAdmin)
 admin.site.register(PlacaExpansaoDigital, PlacaExpansaoDigitalAdmin)
 admin.site.register(EntradaDigital, EntradaDigitalAdmin)
@@ -115,6 +116,6 @@ admin.site.register(Configuracoes, ConfiguracoesAdmin)
 admin.site.register(Sensor,SensorAdmin)
 admin.site.register(SensorGrandeza, SensorGrandezaAdmin)
 admin.site.register(Leitura, LeituraAdmin)
-admin.site.register(AlarmesAnalogicos, AlarmesAnalogicosAdmin)
+# admin.site.register(AlarmesAnalogicos, AlarmesAnalogicosAdmin)
 admin.site.site_header = 'Administração da Central'
 admin.site.site_title = 'Central'

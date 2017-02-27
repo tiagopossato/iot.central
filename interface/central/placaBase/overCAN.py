@@ -44,7 +44,7 @@ def inputState(_idRede, _estados):
     while(len(_estados)<8):
         _estados.insert(0,0)
     _estados.reverse()
-    #print(_estados)
+    print(_estados)
     for x in range(len(_estados)):
         #print("["+str(x) + "] : " + str(_estados[x]))
         alteraEstadoEntrada(_codigoPlacaExpansaoDigital=int(_idRede), _numero=int(x), _estado=int(_estados[x]))

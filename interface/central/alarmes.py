@@ -3,7 +3,7 @@ import time
 from threading import Thread
 
 from central.placaBase.configuracao import config
-from central.models import AlarmeTipo, Alarme, Ambiente
+from central.models import Alarme, Ambiente
 from central.log import log
 
 from central.firebase.alarmesFirebase import SincronizaAlarmes
@@ -12,20 +12,20 @@ from central.firebase.alarmesFirebase import SincronizaAlarmes
 """
 Cria um novo tipo de alarme
 """
-def newAlarmeTipo(_codigo, _mensagem, _prioridade):
-    try:
-        at = AlarmeTipo(codigo=_codigo, mensagem=_mensagem, prioridade=_prioridade)
-        at.save()
-    except Exception as e:
-        log('ALM01',str(e))
+# def newAlarmeTipo(_codigo, _mensagem, _prioridade):
+#     try:
+#         at = AlarmeTipo(codigo=_codigo, mensagem=_mensagem, prioridade=_prioridade)
+#         at.save()
+#     except Exception as e:
+#         log('ALM01',str(e))
 
 class alarmTrigger():
 
-    def on(_alarmeTipo_id, _ambiente):
+    def on(_codigoAlarme, _mensagemAlarme, _prioridadeAlarme, _ambiente):
         try:
             #verifica se o codigo do alarme já está ativo
-            alm = Alarme.objects.
-                filter(alarmeTipo_id = _alarmeTipo_id, ativo = True)
+            alm = Alarme.objects.\
+                filter(codigoAlarme = _codigoAlarme, ativo = True)\
                 .order_by('id').all()
         except Exception as e:
             log('ALM02.0',str(e))
@@ -35,11 +35,11 @@ class alarmTrigger():
             if(len(alm)==1):
                 #O alarme já está ativo
                 # log('ALM02.1','O alarme '+ str(_alarmeTipo_id) + ' já está ativo')
-                print('ALM02.1: O alarme '+ str(_alarmeTipo_id) + ' já está ativo')
+                print('ALM02.1: O alarme '+ str(_codigoAlarme) + ' já está ativo')
                 return True
             if(len(alm)>1):
                 log('ALM02.2','Erro, existe mais de um alarme do tipo: '
-                + str(_alarmeTipo_id) + ' ativo, inativando os mais velhos')
+                + str(_codigoAlarme) + ' ativo, inativando os mais velhos')
                 for x in range(len(alm)-1):
                     alm[x].tempoInativacao=int(time.time())
                     alm[x].ativo = False
@@ -52,31 +52,33 @@ class alarmTrigger():
 
         #Caso nenhum problema aconteceu, insere um novo alarme na tabela
         try:
-            a = Alarme(alarmeTipo_id=_alarmeTipo_id,
+            Alarme(codigoAlarme=_codigoAlarme,
+                mensagemAlarme = _mensagemAlarme,
+                prioridadeAlarme = _prioridadeAlarme,
                 ativo=True, syncAtivacao=False,
                 ambiente_id=_ambiente,
-                tempoAtivacao=datetime.datetime.fromtimestamp(time.time()))
-            a.save()
+                tempoAtivacao=datetime.datetime.fromtimestamp(time.time())
+            ).save()
 
             return True
         except Exception as e:
             log('ALM02.4',str(e))
             return False
 
-    def off(_alarmeTipo_id):
+    def off(_codigoAlarme):
         try:
             #verifica se o codigo do alarme está ativo
-            alm = Alarme.objects.
-                filter(alarmeTipo_id = _alarmeTipo_id, ativo = True)
+            alm = Alarme.objects.\
+                filter(codigoAlarme = _codigoAlarme, ativo = True)\
                 .order_by('id').all()
             #O alarme já está ativo, desativa
             try:
                 if(len(alm)>1):
                     log('ALM03.0','Erro, existe mais de um alarme do tipo: '
-                    + str(_alarmeTipo_id) + ' ativo, inativando todos')
+                        + str(_codigoAlarme) + ' ativo, inativando todos')
                 if(len(alm)==0):
                     # log('ALM03.1','Não existe alarme do tipo: '+ str(_alarmeTipo_id) + ' ativo!')
-                    print('ALM03.1: Não existe alarme do tipo: '+ str(_alarmeTipo_id) + ' ativo!')
+                    print('ALM03.1: Não existe alarme do tipo: '+ str(_codigoAlarme) + ' ativo!')
                     return False
                 for x in range(len(alm)):
                     #Altera alarme na tabela
