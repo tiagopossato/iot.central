@@ -4,8 +4,6 @@ from central.log import log
 from central.alarmeTrigger import alarmeTrigger
 from central.models import AlarmeAnalogico, Leitura, Sensor
 
-
-
 def newAlarmeAnalogico(_mensagemAlarme, _prioridadeAlarme,
                         _valorAlarmeOn, _valorAlarmeOff,
                         _ambiente_id, _grandeza_id):
@@ -70,4 +68,31 @@ def triggerAlarmeAnalogico(_grandeza, _ambiente):
         soma = soma + listaMedia[x].valor
     
     valorMedio = soma / total
-    print(valorMedio)
+    alarmes = AlarmeAnalogico.objects.filter(ambiente=_ambiente)
+
+    for alarme in alarmes:
+        print(alarme.codigoAlarme)
+        # Para cada alarme neste ambiente, verifica se o valor para ligar o alarme é maior que o valor para desligar o alarme
+        if(alarme.valorAlarmeOn > alarme.valorAlarmeOff):
+            # Se sim, significa que o alarme vai disparar com valores acima do valor para ligar o alarme
+            if(valorMedio > alarme.valorAlarmeOn):
+                # Se a média é maior que o valor para ligar o alarme, dispara o método para ligar o alarme
+                alarmeTrigger().on(_codigoAlarme=alarme.codigoAlarme,
+                                    _mensagemAlarme=alarme.mensagemAlarme,
+                                    _prioridadeAlarme=alarme.prioridadeAlarme,
+                                    _ambiente=_ambiente)
+            if(valorMedio < alarme.valorAlarmeOff):
+                # Se a média é menor que o valor para desligar o alarme, dispara o método para desligar o alarme
+                alarmeTrigger().off(_codigoAlarme=alarme.codigoAlarme)
+        if(alarme.valorAlarmeOn < alarme.valorAlarmeOff):
+            # Se não, significa que o alarme vai disparar com valores abaixo do valor para ligar o alarme
+            if(valorMedio < alarme.valorAlarmeOn):
+                # Se a média é menor que o valor para ligar o alarme, dispara o método para ligar o alarme
+                alarmeTrigger().on(_codigoAlarme=alarme.codigoAlarme,
+                                    _mensagemAlarme=alarme.mensagemAlarme,
+                                    _prioridadeAlarme=alarme.prioridadeAlarme,
+                                    _ambiente=_ambiente)
+            if(valorMedio > alarme.valorAlarmeOn):
+                # Se a média é maior que o valor para desligar o alarme, dispara o método para desligar o alarme
+                alarmeTrigger().off(_codigoAlarme=alarme.codigoAlarme)
+

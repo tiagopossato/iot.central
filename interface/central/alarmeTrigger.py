@@ -36,13 +36,15 @@ class alarmeTrigger():
 
         #Caso nenhum problema aconteceu, insere um novo alarme na tabela
         try:
-            Alarme(codigoAlarme=_codigoAlarme,
+            alm = Alarme(codigoAlarme=_codigoAlarme,
                 mensagemAlarme = _mensagemAlarme,
                 prioridadeAlarme = _prioridadeAlarme,
                 ativo=True, syncAtivacao=False,
                 ambiente_id=_ambiente,
                 tempoAtivacao=datetime.datetime.fromtimestamp(time.time())
-            ).save()
+            )
+            alm.save()
+            print(alm)
 
             return True
         except Exception as e:
