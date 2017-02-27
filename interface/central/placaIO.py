@@ -2,7 +2,7 @@ import datetime
 import time
 from central.models import PlacaExpansaoDigital, EntradaDigital
 from central.log import log
-from central.alarmes import alarmTrigger
+from central.alarmeTrigger import alarmeTrigger
 
 def newPlacaExpansaoDigital(_idRede,_descricao=""):
     try:
@@ -64,14 +64,14 @@ def alteraEstadoEntrada(_codigoPlacaExpansaoDigital, _numero, _estado):
             entrada.save()
         
         if(int(_estado) == entrada.triggerAlarme):
-            alarmTrigger.on(
+            alarmeTrigger.on(
                 _codigoAlarme = entrada.codigoAlarme, 
                 _ambiente = entrada.ambiente.id,
                 _mensagemAlarme = entrada.mensagemAlarme,
                 _prioridadeAlarme = entrada.prioridadeAlarme
                 )
         else:
-            alarmTrigger.off(_codigoAlarme=entrada.codigoAlarme)
+            alarmeTrigger.off(_codigoAlarme=entrada.codigoAlarme)
 
         return True
     except Exception as e:

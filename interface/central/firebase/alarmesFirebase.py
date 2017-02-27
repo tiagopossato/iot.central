@@ -90,12 +90,12 @@ class SincronizaAlarmes(Thread):
             if alarme.tempoInativacao:
                 dados['tempoInativacao'] = alarme.tempoInativacao.strftime('%Y-%m-%d %H:%M:%S.%f')
 
-            if alarme.alarmeTipo.prioridade:
-                dados['prioridade'] = alarme.alarmeTipo.prioridade
+            if alarme.prioridadeAlarme:
+                dados['prioridade'] = alarme.prioridadeAlarme
             else:
                 dados['prioridade'] = 0
 
-            dados['mensagem'] = alarme.alarmeTipo.mensagem
+            dados['mensagem'] = alarme.mensagemAlarme
 
             dados['tempoAtivacao'] = alarme.tempoAtivacao.strftime('%Y-%m-%d %H:%M:%S.%f')
             
@@ -112,7 +112,7 @@ class SincronizaAlarmes(Thread):
                 alarme.syncAtivacao = True
                 alarme.save()
             
-            #para este loop
+            #encerra este loop
             loop.stop()
         except Exception as e:
             log('AFB03.0',str(e))

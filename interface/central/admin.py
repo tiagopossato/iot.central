@@ -11,7 +11,7 @@ from central.models import Grandeza
 from central.models import Sensor
 from central.models import SensorGrandeza
 from central.models import Leitura
-from central.models import AlarmesAnalogicos
+from central.models import AlarmeAnalogico
 
 class LogAdmin(admin.ModelAdmin):
     readonly_fields = ('tipo','mensagem','tempo','sync',)
@@ -31,7 +31,7 @@ class AlarmeAdmin(admin.ModelAdmin):
     list_display = ('mensagemAlarme','ativo','prioridadeAlarme','ambiente', 'tempoAtivacao','tempoInativacao',)
     list_filter = ('ativo','tempoAtivacao','ambiente','mensagemAlarme',)
     ordering = ('-ativo', '-tempoAtivacao',)
-    list_per_page = EntradaDigital.objects.count() + AlarmesAnalogicos.objects.count()
+    list_per_page = EntradaDigital.objects.count() + AlarmeAnalogico.objects.count()
     
     def has_add_permission(self, request):
         num_objects = self.model.objects.count()
@@ -40,11 +40,6 @@ class AlarmeAdmin(admin.ModelAdmin):
         else:
             return True
  
-# class AlarmeTipoAdmin(admin.ModelAdmin):
-#     list_display = ('codigo','mensagem','prioridade',)
-#     ordering = ('codigo',)
-#     list_per_page = 50
-
 class PlacaExpansaoDigitalAdmin(admin.ModelAdmin):
     list_display = ('descricao','idRede',)
     ordering = ('idRede',)
@@ -100,13 +95,13 @@ class LeituraAdmin(admin.ModelAdmin):
         else:
             return True
 
-# class AlarmesAnalogicosAdmin(admin.ModelAdmin):
-#     list_display = ('alarmeTipo','ambiente','valorAlarmeOn', 'valorAlarmeOff','grandeza',)
-#     ordering = ('ambiente',)
-#     list_filter = ('ambiente','grandeza','alarmeTipo',)
+class AlarmeAnalogicoAdmin(admin.ModelAdmin):
+    list_display = ('mensagemAlarme','prioridadeAlarme','valorAlarmeOn', 'valorAlarmeOff','grandeza','ambiente',)
+    readonly_fields = ('codigoAlarme',)
+    ordering = ('ambiente','mensagemAlarme',)
+    list_filter = ('ambiente','grandeza',)
 
 admin.site.register(Log, LogAdmin)
-# admin.site.register(AlarmeTipo, AlarmeTipoAdmin)
 admin.site.register(Alarme, AlarmeAdmin)
 admin.site.register(PlacaExpansaoDigital, PlacaExpansaoDigitalAdmin)
 admin.site.register(EntradaDigital, EntradaDigitalAdmin)
@@ -116,6 +111,6 @@ admin.site.register(Configuracoes, ConfiguracoesAdmin)
 admin.site.register(Sensor,SensorAdmin)
 admin.site.register(SensorGrandeza, SensorGrandezaAdmin)
 admin.site.register(Leitura, LeituraAdmin)
-# admin.site.register(AlarmesAnalogicos, AlarmesAnalogicosAdmin)
+admin.site.register(AlarmeAnalogico, AlarmeAnalogicoAdmin)
 admin.site.site_header = 'Administração da Central'
 admin.site.site_title = 'Central'

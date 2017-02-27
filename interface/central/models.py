@@ -27,16 +27,6 @@ class Configuracoes(models.Model):
     class Meta:
         verbose_name = 'Configuração'
         verbose_name_plural = 'Configurações'
-
-# class AlarmeTipo(models.Model):
-#     codigo = models.IntegerField(unique=True, null=False)
-#     mensagem = models.CharField(max_length=255, unique=True, null=False)
-#     prioridade = models.IntegerField(null=False)
-#     def __str__(self):
-#         return self.mensagem
-#     class Meta:
-#         verbose_name = 'Tipo de Alarme'
-#         verbose_name_plural = 'Tipos de Alarme'
         
 class Ambiente(models.Model):
     nome = models.CharField(max_length=255, null=False)
@@ -48,7 +38,7 @@ class Ambiente(models.Model):
         verbose_name_plural = 'Ambientes'
 
 class Alarme(models.Model):
-    uid = models.CharField(max_length=48, null=True, blank=True) #usado para sincronização com o firebase
+    uid = models.CharField(max_length=48, null=True, blank=True) #usado para o firebase
     codigoAlarme = models.CharField(max_length=36,null=False) #usado para controle entre alarmes digitais a analógicos
     mensagemAlarme = models.CharField(max_length=255, null=False)
     prioridadeAlarme = models.IntegerField(null=False)
@@ -58,7 +48,6 @@ class Alarme(models.Model):
     tempoInativacao = models.DateTimeField(null=True)
     syncInativacao = models.BooleanField(default=False, null=False)
 
-    # alarmeTipo = models.ForeignKey(AlarmeTipo, to_field='codigo', on_delete=models.PROTECT)
     ambiente = models.ForeignKey(Ambiente, on_delete=models.PROTECT)
     def __str__(self):
         return self.mensagemAlarme
@@ -97,10 +86,8 @@ class EntradaDigital(models.Model):
     
     #sobrescreve o método save para adicionar o valor para o código do alarme
     def save(self, *args, **kwargs):
-        if(self.codigoAlarme == None):
-            self.codigoAlarme = str(uuid.uuid4())
+        self.codigoAlarme = str(uuid.uuid4())
         super(EntradaDigital, self).save(*args, **kwargs) # Call the "real" save() method.
-
 
     class Meta:
         unique_together = ('placaExpansaoDigital', 'numero',)
@@ -197,15 +184,20 @@ class Leitura(models.Model):
         verbose_name = 'Leitura'
         verbose_name_plural = 'Leituras'
 
-class AlarmesAnalogicos(models.Model):
-    codigoAlarme = models.CharField(primary_key=True, max_length=36, default=str(uuid.uuid4()))
-    mensagem = models.CharField(max_length=255, unique=True, null=False)
-    prioridade = models.IntegerField(null=False)
+class AlarmeAnalogico(models.Model):
+    codigoAlarme = models.CharField(primary_key=True, max_length=36)
+    mensagemAlarme = models.CharField('Mensagem do alarme', max_length=255)
+    prioridadeAlarme = models.IntegerField('Prioridade do alarme')
     valorAlarmeOn = models.FloatField('Valor para ativar o alarme')
     valorAlarmeOff = models.FloatField('Valor para desativar o alarme')
-    ambiente = models.ForeignKey(Ambiente, to_field='id', on_delete=models.PROTECT, default=0)
+    ambiente = models.ForeignKey(Ambiente, to_field='id', on_delete=models.PROTECT)
     grandeza = models.ForeignKey(Grandeza, to_field='codigo', on_delete=models.PROTECT)
-    
+
+    #sobrescreve o método save para adicionar o valor para o código do alarme
+    def save(self, *args, **kwargs):
+        self.codigoAlarme = str(uuid.uuid4())
+        super(AlarmeAnalogico, self).save(*args, **kwargs) # Call the "real" save() method.
+
     class Meta:
         verbose_name = 'Alarme Analógico'
         verbose_name_plural = 'Alarmes Analógicos'

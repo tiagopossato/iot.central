@@ -1,25 +1,9 @@
 import datetime
 import time
-from threading import Thread
-
-from central.placaBase.configuracao import config
 from central.models import Alarme, Ambiente
 from central.log import log
 
-from central.firebase.alarmesFirebase import SincronizaAlarmes
-# from central.servidor.alarmesServidor import SincronizaAlarmes
-
-"""
-Cria um novo tipo de alarme
-"""
-# def newAlarmeTipo(_codigo, _mensagem, _prioridade):
-#     try:
-#         at = AlarmeTipo(codigo=_codigo, mensagem=_mensagem, prioridade=_prioridade)
-#         at.save()
-#     except Exception as e:
-#         log('ALM01',str(e))
-
-class alarmTrigger():
+class alarmeTrigger():
 
     def on(_codigoAlarme, _mensagemAlarme, _prioridadeAlarme, _ambiente):
         try:
