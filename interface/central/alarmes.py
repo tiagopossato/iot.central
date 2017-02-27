@@ -20,15 +20,12 @@ def newAlarmeTipo(_codigo, _mensagem, _prioridade):
         log('ALM01',str(e))
 
 class alarmTrigger():
-    # def __init__(self):
-        # self.sincronizador = SincronizaAlarmes()
-        # self.sincronizador.start()
 
     def on(_alarmeTipo_id, _ambiente):
         try:
             #verifica se o codigo do alarme já está ativo
-            alm = Alarme.objects.\
-                filter(alarmeTipo_id = _alarmeTipo_id, ativo = True)\
+            alm = Alarme.objects.
+                filter(alarmeTipo_id = _alarmeTipo_id, ativo = True)
                 .order_by('id').all()
         except Exception as e:
             log('ALM02.0',str(e))
@@ -41,15 +38,13 @@ class alarmTrigger():
                 print('ALM02.1: O alarme '+ str(_alarmeTipo_id) + ' já está ativo')
                 return True
             if(len(alm)>1):
-                log('ALM02.2','Erro, existe mais de um alarme do tipo: '\
+                log('ALM02.2','Erro, existe mais de um alarme do tipo: '
                 + str(_alarmeTipo_id) + ' ativo, inativando os mais velhos')
                 for x in range(len(alm)-1):
                     alm[x].tempoInativacao=int(time.time())
                     alm[x].ativo = False
                     alm[x].syncInativacao = False
                     alm[x].save()
-                    # if(self.sincronizador.isAlive() == False):
-                    #     self.sincronizador.run()
                 return True
         except Exception as e:
             log('ALM02.3',str(e))
@@ -57,14 +52,12 @@ class alarmTrigger():
 
         #Caso nenhum problema aconteceu, insere um novo alarme na tabela
         try:
-            a = Alarme(alarmeTipo_id=_alarmeTipo_id, \
-                ativo=True, syncAtivacao=False, \
-                ambiente_id=_ambiente,\
+            a = Alarme(alarmeTipo_id=_alarmeTipo_id,
+                ativo=True, syncAtivacao=False,
+                ambiente_id=_ambiente,
                 tempoAtivacao=datetime.datetime.fromtimestamp(time.time()))
             a.save()
 
-            # if(self.sincronizador.isAlive() == False):
-            #     self.sincronizador.run()
             return True
         except Exception as e:
             log('ALM02.4',str(e))
@@ -73,8 +66,8 @@ class alarmTrigger():
     def off(_alarmeTipo_id):
         try:
             #verifica se o codigo do alarme está ativo
-            alm = Alarme.objects.\
-                filter(alarmeTipo_id = _alarmeTipo_id, ativo = True)\
+            alm = Alarme.objects.
+                filter(alarmeTipo_id = _alarmeTipo_id, ativo = True)
                 .order_by('id').all()
             #O alarme já está ativo, desativa
             try:
@@ -91,8 +84,6 @@ class alarmTrigger():
                     alm[x].ativo = False
                     alm[x].syncInativacao = False
                     alm[x].save()
-                    # if(self.sincronizador.isAlive() == False):
-                    #     self.sincronizador.run()
                 return True
             except Exception as e:
                 log('ALM03.2',str(e))
