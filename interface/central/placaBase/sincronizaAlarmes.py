@@ -8,7 +8,7 @@ django.setup()
 from time import sleep
 from central.log import log
 from central.firebase.alarmesFirebase import SincronizaAlarmes
-
+"""
 from central.placaIO import alteraEstadoEntrada, newEntradaDigital
 
 alteraEstadoEntrada(3, 0, False)
@@ -34,7 +34,7 @@ alteraEstadoEntrada(3, 0, False)
 alteraEstadoEntrada(3, 7, False)
 
 exit()
-
+"""
 if __name__ == "__main__":
 	try:
 		arquivo = open("/var/run/centralSinc.pid","w")

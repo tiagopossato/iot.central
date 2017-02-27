@@ -82,24 +82,23 @@ class EntradaDigital(models.Model):
     nome = models.CharField(max_length=255, null=False)
     estado = models.BooleanField(default=False, null=False)
     #define em qual estado o alarme será disparado
-    triggerAlarme = models.BooleanField(default=False, null=False)
+    triggerAlarme = models.BooleanField('Estado para alarme', default=False, null=False)
     updated_at =  models.DateTimeField(auto_now=True)
     sync = models.BooleanField(default=False, null=False)
 
-    placaExpansaoDigital = models.ForeignKey(PlacaExpansaoDigital,\
+    placaExpansaoDigital = models.ForeignKey(PlacaExpansaoDigital,
         to_field='idRede', on_delete=models.PROTECT)
-    alarmeTipo = models.ForeignKey(AlarmeTipo, blank=True, null=True,\
-    to_field='codigo', on_delete=models.PROTECT)
+    alarmeTipo = models.ForeignKey(AlarmeTipo, blank=True, null=True,
+    to_field='codigo', on_delete=models.PROTECT, verbose_name="Tipo do alarme",)
     ambiente = models.ForeignKey(Ambiente, to_field='id', on_delete=models.PROTECT)
 
     class Meta:
-        unique_together = (('placaExpansaoDigital', 'numero'),)
+        unique_together = ('placaExpansaoDigital', 'numero',)
+        verbose_name = 'Entrada digital'
+        verbose_name_plural = 'Entradas digitais'
 
     def __str__(self):
         return str(self.placaExpansaoDigital.descricao) + " [ " + str(self.numero) + " ]"
-    class Meta:
-        verbose_name = 'Entrada digital'
-        verbose_name_plural = 'Entradas digitais'
 
 class Grandeza(models.Model):
     codigo = models.IntegerField(primary_key=True)
@@ -165,14 +164,12 @@ class SensorGrandeza(models.Model):
 
     #define combinacao unica    
     class Meta:
-        unique_together = (('grandeza', 'sensor'),)
+        unique_together = ('grandeza', 'sensor')
+        verbose_name = 'Grandeza do Sensor'
+        verbose_name_plural = 'Grandezas dos Sensores'
 
     def __str__(self):
         return str(self.sensor.idRede) + " - " + str(self.grandeza)
-        
-    class Meta:
-        verbose_name = 'Grandeza do Sensor'
-        verbose_name_plural = 'Grandezas dos Sensores'
 
 class Leitura(models.Model):
     valor = models.FloatField()
