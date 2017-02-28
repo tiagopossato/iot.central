@@ -33,20 +33,27 @@ def alteraSensorFirebase(sensor):
         dados = {}
         dados['idRede'] = sensor.idRede
         dados['descricao'] = sensor.descricao
-        dados['createdAt'] = sensor.createdAt.timestamp()
+        dados['updatedAt'] = sensor.updatedAt.timestamp()
         dados['intervaloAtualizacao'] = sensor.intervaloAtualizacao
         dados['ambiente'] = sensor.ambiente.uid
         dados['central'] = Configuracoes.objects.get().uidCentral
+        
         dados['grandezas'] = {}
-        for g in sensor.sensorgrandeza_set.values():
+        grandezas = sensor.sensorgrandeza_set.values()        
+        for g in grandezas:
             dados['grandezas'][g['grandeza_id']] = True
 
         print(dados)
+
         ConectaFirebase()
         user = ConectaFirebase.getUser()
         db = ConectaFirebase.db
-        amb = db.child("sensores").child(sensor.uid).set(dados, user['idToken'])
-        #verifica se foi alterado de ambiente
+
+        sen = db.child("sensores").child(sensor.uid).update(dados, user['idToken'])
+
+        # adiciona as grandezas no ambiente
+        db.child("ambientes").child(sensor.ambiente.uid).child('grandezas').update(dados['grandezas'], user['idToken'])        
+        # verifica se foi alterado de ambiente
         if(sensor.get_previous_by_updatedAt().uid != sensor.ambiente.uid):
             #altera o relacionamento antigo
             db.child("ambientes").child(sensor.get_previous_by_updatedAt().ambiente.uid).child('sensores').child(sensor.uid).set(False, user['idToken'])
@@ -59,7 +66,6 @@ def alteraSensorFirebase(sensor):
 
 
 def newLeitura(_idRedeSensor,_grandeza, _valor):
-    # sensor = Sensor.objects.get(idRede=_idRedeSensor, grandezas__codigo=_grandeza)
     try:
         sensor = Sensor.objects.get(idRede=_idRedeSensor)
     except ObjectDoesNotExist as e:

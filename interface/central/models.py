@@ -155,24 +155,22 @@ class Sensor(models.Model):
             self = novoSensorFirebase(self)
             if(self == False):
                 return False
-        if(self.uid != None):
+        elif(self.uid != None):
             self.updatedAt = datetime.fromtimestamp(time.time())
             self = alteraSensorFirebase(self)
 
         if(self):
-            #armazena os dados antigos
-            original_idRede = self.get_previous_by_updatedAt().idRede
-            original_intervaloAtualizacao = self.get_previous_by_updatedAt().intervaloAtualizacao
-            original_intervaloLeitura = self.get_previous_by_updatedAt().intervaloLeitura
+            # Caso for um update armazena os dados antigos
+            if(self.id != None):                
+                original_idRede = self.get_previous_by_updatedAt().idRede
+                original_intervaloAtualizacao = self.get_previous_by_updatedAt().intervaloAtualizacao
+                original_intervaloLeitura = self.get_previous_by_updatedAt().intervaloLeitura
 
             # Call the "real" save() method.    
             super(Sensor, self).save(*args, **kwargs)
 
             #altera os dados do sensor na placa física
             try:               
-                print(original_idRede)
-                print(original_intervaloAtualizacao)
-                print(original_intervaloLeitura)
 
                 from central.placaBase.placaBase import PlacaBase
                 if(original_intervaloAtualizacao != self.intervaloAtualizacao):
