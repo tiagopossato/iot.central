@@ -31,19 +31,18 @@ class SincronizaAlarmes(Thread):
             self.db = ConectaFirebase.db
             return
        
-        #pega os alarmes novos, que ainda não foram criados
-        #no banco de dados do servidor
         try:        
             loop = asyncio.get_event_loop()
         except Exception as e:
             print("get_event_loop: " + str(e))
             return
-            
+
+        #pega os alarmes novos, que ainda não foram criados
+        #no banco de dados do servidor            
         try:
             #primeiro os ativos
             alarmes = Alarme.objects.filter(syncAtivacao = False, syncInativacao = False).exclude(ambiente__uid = '').order_by('-ativo')
             #print("Enviando novos alarmes ainda ativos")
-            loop = asyncio.get_event_loop()
             for x in range(len(alarmes)):
                 loop.call_soon(self._enviaAlarmes, loop, alarmes[x])
                 loop.run_forever()
@@ -64,10 +63,10 @@ class SincronizaAlarmes(Thread):
         except Exception as e:
             log('AFB02.2',str(e))
         
-        try:        
-            loop.close()
-        except Exception as e:
-            print("loop.close:" + str(e))
+        # try:        
+        #     #loop.close()
+        # except Exception as e:
+        #     print("loop.close:" + str(e))
        
 
         try:
