@@ -24,7 +24,7 @@ def newLeitura(_idRedeSensor,_grandeza, _valor):
         _valor = format(_valor, '.2f')
         l = Leitura(valor=_valor, sensor=sensor, grandeza=grandeza, ambiente=sensor.ambiente)
         l.save()
-        print(str(sensor) + ': '+ str(_valor) + ' ' + str(grandeza) + '[' + str(l.created_at) + ']')
+        print(str(sensor) + ': '+ str(_valor) + ' ' + str(grandeza) + '[' + str(l.createdAt) + ']')
         triggerAlarmeAnalogico(_grandeza=grandeza, _ambiente=sensor.ambiente)
     except Exception as e:
         log('SEN01.2','Nova leitura: ' + str(e))

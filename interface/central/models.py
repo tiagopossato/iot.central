@@ -31,6 +31,9 @@ class Configuracoes(models.Model):
 class Ambiente(models.Model):
     nome = models.CharField(max_length=255, null=False)
     uid = models.CharField(max_length=48, null=True, blank=True)
+    createdAt =  models.DateTimeField(auto_now=True)
+    updatedAt = models.DateTimeField(auto_now=True)
+    ativo = models.BooleanField(default=True)
 
     #sobrescreve o método save para adicionar o valor para o código do alarme
     def save(self, *args, **kwargs):
@@ -70,7 +73,7 @@ class Alarme(models.Model):
 class PlacaExpansaoDigital(models.Model):
     idRede = models.IntegerField(null=False, unique=True)
     descricao = models.CharField(max_length=255, null=True)
-    updated_at = models.DateTimeField(auto_now=True)
+    updatedAt = models.DateTimeField(auto_now=True)
     def __str__(self):
         if(self.descricao!=None):
             return str(self.idRede) + " - " + self.descricao
@@ -89,7 +92,7 @@ class EntradaDigital(models.Model):
     codigoAlarme = models.CharField(max_length=36, default=None)
     mensagemAlarme = models.CharField('Mensagem do alarme', max_length=255)
     prioridadeAlarme = models.IntegerField('Prioridade do alarme')    
-    updated_at =  models.DateTimeField(auto_now=True)
+    updatedAt =  models.DateTimeField(auto_now=True)
     sync = models.BooleanField(default=False, null=False)
 
     placaExpansaoDigital = models.ForeignKey(PlacaExpansaoDigital,
@@ -113,7 +116,7 @@ class Grandeza(models.Model):
     codigo = models.IntegerField(primary_key=True)
     nome = models.CharField(max_length=255, null=False, unique=True)
     unidade = models.CharField(max_length=15, null=False, unique=True)
-    updated_at =  models.DateTimeField(auto_now=True)
+    updatedAt =  models.DateTimeField(auto_now=True)
     sync = models.BooleanField(default=False, null=False)
     
     def __str__(self):
@@ -128,7 +131,7 @@ class Sensor(models.Model):
     descricao = models.CharField(max_length=255, unique=True, default='')
     intervaloAtualizacao = models.IntegerField(null=False, default=2)
     intervaloLeitura = models.IntegerField(null=False, default=2)
-    updated_at =  models.DateTimeField(auto_now=True)
+    updatedAt =  models.DateTimeField(auto_now=True)
     sync = models.BooleanField(default=False, null=False)
 
     ambiente = models.ForeignKey(Ambiente, to_field='id', on_delete=models.PROTECT, default=0)
@@ -164,7 +167,7 @@ class Sensor(models.Model):
 
 class SensorGrandeza(models.Model):
     obs = models.CharField(max_length=255, blank=True, null=True)
-    updated_at =  models.DateTimeField(auto_now=True)
+    updatedAt =  models.DateTimeField(auto_now=True)
     curvaCalibracao = models.CharField(max_length=255)
     sync = models.BooleanField(default=False, null=False)
 
@@ -182,7 +185,7 @@ class SensorGrandeza(models.Model):
 
 class Leitura(models.Model):
     valor = models.FloatField()
-    created_at =  models.DateTimeField(auto_now=True)
+    createdAt =  models.DateTimeField(auto_now=True)
     sync = models.BooleanField(default=False, null=False)
 
     ambiente = models.ForeignKey(Ambiente, to_field='id', on_delete=models.PROTECT, default=0)

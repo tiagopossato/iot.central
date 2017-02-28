@@ -39,7 +39,7 @@ def updateEntradaDigital(_id, _placaExpansaoDigital=None,
                 entrada.mensagemAlarme = _mensagemAlarme
                 entrada.prioridadeAlarme = _prioridadeAlarme          
 
-            entrada.updated_at = datetime.datetime.fromtimestamp(time.time())
+            entrada.updatedAt = datetime.datetime.fromtimestamp(time.time())
             entrada.save()
             return True
         except Exception as e:
@@ -60,7 +60,7 @@ def alteraEstadoEntrada(_codigoPlacaExpansaoDigital, _numero, _estado):
             print("Update no "+entrada.nome+" -> "+str(_estado))
             entrada.estado = bool(int(_estado))
             entrada.sync = False
-            entrada.updated_at = datetime.datetime.fromtimestamp(time.time())
+            entrada.updatedAt = datetime.datetime.fromtimestamp(time.time())
             entrada.save()
         
         if(int(_estado) == entrada.triggerAlarme):

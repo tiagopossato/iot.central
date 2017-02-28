@@ -48,7 +48,7 @@ def triggerAlarmeAnalogico(_grandeza, _ambiente):
         # print(st.strftime('%Y-%m-%d %H:%M:%S') + ' - '+ et.strftime('%Y-%m-%d %H:%M:%S'))
         #seleciona os sensores que enviaram dados na ultima hora
         sensores = Leitura.objects.filter(
-                                grandeza=_grandeza, ambiente=_ambiente, created_at__range=(st, et)
+                                grandeza=_grandeza, ambiente=_ambiente, createdAt__range=(st, et)
                                 ).values_list('sensor', flat=True).distinct()
     except Exception as e:
         log('AAN03.1',str(e))
@@ -65,7 +65,7 @@ def triggerAlarmeAnalogico(_grandeza, _ambiente):
             st = datetime.datetime.fromtimestamp(ts-sensor.intervaloAtualizacao)
             leitura = Leitura.objects.filter(
                                 grandeza=_grandeza, ambiente=_ambiente,
-                                created_at__range=(st, et), sensor = sensor
+                                createdAt__range=(st, et), sensor = sensor
                                 ).last()
             if(leitura != None): listaMedia.append(leitura)
         

@@ -52,9 +52,9 @@ class EntradaDigitalAdmin(admin.ModelAdmin):
     list_per_page = 50
 
 class AmbienteAdmin(admin.ModelAdmin):
-    list_display = ('nome', 'uid',)
+    list_display = ('nome', 'uid','ativo',)
     ordering = ('nome',)
-    readonly_fields = ('uid',)
+    readonly_fields = ('uid','createdAt', 'updatedAt',)
 
 class ConfiguracoesAdmin(admin.ModelAdmin):
     list_display = ('apiKey','authDomain','databaseURL',\
@@ -84,10 +84,10 @@ class SensorGrandezaAdmin(admin.ModelAdmin):
 
 
 class LeituraAdmin(admin.ModelAdmin):
-    readonly_fields = ('valor','created_at','sync','ambiente','grandeza','sensor',)
-    list_display = ('sensor','valor','grandeza','created_at','ambiente',)
-    list_filter = ('created_at','sensor','ambiente',)
-    ordering = ('-created_at','-sensor')
+    readonly_fields = ('valor','createdAt','sync','ambiente','grandeza','sensor',)
+    list_display = ('sensor','valor','grandeza','createdAt','ambiente',)
+    list_filter = ('createdAt','sensor','ambiente',)
+    ordering = ('-createdAt','-sensor')
     list_per_page = 20
     def has_add_permission(self, request):
         num_objects = self.model.objects.count()
