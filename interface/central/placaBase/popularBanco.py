@@ -9,25 +9,25 @@ django.setup()
 
 from central.models import Configuracoes, Ambiente, Grandeza, Sensor, SensorGrandeza
 
-# Configuracoes(
-#     apiKey = 'AIzaSyCaYACeZvP5sW7MHKA5co7PttejxUxnTTM',
-#     authDomain = 'testes-apisensores.firebaseapp.com',
-#     databaseURL = 'https://testes-apiSensores.firebaseio.com',
-#     storageBucket = 'testes-apiSensores.appspot.com',
-#     uidCentral = '-KbztEuoaYejBSl-nyFx',
-#     maxAlarmes = 20,
-#     portaSerial = '/dev/ttyAMA0',
-#     taxa = 115200
-# ).save()
+Configuracoes(
+    apiKey = 'AIzaSyCaYACeZvP5sW7MHKA5co7PttejxUxnTTM',
+    authDomain = 'testes-apisensores.firebaseapp.com',
+    databaseURL = 'https://testes-apiSensores.firebaseio.com',
+    storageBucket = 'testes-apiSensores.appspot.com',
+    uidCentral = '-KbztEuoaYejBSl-nyFx',
+    maxAlarmes = 20,
+    portaSerial = '/dev/ttyAMA0',
+    taxa = 115200
+).save()
 
-# Ambiente(nome='Estufa de enraizamento').save()
-# Ambiente(nome='Estufa de cultivo de flores').save()
+Ambiente(nome='Estufa de enraizamento').save()
+Ambiente(nome='Estufa de cultivo de flores').save()
 
-# Grandeza(codigo=71, nome='Temperatura', unidade='°C').save()
-# Grandeza(codigo=72, nome='Umidade do ar', unidade='%uR').save()
-# Grandeza(codigo=73, nome='Umidade do solo', unidade='%').save()
+Grandeza(codigo=71, nome='Temperatura', unidade='°C').save()
+Grandeza(codigo=72, nome='Umidade do ar', unidade='%uR').save()
+Grandeza(codigo=73, nome='Umidade do solo', unidade='%').save()
 
-# Sensor(idRede=1, ambiente_id=1, descricao='Sensor de Temperatura e Umidade do ar').save()
+Sensor(idRede=1, ambiente_id=1, descricao='Sensor de Temperatura e Umidade do ar').save()
 
 SensorGrandeza(grandeza_id=71, sensor_id=1).save()
 SensorGrandeza(grandeza_id=72, sensor_id=1).save()
