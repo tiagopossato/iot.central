@@ -53,7 +53,8 @@ class EntradaDigitalAdmin(admin.ModelAdmin):
 
 class AmbienteAdmin(admin.ModelAdmin):
     list_display = ('nome', 'uid',)
-    ordering = ('nome',)      
+    ordering = ('nome',)
+    readonly_fields = ('uid',)
 
 class ConfiguracoesAdmin(admin.ModelAdmin):
     list_display = ('apiKey','authDomain','databaseURL',\

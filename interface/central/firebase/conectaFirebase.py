@@ -1,5 +1,6 @@
 import pyrebase
 import requests
+import os
 from central.log import log
 from central.models import Configuracoes
 from central.util import check_host
@@ -19,7 +20,7 @@ class ConectaFirebase:
                 "authDomain": cfg.authDomain,
                 "databaseURL": cfg.databaseURL,
                 "storageBucket": cfg.storageBucket,
-                "serviceAccount": "../testes-apiSensores-cba45d38c53e.json"
+                "serviceAccount": os.path.abspath('central/firebase/testes-apiSensores-cba45d38c53e.json')
             }
             firebase = pyrebase.initialize_app(config)
             # Get a reference to the auth service

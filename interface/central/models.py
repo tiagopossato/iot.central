@@ -31,6 +31,18 @@ class Configuracoes(models.Model):
 class Ambiente(models.Model):
     nome = models.CharField(max_length=255, null=False)
     uid = models.CharField(max_length=48, null=True, blank=True)
+
+    #sobrescreve o método save para adicionar o valor para o código do alarme
+    def save(self, *args, **kwargs):
+        try:
+            from central.ambiente import salvaFirebase
+            self = salvaFirebase(self)
+            super(Ambiente, self).save(*args, **kwargs) # Call the "real" save() method.
+        except Exception as e:
+            from central.log import log
+            log('MOD01.0',str(e))
+            
+
     def __str__(self):
         return self.nome
     class Meta:
