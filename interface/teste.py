@@ -11,5 +11,5 @@ django.setup()
 from central.placaBase.overCAN  import inputState, newLeitura
 
 # for x in range(20):
-newLeitura(_idRedeSensor=random.randint(1,2),_grandeza=71, _valor=random.uniform(20, 50))
+newLeitura(_idRedeSensor=random.randint(1,2),_grandeza=71, _valor=random.uniform(15, 30))
 print('')

@@ -12,17 +12,17 @@ class alarmeTrigger():
                 filter(codigoAlarme = _codigoAlarme, ativo = True)\
                 .order_by('id').all()
         except Exception as e:
-            log('ALM02.0',str(e))
+            log('ALT01.0',str(e))
             return False
         
         try:
             if(len(alm)==1):
                 #O alarme já está ativo
-                # log('ALM02.1','O alarme '+ str(_alarmeTipo_id) + ' já está ativo')
-                print('ALM02.1: O alarme '+ str(_codigoAlarme) + ' já está ativo')
+                # log('ALT01.1','O alarme '+ str(_alarmeTipo_id) + ' já está ativo')
+                print('ALT01.1: O alarme '+ str(_codigoAlarme) + ' já está ativo')
                 return True
             if(len(alm)>1):
-                log('ALM02.2','Erro, existe mais de um alarme do tipo: '
+                log('ALT01.2','Erro, existe mais de um alarme do tipo: '
                 + str(_codigoAlarme) + ' ativo, inativando os mais velhos')
                 for x in range(len(alm)-1):
                     alm[x].tempoInativacao=int(time.time())
@@ -31,7 +31,7 @@ class alarmeTrigger():
                     alm[x].save()
                 return True
         except Exception as e:
-            log('ALM02.3',str(e))
+            log('ALT01.3',str(e))
             return False
 
         #Caso nenhum problema aconteceu, insere um novo alarme na tabela
@@ -48,7 +48,7 @@ class alarmeTrigger():
 
             return True
         except Exception as e:
-            log('ALM02.4',str(e))
+            log('ALT01.4',str(e))
             return False
 
     def off(_codigoAlarme):
@@ -60,11 +60,11 @@ class alarmeTrigger():
             #O alarme já está ativo, desativa
             try:
                 if(len(alm)>1):
-                    log('ALM03.0','Erro, existe mais de um alarme do tipo: '
+                    log('AT02.0','Erro, existe mais de um alarme do tipo: '
                         + str(_codigoAlarme) + ' ativo, inativando todos')
                 if(len(alm)==0):
-                    # log('ALM03.1','Não existe alarme do tipo: '+ str(_alarmeTipo_id) + ' ativo!')
-                    print('ALM03.1: Não existe alarme do tipo: '+ str(_codigoAlarme) + ' ativo!')
+                    # log('ALT02.1','Não existe alarme do tipo: '+ str(_alarmeTipo_id) + ' ativo!')
+                    print('ALT02.1: Não existe alarme do tipo: '+ str(_codigoAlarme) + ' ativo!')
                     return False
                 for x in range(len(alm)):
                     #Altera alarme na tabela
@@ -74,8 +74,8 @@ class alarmeTrigger():
                     alm[x].save()
                 return True
             except Exception as e:
-                log('ALM03.2',str(e))
+                log('ALT02.2',str(e))
                 return False
         except Exception as e:
-            log('ALM03.3',str(e))
+            log('ALT02.3',str(e))
             return False
