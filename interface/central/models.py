@@ -1,6 +1,8 @@
 from django.db import models
 from django.db.models.signals import post_save
-from django.dispatch import receiver
+#from django.dispatch import receiver
+from datetime import datetime
+import time
 import uuid
 
 class Log(models.Model):
@@ -35,16 +37,22 @@ class Ambiente(models.Model):
     updatedAt = models.DateTimeField(auto_now=True)
     ativo = models.BooleanField(default=True)
 
-    #sobrescreve o método save para adicionar o valor para o código do alarme
+    #sobrescreve o método save para adicionar cadastrar no firebase
     def save(self, *args, **kwargs):
         try:
-            from central.ambiente import salvaFirebase
-            self = salvaFirebase(self)
-            super(Ambiente, self).save(*args, **kwargs) # Call the "real" save() method.
+            from central.ambiente import novoAmbienteFirebase, alteraAmbienteFirebase
+            if(self.id == None):               
+                self.createdAt = datetime.fromtimestamp(time.time())
+                self = novoAmbienteFirebase(self)
+            elif(self.uid != None):
+                self.updatedAt = datetime.fromtimestamp(time.time())
+                self = alteraAmbienteFirebase(self)
+            if(self):
+                super(Ambiente, self).save(*args, **kwargs) # Call the "real" save() method.
         except Exception as e:
             from central.log import log
             log('MOD01.0',str(e))
-            
+            return str(e)            
 
     def __str__(self):
         return self.nome
@@ -128,35 +136,58 @@ class Grandeza(models.Model):
 
 class Sensor(models.Model):
     idRede = models.IntegerField(null=False, unique=True)
+    uid = models.CharField(max_length=48, null=True, blank=True)
     descricao = models.CharField(max_length=255, unique=True, default='')
     intervaloAtualizacao = models.IntegerField(null=False, default=2)
     intervaloLeitura = models.IntegerField(null=False, default=2)
+    createdAt =  models.DateTimeField(auto_now=True)
     updatedAt =  models.DateTimeField(auto_now=True)
     sync = models.BooleanField(default=False, null=False)
 
     ambiente = models.ForeignKey(Ambiente, to_field='id', on_delete=models.PROTECT, default=0)
     grandezas = models.ManyToManyField(Grandeza, through='SensorGrandeza')
     
-    def __init__(self, *args, **kwargs):
-        super(Sensor, self).__init__(*args, **kwargs)
-        self.__original_idRede = self.idRede
-        self.__original_intervaloAtualizacao = self.intervaloAtualizacao
-        self.__original_intervaloLeitura = self.intervaloLeitura
-
     def save(self, *args, **kwargs):
-        super(Sensor, self).save(*args, **kwargs) # Call the "real" save() method.
-        from central.placaBase.placaBase import PlacaBase
-        
-        if(self.__original_intervaloAtualizacao != self.intervaloAtualizacao):
-            PlacaBase.enviaComando(PlacaBase,str(self.__original_idRede),
-            'CHANGE_SEND_TIME', str(self.intervaloAtualizacao))
+        from central.sensor import novoSensorFirebase, alteraSensorFirebase
+        if(self.id == None):
+            self.createdAt = datetime.fromtimestamp(time.time())
+            #salva o sensor no firebase            
+            self = novoSensorFirebase(self)
+            if(self == False):
+                return False
+        if(self.uid != None):
+            self.updatedAt = datetime.fromtimestamp(time.time())
+            self = alteraSensorFirebase(self)
 
-        if(self.__original_intervaloLeitura != self.intervaloLeitura):
-            PlacaBase.enviaComando(PlacaBase,str(self.__original_idRede),
-            'CHANGE_READ_TIME', str(self.intervaloLeitura))
-        if(self.__original_idRede != self.idRede):
-            PlacaBase.enviaComando(PlacaBase,str(self.__original_idRede),
-            'CHANGE_ID', str(self.idRede))
+        if(self):
+            #armazena os dados antigos
+            original_idRede = self.get_previous_by_updatedAt().idRede
+            original_intervaloAtualizacao = self.get_previous_by_updatedAt().intervaloAtualizacao
+            original_intervaloLeitura = self.get_previous_by_updatedAt().intervaloLeitura
+
+            # Call the "real" save() method.    
+            super(Sensor, self).save(*args, **kwargs)
+
+            #altera os dados do sensor na placa física
+            try:               
+                print(original_idRede)
+                print(original_intervaloAtualizacao)
+                print(original_intervaloLeitura)
+
+                from central.placaBase.placaBase import PlacaBase
+                if(original_intervaloAtualizacao != self.intervaloAtualizacao):
+                    PlacaBase.enviaComando(PlacaBase,str(original_idRede),
+                    'CHANGE_SEND_TIME', str(self.intervaloAtualizacao))
+
+                if(original_intervaloLeitura != self.intervaloLeitura):
+                    PlacaBase.enviaComando(PlacaBase,str(original_idRede),
+                    'CHANGE_READ_TIME', str(self.intervaloLeitura))
+                if(original_idRede != self.idRede):
+                    PlacaBase.enviaComando(PlacaBase,str(original_idRede),
+                    'CHANGE_ID', str(self.idRede))
+            except Exception as e:
+                from central.log import log
+                log('MOD02.0',str(e))
 
     def __str__(self):
         return str(self.descricao) + " [ " + str(self.idRede) + " ]"
@@ -174,8 +205,16 @@ class SensorGrandeza(models.Model):
     grandeza = models.ForeignKey(Grandeza, to_field='codigo', on_delete=models.PROTECT)
     sensor = models.ForeignKey(Sensor, to_field='idRede', on_delete=models.PROTECT)
 
-    #define combinacao unica    
+    def save(self, *args, **kwargs):
+        # Call the "real" save() method.    
+        super(SensorGrandeza, self).save(*args, **kwargs)
+        from central.sensor import alteraSensorFirebase
+        self.sensor.updatedAt = datetime.fromtimestamp(time.time())
+        #salva insere no firebase o relaciomanento do sensor com a grandeza
+        alteraSensorFirebase(self.sensor)
+        
     class Meta:
+        #define combinacao unica   
         unique_together = ('grandeza', 'sensor')
         verbose_name = 'Grandeza do Sensor'
         verbose_name_plural = 'Grandezas dos Sensores'

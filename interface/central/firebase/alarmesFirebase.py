@@ -13,7 +13,7 @@ class SincronizaAlarmes(Thread):
     def __init__ (self):        
         self.cfg = Configuracoes.objects.get()    
         ConectaFirebase()
-        self.user = ConectaFirebase.user()
+        self.user = ConectaFirebase.getUser()
         self.db = ConectaFirebase.db
         Thread.__init__(self, name="SincronizaAlarmes")
 
@@ -27,7 +27,7 @@ class SincronizaAlarmes(Thread):
         except Exception as e:
             log('AFB02.0',str(e))
             ConectaFirebase()
-            self.user = ConectaFirebase.user()
+            self.user = ConectaFirebase.getUser()
             self.db = ConectaFirebase.db
             return
        

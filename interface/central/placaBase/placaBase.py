@@ -80,7 +80,7 @@ class PlacaBase():
             #verifica se a thread está ativa
             if(self._thEnvia.isAlive() == False):
                 self._thEnvia.run()
-        except ValueError as e:
+        except Exception as e:
             log("PLB03.2",str(e))
 
     def resetPlacaBase(self):
