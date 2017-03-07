@@ -43,7 +43,9 @@ class ConectaFirebase:
         except requests.exceptions.HTTPError as e:
             e = eval(e.strerror)
             log('CFB01.2',e['error']['message'])
+            ConectaFirebase._token = None
             return False
         except Exception as e:
             log('CFB01.3',str(e))
+            ConectaFirebase._token = None
             return False
