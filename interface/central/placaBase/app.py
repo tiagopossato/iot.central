@@ -17,7 +17,7 @@ tempo = 1
 
 def encerrar(arg1=0, arg2=0):
 #    for x in range(8):
-    PlacaBase.enviaComando(PlacaBase,'3', 'CHANGE_OUTPUT_STATE', (0,))
+    PlacaBase.enviaComando('3', 'CHANGE_OUTPUT_STATE', (0,))
     log("RUN02","Encerrando aplicacao")
     PlacaBase.fechar(PlacaBase)
     exit()
@@ -34,17 +34,17 @@ class _testaPlaca(Thread):
         log("RUN01","Iniciando aplicacao")
         
         cfg = Configuracoes.objects.get()
-        PlacaBase.iniciar(PlacaBase,cfg.portaSerial, cfg.taxa, processaMensagem)
+        PlacaBase.iniciar(cfg.portaSerial, cfg.taxa, processaMensagem)
 
         while(True):
             try:
                 """
                 #pb.enviaComando('3', 'CHANGE_OUTPUT_STATE', (randint(0,8),randint(0,1)))
                 for x in range(8):
-                    PlacaBase.enviaComando(PlacaBase,'3', 'CHANGE_OUTPUT_STATE', (2**x,))
+                    PlacaBase.enviaComando('3', 'CHANGE_OUTPUT_STATE', (2**x,))
                     sleep(tempo)
                 for x in range(8,-1,-1):
-                    PlacaBase.enviaComando(PlacaBase,'3', 'CHANGE_OUTPUT_STATE', (2**x,))
+                    PlacaBase.enviaComando('3', 'CHANGE_OUTPUT_STATE', (2**x,))
                 """
                 sleep(tempo)
             except KeyboardInterrupt:

@@ -175,14 +175,14 @@ class Sensor(models.Model):
 
                 from central.placaBase.placaBase import PlacaBase
                 if(original_intervaloAtualizacao != self.intervaloAtualizacao):
-                    PlacaBase.enviaComando(PlacaBase,str(original_idRede),
+                    PlacaBase.enviaComando(str(original_idRede),
                     'CHANGE_SEND_TIME', str(self.intervaloAtualizacao))
 
                 if(original_intervaloLeitura != self.intervaloLeitura):
-                    PlacaBase.enviaComando(PlacaBase,str(original_idRede),
+                    PlacaBase.enviaComando(str(original_idRede),
                     'CHANGE_READ_TIME', str(self.intervaloLeitura))
                 if(original_idRede != self.idRede):
-                    PlacaBase.enviaComando(PlacaBase,str(original_idRede),
+                    PlacaBase.enviaComando(str(original_idRede),
                     'CHANGE_ID', str(self.idRede))
             except Exception as e:
                 from central.log import log
