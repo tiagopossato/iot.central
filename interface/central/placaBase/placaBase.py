@@ -153,34 +153,42 @@ class _RecebeMensagens(Thread):
             while(True):
                 try:
                     inMsg = PlacaBase._portaSerial.readline()
+                except Exception as e:
+                    log("PLB04.0",str(e))
+                    continue
+                
+                try:
                     inMsg = inMsg.decode("UTF-8")
                     # print(inMsg)
                     if(len(inMsg) == 0 ):
                         continue
                 except Exception as e:
-                    log("PLB04.0",str(e))
+                    log("PLB04.1",str(e))
+                    continue
                 
                 try:
-                    j = simplejson.loads(inMsg)
+                    j = simplejson.loads(inMsg)                    
                     try:
                         if(j['id']==CENTRAL_ID and j['codigo'] == ovcComands['ONLINE']):
                             PlacaBase._isOnline = True
                             continue
                     except Exception as e:
-                        log("PLB04.1",str(e) + "["+inMsg+"]")
+                        log("PLB04.2",str(e) + "["+inMsg+"]")
                         continue
                     
-                    PlacaBase._bufferRecebimento.put(j)
+                    PlacaBase._bufferRecebimento.put(j)                    
                     #verifica se a thread está ativa
                     if(PlacaBase._thCallback.isAlive() == False):
                         PlacaBase._thCallback.run()
 
                 except simplejson.scanner.JSONDecodeError as e:
-                    log("PLB04.2",str(e) + "["+inMsg+"]")
+                    log("PLB04.3",str(e) + "["+inMsg+"]")
+                    continue
                 except Exception as e:
-                    log("PLB04.3",str(e))
+                    log("PLB04.4",str(e))
+                    continue
         except KeyboardInterrupt as e:
-            PlacaBase.exit()
+            return
 
 """
 Thread para processar as mensagens recebidas
@@ -193,7 +201,7 @@ class _CallbackRecebe(Thread):
     def run(self):
         try:
             while(PlacaBase._bufferRecebimento.empty() == False):
-                PlacaBase.callback(PlacaBase._bufferRecebimento.get())
+                PlacaBase._callback(PlacaBase._bufferRecebimento.get())
         except Exception as e:
             log("PLB05.0",str(e))
         except KeyboardInterrupt as e:
