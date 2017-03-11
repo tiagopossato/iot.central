@@ -38,12 +38,14 @@ class _testaPlaca(Thread):
 
         while(True):
             try:
-            #pb.enviaComando('3', 'CHANGE_OUTPUT_STATE', (randint(0,8),randint(0,1)))
+                """
+                #pb.enviaComando('3', 'CHANGE_OUTPUT_STATE', (randint(0,8),randint(0,1)))
                 for x in range(8):
                     PlacaBase.enviaComando(PlacaBase,'3', 'CHANGE_OUTPUT_STATE', (2**x,))
                     sleep(tempo)
                 for x in range(8,-1,-1):
                     PlacaBase.enviaComando(PlacaBase,'3', 'CHANGE_OUTPUT_STATE', (2**x,))
-                    sleep(tempo)
+                """
+                sleep(tempo)
             except KeyboardInterrupt:
                 encerrar()

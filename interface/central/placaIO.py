@@ -62,7 +62,7 @@ def alteraEstadoEntrada(_codigoPlacaExpansaoDigital, _numero, _estado):
             entrada.sync = False
             entrada.updatedAt = datetime.datetime.fromtimestamp(time.time())
             entrada.save()
-        
+
         if(int(_estado) == entrada.triggerAlarme):
             alarmeTrigger.on(
                 _codigoAlarme = entrada.codigoAlarme, 
@@ -70,7 +70,7 @@ def alteraEstadoEntrada(_codigoPlacaExpansaoDigital, _numero, _estado):
                 _mensagemAlarme = entrada.mensagemAlarme,
                 _prioridadeAlarme = entrada.prioridadeAlarme
                 )
-        else:
+        if(int(_estado) != entrada.triggerAlarme):
             alarmeTrigger.off(_codigoAlarme=entrada.codigoAlarme)
 
         return True

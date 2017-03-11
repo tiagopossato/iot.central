@@ -109,7 +109,8 @@ class EntradaDigital(models.Model):
     
     #sobrescreve o método save para adicionar o valor para o código do alarme
     def save(self, *args, **kwargs):
-        self.codigoAlarme = str(uuid.uuid4())
+        if(self.codigoAlarme == None):
+            self.codigoAlarme = str(uuid.uuid4())
         super(EntradaDigital, self).save(*args, **kwargs) # Call the "real" save() method.
 
     class Meta:
