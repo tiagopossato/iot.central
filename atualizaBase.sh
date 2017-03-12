@@ -1,9 +1,11 @@
 #!/bin/bash
 echo "....Atualizando banco de dados"
 
-pasta=$1
-
-cd $pasta/interface
+if [ $1 -eq ""]; then
+	cd interface
+else
+	cd $1/interface
+fi
 
 # muda nome do arquivo para evitar conflitos
 mv central/admin.py central/2admin.py
