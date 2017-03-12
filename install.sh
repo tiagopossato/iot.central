@@ -8,11 +8,14 @@ if [ "$(id -u)" != "0" ]; then
 	exit 1
 fi
 
+diretorio=$(pwd)
+
 #para o servico caso estiver rodando
 #echo "Parando o serviço"
-#service central stop
+service central stop
 
 echo "Desinstalando versão instalada"
+
 sh uninstall.sh
 
 #verifica se já existe uma instalação
@@ -45,52 +48,22 @@ echo ".Copiando arquivos"
 # cp -r placaBase/app /opt/iot.central/placaBase
 cp -r interface /opt/iot.central/
 
-#
-#copia arquivo do serviço
-echo "...Instalando serviço"
-cp servico/central.sh /etc/init.d/central
-#altera dono e grupo
-chown root:root /etc/init.d/central
-#altera as permissoes
-chmod 755 /etc/init.d/central
-#coloca para inicializar junto ao sistema
-update-rc.d central defaults
-#
+# #
+# #copia arquivo do serviço
+# echo "...Instalando serviço"
+# cp servico/central.sh /etc/init.d/central
+# #altera dono e grupo
+# chown root:root /etc/init.d/central
+# #altera as permissoes
+# chmod 755 /etc/init.d/central
+# #coloca para inicializar junto ao sistema
+# update-rc.d central defaults
+# #
 
+echo "...instalado o sincronizador de alarmes"
+cp servico/sincronizaAlarmes.conf /etc/supervisor/conf.d/sincronizaAlarmes.conf
 
-echo "....Atualizando banco de dados"
-#muda nome do arquivo para evitar conflitos
-mv /opt/iot.central/interface/central/admin.py /opt/iot.central/interface/central/2admin.py
-
-mv /opt/iot.central/interface/interface/urls.py /opt/iot.central/interface/interface/2urls.py
-mv /opt/iot.central/interface/interface/_urls.py /opt/iot.central/interface/interface/urls.py
-
-cd /opt/iot.central/interface
-
-python3 manage.py makemigrations
-python3 manage.py migrate
-
-echo -n "Criar Super Usuario? 1->s , 2->n  "
-read resp
-if [ $resp -eq 1 ]; then
-	python3 manage.py createsuperuser
-fi
-
-
-echo -n "Popular o banco? 1->s , 2->n  "
-read resp
-if [ $resp -eq 1 ]; then
-	cd /opt/iot.central/interface/central/placaBase
-	python3 popularBanco.py
-fi
-
-echo "update central_entradadigital set estado=0;" > /tmp/tmp.sql
-sqlite3 /opt/iot.central/banco/db.sqlite3 < /tmp/tmp.sql
-rm /tmp/tmp.sql
-
-mv /opt/iot.central/interface/central/2admin.py /opt/iot.central/interface/central/admin.py
-mv /opt/iot.central/interface/interface/urls.py /opt/iot.central/interface/interface/_urls.py
-mv /opt/iot.central/interface/interface/2urls.py /opt/iot.central/interface/interface/urls.py
+sh $diretorio/atualizaBase.sh $diretorio
 
 #altera as permissoes dos arquivos
 echo "..Alterando as permissões"
@@ -103,3 +76,4 @@ echo "ATENÇÃO! REVER AS PERMISSOES DOS ARQUIVOS QUANDO COLOCAR EM PRODUÇÃO"
 #Reiniciando serviço
 echo ".....Reiniciando serviço"
 service central restart
+supervisorctl reload
