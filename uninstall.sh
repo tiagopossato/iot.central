@@ -24,6 +24,9 @@ if [ -d /opt/iot.central ]; then
 	fi
 fi
 
+rm /etc/supervisor/conf.d/sincronizaAlarmes.conf
+supervisorctl reload
+
 echo "..Desinstalando serviço"
 update-rc.d -f central remove
 #remove arquivo
