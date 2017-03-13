@@ -78,7 +78,7 @@ class PlacaBase():
 
     def initDB():
         try:
-            pool = redis.ConnectionPool(host='localhost', port=6397, db=0)
+            pool = redis.ConnectionPool(host='localhost', port=6379, db=0)
             PlacaBase._db = redis.Redis(connection_pool=pool)
         except Exception as e:
             print(str(e))

@@ -1,8 +1,9 @@
 sudo: 
-	apt-get install python3 sqlite3
-	easyInstall3 -U
+	apt-get install python3 sqlite3 supervisor redis-server
+	easy_install3 -U
 		pyrebase
 		requests
 		django
 		pyserial
 		simplejson
+		redis

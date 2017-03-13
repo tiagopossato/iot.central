@@ -15,16 +15,14 @@ service central stop
 #verifica se existe uma instalação
 if [ -d /opt/iot.central ]; then
 	#remove os arquivos do app existente
-	# if [ -d /opt/iot.central/placaBase/app/ ]; then
-	# 	rm -rf /opt/iot.central/placaBase/app
-	# fi
-	#remove os arquivos do app existente
 	if [ -d /opt/iot.central/interface/ ]; then
 		rm -rf /opt/iot.central/interface
 	fi
 fi
 
+#remove servicos no supervisord
 rm /etc/supervisor/conf.d/sincronizaAlarmes.conf
+rm /etc/supervisor/conf.d/central.conf
 supervisorctl reload
 
 echo "..Desinstalando serviço"
