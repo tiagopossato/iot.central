@@ -51,9 +51,11 @@ def triggerSaidasDigitais():
 
 
                 if (not tsd[x].estado):
-
+                    
                     if (tsd[x].tempoLigado == 0):
                         continue
+                    
+                    if(tsd[x].ultimoAcionamento == None): tsd[x].ultimoAcionamento = datetime(1970,1,1)
 
                     delta = (horaAtual - tsd[x].ultimoAcionamento).total_seconds()
 
