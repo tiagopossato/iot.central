@@ -13,6 +13,8 @@ try:
     import RPi.GPIO as gpio
 except RuntimeError as e:
     print(e)
+except ImportError as ie:
+    print(ie)
 
 CENTRAL_ID = 0
 
@@ -70,7 +72,7 @@ class PlacaBase():
         except Exception as e:
             log("PLB01.2", str(e))
 
-    def _ipc(message):        
+    def _ipc(message):
         PlacaBase._bufferEnvio.put(message['data'].decode("UTF-8"))
         #verifica se a thread está ativa
         if(PlacaBase._thEnvia.isAlive() == False):
@@ -101,6 +103,7 @@ class PlacaBase():
             else:
                 log("PLB02.0","O parâmetro msg deve ser uma única string ou uma tupla de strings")
                 return False
+#            print(strComando)
             PlacaBase._db.publish('msg',strComando)
             # PlacaBase._bufferEnvio.put(strComando)
             #verifica se a thread está ativa

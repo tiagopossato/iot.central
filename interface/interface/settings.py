@@ -81,8 +81,8 @@ WSGI_APPLICATION = 'interface.wsgi.application'
 # https://docs.djangoproject.com/en/1.10/ref/settings/#databases
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join('/opt/iot.central/banco', 'db.sqlite3'),
+        'ENGINE': 'django.db.backends.sqlite3',	
+        'NAME': '/opt/estufa-central/banco/db.sqlite3',
     }
 }
 

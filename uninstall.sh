@@ -13,15 +13,14 @@ echo ".Parando o serviço"
 service central stop
 
 #verifica se existe uma instalação
-if [ -d /opt/iot.central ]; then
+if [ -d /opt/estufa-central ]; then
 	#remove os arquivos do app existente
-	if [ -d /opt/iot.central/interface/ ]; then
-		rm -rf /opt/iot.central/interface
+	if [ -d /opt/estufa-central/interface/ ]; then
+		rm -rf /opt/estufa-central/interface
 	fi
 fi
 
 #remove servicos no supervisord
-rm /etc/supervisor/conf.d/sincronizaAlarmes.conf
 rm /etc/supervisor/conf.d/central.conf
 supervisorctl reload
 

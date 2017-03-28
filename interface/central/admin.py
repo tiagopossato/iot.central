@@ -7,15 +7,19 @@ from central.models import PlacaExpansaoDigital
 from central.models import EntradaDigital
 from central.models import Ambiente
 from central.models import Configuracoes
-from central.models import Grandeza
+from central.models import SaidaDigital
 from central.models import Sensor
 from central.models import SensorGrandeza
 from central.models import Leitura
 from central.models import AlarmeAnalogico
 
 class LogAdmin(admin.ModelAdmin):
+    def tempo_mod(self, obj):
+       if(obj.tempo):
+           return obj.tempo.strftime("%d %b %Y %H:%M:%S")
+
     readonly_fields = ('tipo','mensagem','tempo','sync',)
-    list_display = ('tipo','mensagem','tempo',)
+    list_display = ('tipo','mensagem','tempo_mod',)
     ordering = ('-tempo',)
     list_filter = ('tipo','tempo',)
     list_per_page = 50
@@ -27,8 +31,17 @@ class LogAdmin(admin.ModelAdmin):
             return True
 
 class AlarmeAdmin(admin.ModelAdmin):
-    readonly_fields = ('uid','codigoAlarme','ativo','mensagemAlarme','prioridadeAlarme','ambiente','tempoAtivacao','syncAtivacao','tempoInativacao','syncInativacao',)
-    list_display = ('mensagemAlarme','ativo','prioridadeAlarme','ambiente', 'tempoAtivacao','tempoInativacao',)
+    def tempoAtivacao_mod(self, obj):
+       if(obj.tempoAtivacao):
+           return obj.tempoAtivacao.strftime("%d %b %Y %H:%M:%S")
+
+    def tempoInativacao_mod(self, obj):
+       if(obj.tempoInativacao):
+           return obj.tempoInativacao.strftime("%d %b %Y %H:%M:%S")
+
+    readonly_fields = ('uid','codigoAlarme','ativo','mensagemAlarme','prioridadeAlarme','ambiente','tempoAtivacao',
+                       'syncAtivacao','tempoInativacao',)
+    list_display = ('mensagemAlarme','ativo','prioridadeAlarme','ambiente', 'tempoAtivacao_mod','tempoInativacao_mod',)
     list_filter = ('ativo','tempoAtivacao','ambiente','mensagemAlarme',)
     ordering = ('-ativo', '-tempoAtivacao',)
     list_per_page = EntradaDigital.objects.count() + AlarmeAnalogico.objects.count()
@@ -57,8 +70,7 @@ class AmbienteAdmin(admin.ModelAdmin):
     readonly_fields = ('uid','createdAt', 'updatedAt',)
 
 class ConfiguracoesAdmin(admin.ModelAdmin):
-    list_display = ('apiKey','authDomain','databaseURL',\
-                    'storageBucket','uidCentral')
+    list_display = ('apiKey','maxAlarmes','portaSerial','taxa',)
     def has_add_permission(self, request):
         num_objects = self.model.objects.count()
         if num_objects >= 1:
@@ -108,8 +120,8 @@ admin.site.register(PlacaExpansaoDigital, PlacaExpansaoDigitalAdmin)
 admin.site.register(EntradaDigital, EntradaDigitalAdmin)
 admin.site.register(Ambiente, AmbienteAdmin)
 admin.site.register(Configuracoes, ConfiguracoesAdmin)
-#admin.site.register(Grandeza, GrandezaAdmin)
-admin.site.register(Sensor,SensorAdmin)
+admin.site.register(SaidaDigital)
+admin.site.register(Sensor, SensorAdmin)
 admin.site.register(SensorGrandeza, SensorGrandezaAdmin)
 admin.site.register(Leitura, LeituraAdmin)
 admin.site.register(AlarmeAnalogico, AlarmeAnalogicoAdmin)

@@ -14,7 +14,6 @@ class alarmeTrigger():
         except Exception as e:
             log('ALT01.0',str(e))
             return False
-        print(alm)
         try:
             if(len(alm)==1):
                 #O alarme já está ativo

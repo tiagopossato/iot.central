@@ -4,7 +4,7 @@ import time
 import socket
 
 def salvaArquivo(_tipo, _mensagem):
-	arquivo = open("/opt/iot.central/banco/logs.csv","+a")
+	arquivo = open("/opt/estufa-central/banco/logs.csv","+a")
 	arquivo.write('[')
 	arquivo.write(datetime.datetime.fromtimestamp(time.time()).strftime('%d-%m-%Y %H:%M:%S'))
 	arquivo.write('] [')
@@ -21,7 +21,7 @@ Verifica conexão com a Internet
 """
 
 def check_host():
-	confiaveis = ['firebase.google.com']
+	confiaveis = ['google.com']
 	for host in confiaveis:
 		a=socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 		a.settimeout(.5)
