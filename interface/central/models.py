@@ -16,7 +16,7 @@ class Log(models.Model):
         verbose_name_plural = 'Logs'
 
 class Configuracoes(models.Model):
-    apiKey = models.CharField(max_length=255, null=False, unique=True)
+    uidCentral = models.CharField(max_length=48, null=False, unique=True)
     maxAlarmes =  models.IntegerField(null=False)
     portaSerial =  models.CharField(max_length=20, null=False, default='/dev/ttyAMA0')
     taxa = models.IntegerField(null=False, default=115200)
@@ -32,19 +32,22 @@ class Ambiente(models.Model):
     updatedAt = models.DateTimeField(auto_now=True)
     ativo = models.BooleanField(default=True)
 
-    #sobrescreve o método save
+    #sobrescreve o método save para adicionar cadastrar no firebase
     def save(self, *args, **kwargs):
         try:
+            from central.ambiente import novoAmbienteFirebase, alteraAmbienteFirebase
             if(self.id == None):               
                 self.createdAt = datetime.fromtimestamp(time.time())
+                self = novoAmbienteFirebase(self)
             elif(self.uid != None):
                 self.updatedAt = datetime.fromtimestamp(time.time())
+                self = alteraAmbienteFirebase(self)
             if(self):
                 super(Ambiente, self).save(*args, **kwargs) # Call the "real" save() method.
         except Exception as e:
             from central.log import log
             log('MOD01.0',str(e))
-            return str(e)            
+            return str(e)      
 
     def __str__(self):
         return self.nome
@@ -190,40 +193,53 @@ class Sensor(models.Model):
         super(Sensor, self).__init__(*args, **kwargs)
         self.original_idRede = self.idRede
         self.original_intervaloAtualizacao = self.intervaloAtualizacao
+        self.original_intervaloLeitura = self.intervaloLeitura
     
     def save(self, *args, **kwargs):
+        from central.sensor import novoSensorFirebase, alteraSensorFirebase
         if(self.id == None):
             self.createdAt = datetime.fromtimestamp(time.time())
-
-        self.updatedAt = datetime.fromtimestamp(time.time())
-
-        # Call the "real" save() method.    
-        super(Sensor, self).save(*args, **kwargs)
+            #salva o sensor no firebase            
+            self = novoSensorFirebase(self)
+            if(self == False):
+                return False
+        elif(self.uid != None):
+            self.updatedAt = datetime.fromtimestamp(time.time())
+            self = alteraSensorFirebase(self)
 
         if(self):
+            # Caso for um update armazena os dados antigos
+            if(self.id != None):                
+                original_idRede = self.get_previous_by_updatedAt().idRede
+                original_intervaloAtualizacao = self.get_previous_by_updatedAt().intervaloAtualizacao
+                original_intervaloLeitura = self.get_previous_by_updatedAt().intervaloLeitura
+
+            # Call the "real" save() method.    
+            super(Sensor, self).save(*args, **kwargs)
+
             #altera os dados do sensor na placa física
-            try:
+            try:               
+
                 from central.placaBase.placaBase import PlacaBase
-                if(self.original_intervaloAtualizacao != self.intervaloAtualizacao):
-                    PlacaBase.enviaComando(str(self.original_idRede),
+                if(original_intervaloAtualizacao != self.intervaloAtualizacao):
+                    PlacaBase.enviaComando(str(original_idRede),
                     'CHANGE_SEND_TIME', str(self.intervaloAtualizacao))
 
-                if(self.original_intervaloLeitura != self.intervaloLeitura):
-                    PlacaBase.enviaComando(str(self.original_idRede),
+                if(original_intervaloLeitura != self.intervaloLeitura):
+                    PlacaBase.enviaComando(str(original_idRede),
                     'CHANGE_READ_TIME', str(self.intervaloLeitura))
-
-                if(self.original_idRede != self.idRede):
-                    PlacaBase.enviaComando(str(self.original_idRede),
+                if(original_idRede != self.idRede):
+                    PlacaBase.enviaComando(str(original_idRede),
                     'CHANGE_ID', str(self.idRede))
                     #altera os relacionamentos de grandezas
                     sg = SensorGrandeza.objects.filter(sensor_id=self.original_idRede).all()
                     for x in range(len(sg)):
                         sg[x].sensor_id = self.idRede
                         sg[x].save()
-
+                        
             except Exception as e:
                 from central.log import log
-                log('MOD02.1',str(e))
+                log('MOD02.0',str(e))
 
     def __str__(self):
         return str(self.descricao) + " [ " + str(self.idRede) + " ]"

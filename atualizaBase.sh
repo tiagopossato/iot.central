@@ -29,7 +29,7 @@ if [ $resp -eq 1 ]; then
 fi
 
 echo "update central_entradadigital set estado=0;" > /tmp/tmp.sql
-sqlite3 /opt/estufa-central/banco/db.sqlite3 < /tmp/tmp.sql
+sqlite3 /opt/iot.central/banco/db.sqlite3 < /tmp/tmp.sql
 rm /tmp/tmp.sql
 
 mv central/2admin.py central/admin.py

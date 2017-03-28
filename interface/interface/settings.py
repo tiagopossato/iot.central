@@ -82,7 +82,10 @@ WSGI_APPLICATION = 'interface.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',	
-        'NAME': '/opt/estufa-central/banco/db.sqlite3',
+        'NAME': '/opt/iot.central/banco/db.sqlite3',
+        'OPTIONS': {
+            'timeout': 30,
+        }
     }
 }
 

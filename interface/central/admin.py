@@ -70,7 +70,7 @@ class AmbienteAdmin(admin.ModelAdmin):
     readonly_fields = ('uid','createdAt', 'updatedAt',)
 
 class ConfiguracoesAdmin(admin.ModelAdmin):
-    list_display = ('apiKey','maxAlarmes','portaSerial','taxa',)
+    list_display = ('uidCentral','maxAlarmes','portaSerial','taxa',)
     def has_add_permission(self, request):
         num_objects = self.model.objects.count()
         if num_objects >= 1:

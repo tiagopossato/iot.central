@@ -4,7 +4,7 @@ import time
 import socket
 
 def salvaArquivo(_tipo, _mensagem):
-	arquivo = open("/opt/estufa-central/banco/logs.csv","+a")
+	arquivo = open("/opt/iot.central/banco/logs.csv","+a")
 	arquivo.write('[')
 	arquivo.write(datetime.datetime.fromtimestamp(time.time()).strftime('%d-%m-%Y %H:%M:%S'))
 	arquivo.write('] [')

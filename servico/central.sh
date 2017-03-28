@@ -16,7 +16,7 @@ start() {
 		exit $?
 	fi
 
-	cd /opt/estufa-central/interface
+	cd /opt/iot.central/interface
 	python3 manage.py runserver &
   
 }

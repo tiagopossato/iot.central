@@ -40,7 +40,7 @@ def triggerSaidasDigitais():
         try:
 
             if (registros == 0):
-                sleep(0.5)
+                sleep(1)
                 continue
 
             for x in range(registros):
@@ -76,8 +76,8 @@ def triggerSaidasDigitais():
                         tsd[x].save()
                         tsd[x].desligar()
 
-            #Espera por 0.1 segundos
-            sleep(0.1)
+            #Espera por 0.25 segundos
+            sleep(0.25)
 
         except Exception as e:
             log('CEN02.0', str(e))
