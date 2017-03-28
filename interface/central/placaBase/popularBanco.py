@@ -40,7 +40,7 @@ newEntradaDigital(_placaExpansaoDigital=3, _numero=5, _triggerAlarme=True, _mens
 newEntradaDigital(_placaExpansaoDigital=3, _numero=6, _triggerAlarme=True, _mensagemAlarme="Entrada 6", _prioridadeAlarme=3, _ambiente_id=1, _nome = "Entrada 6")
 newEntradaDigital(_placaExpansaoDigital=3, _numero=7, _triggerAlarme=True, _mensagemAlarme="Entrada 7", _prioridadeAlarme=3, _ambiente_id=1, _nome = "Entrada 7")
 
-SaidaDigital(numero=0 nome='Teste', ativa=True, 
+SaidaDigital(numero=0, nome='Teste', ativa=True, 
              tempoLigado=1, tempoDesligado=1, placaExpansaoDigital_id=3, ambiente_id=1).save()
 
 SaidaDigital(numero=2, nome='Bomba de tunel de enraizamento', ativa=True, 

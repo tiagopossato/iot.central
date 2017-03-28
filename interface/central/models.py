@@ -219,23 +219,23 @@ class Sensor(models.Model):
 
             #altera os dados do sensor na placa física
             try:               
+                if(self.id != None):
+                    from central.placaBase.placaBase import PlacaBase
+                    if(original_intervaloAtualizacao != self.intervaloAtualizacao):
+                        PlacaBase.enviaComando(str(original_idRede),
+                        'CHANGE_SEND_TIME', str(self.intervaloAtualizacao))
 
-                from central.placaBase.placaBase import PlacaBase
-                if(original_intervaloAtualizacao != self.intervaloAtualizacao):
-                    PlacaBase.enviaComando(str(original_idRede),
-                    'CHANGE_SEND_TIME', str(self.intervaloAtualizacao))
-
-                if(original_intervaloLeitura != self.intervaloLeitura):
-                    PlacaBase.enviaComando(str(original_idRede),
-                    'CHANGE_READ_TIME', str(self.intervaloLeitura))
-                if(original_idRede != self.idRede):
-                    PlacaBase.enviaComando(str(original_idRede),
-                    'CHANGE_ID', str(self.idRede))
-                    #altera os relacionamentos de grandezas
-                    sg = SensorGrandeza.objects.filter(sensor_id=self.original_idRede).all()
-                    for x in range(len(sg)):
-                        sg[x].sensor_id = self.idRede
-                        sg[x].save()
+                    if(original_intervaloLeitura != self.intervaloLeitura):
+                        PlacaBase.enviaComando(str(original_idRede),
+                        'CHANGE_READ_TIME', str(self.intervaloLeitura))
+                    if(original_idRede != self.idRede):
+                        PlacaBase.enviaComando(str(original_idRede),
+                        'CHANGE_ID', str(self.idRede))
+                        #altera os relacionamentos de grandezas
+                        sg = SensorGrandeza.objects.filter(sensor_id=self.original_idRede).all()
+                        for x in range(len(sg)):
+                            sg[x].sensor_id = self.idRede
+                            sg[x].save()
                         
             except Exception as e:
                 from central.log import log
