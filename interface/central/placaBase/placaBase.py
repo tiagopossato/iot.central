@@ -187,7 +187,7 @@ class _RecebeMensagens(Thread):
                 
                 try:
                     inMsg = inMsg.decode("UTF-8")
-                    # print(inMsg)
+                    print(inMsg)
                     if(len(inMsg) == 0 ):
                         continue
                 except Exception as e:
@@ -195,6 +195,7 @@ class _RecebeMensagens(Thread):
                     continue
                 
                 try:
+                    #extrai as informações da URI e transforma em um objeto
                     j = simplejson.loads(inMsg)                    
                     try:
                         if(j['id']==CENTRAL_ID and j['codigo'] == ovcComands['ONLINE']):
