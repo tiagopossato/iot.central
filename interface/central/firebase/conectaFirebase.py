@@ -16,14 +16,15 @@ class ConectaFirebase:
             if(check_host()==False):
                 log('CFB01.0',"Sem conexão")
                 return None
-            cfg = Configuracoes.objects.get()            
+            cfg = Configuracoes.objects.get()
             config = {
-                "apiKey": cfg.apiKey,
-                "authDomain": cfg.authDomain,
-                "databaseURL": cfg.databaseURL,
-                "storageBucket": cfg.storageBucket,
+                "apiKey": "AIzaSyCaYACeZvP5sW7MHKA5co7PttejxUxnTTM",
+                "authDomain": "testes-apisensores.firebaseapp.com",
+                "databaseURL": "https://testes-apisensores.firebaseio.com",
+                "storageBucket": "testes-apisensores.appspot.com",
+                "messagingSenderId": "475937382333",
                 "serviceAccount": os.path.dirname(os.path.abspath(__file__)) + '/testes-apiSensores-cba45d38c53e.json'
-            }   
+            }
             firebase = pyrebase.initialize_app(config)
             # Get a reference to the auth service
             ConectaFirebase.auth = firebase.auth()
@@ -37,7 +38,8 @@ class ConectaFirebase:
         try:
             cfg = Configuracoes.objects.get()
             if(ConectaFirebase._token==None): 
-                ConectaFirebase._token= ConectaFirebase.auth.create_custom_token(cfg.uidCentral)
+                # ConectaFirebase._token= ConectaFirebase.auth.create_custom_token(cfg.uidCentral)
+                ConectaFirebase._token= ConectaFirebase.auth.create_custom_token('-KbztEuoaYejBSl-nyFx')
             ConectaFirebase._user = ConectaFirebase.auth.sign_in_with_custom_token(ConectaFirebase._token)
             return ConectaFirebase._user
         except requests.exceptions.HTTPError as e:

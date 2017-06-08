@@ -1,6 +1,5 @@
 from django.db import models
 from django.db.models.signals import post_save
-#from django.dispatch import receiver
 from datetime import datetime
 import time
 import uuid
@@ -17,10 +16,6 @@ class Log(models.Model):
         verbose_name_plural = 'Logs'
 
 class Configuracoes(models.Model):
-    apiKey = models.CharField(max_length=255, null=False, unique=True)
-    authDomain = models.CharField(max_length=255, null=False, unique=True)
-    databaseURL = models.CharField(max_length=255, null=False, unique=True)
-    storageBucket = models.CharField(max_length=255, null=False, unique=True)
     uidCentral = models.CharField(max_length=48, null=False, unique=True)
     maxAlarmes =  models.IntegerField(null=False)
     portaSerial =  models.CharField(max_length=20, null=False, default='/dev/ttyAMA0')
@@ -52,7 +47,7 @@ class Ambiente(models.Model):
         except Exception as e:
             from central.log import log
             log('MOD01.0',str(e))
-            return str(e)            
+            return str(e)      
 
     def __str__(self):
         return self.nome
@@ -61,7 +56,7 @@ class Ambiente(models.Model):
         verbose_name_plural = 'Ambientes'
 
 class Alarme(models.Model):
-    uid = models.CharField(max_length=48, null=True, blank=True) #usado para o firebase
+    uid = models.CharField(max_length=48, null=True, blank=True) #usado para o 
     codigoAlarme = models.CharField(max_length=36,null=False) #usado para controle entre alarmes digitais a analógicos
     mensagemAlarme = models.CharField(max_length=255, null=False)
     prioridadeAlarme = models.IntegerField(null=False)
@@ -121,6 +116,52 @@ class EntradaDigital(models.Model):
     def __str__(self):
         return str(self.placaExpansaoDigital.descricao) + " [ " + str(self.numero) + " ]"
 
+class SaidaDigital(models.Model):
+    numero = models.IntegerField(null=False)
+    nome = models.CharField(max_length=255, null=False)
+    ativa = models.BooleanField(default=False, null=False)
+    estado = models.BooleanField(default=False, null=False)
+    tempoLigado = models.IntegerField('Tempo ligado em segundos',null=False)
+    tempoDesligado = models.IntegerField('Tempo desligado em segundos',null=False)
+    updatedAt =  models.DateTimeField(auto_now=True)
+    ultimoAcionamento = models.DateTimeField(null=True)
+    sync = models.BooleanField(default=False, null=False)
+
+    placaExpansaoDigital = models.ForeignKey(PlacaExpansaoDigital,
+        to_field='idRede', on_delete=models.PROTECT, verbose_name='Placa de expansão digital')
+
+    ambiente = models.ForeignKey(Ambiente, to_field='id', on_delete=models.PROTECT)
+    
+    #sobrescreve o método save para adicionar o valor para o código do alarme
+    def save(self, *args, **kwargs):
+        if (not self.ativa):
+            self.desligar()
+
+        super(SaidaDigital, self).save(*args, **kwargs) # Call the "real" save() method.
+
+    def ligar(self):
+        #liga a saida digital
+        from central.placaBase.placaBase import PlacaBase
+        from central.log import log
+        PlacaBase.enviaComando(self.placaExpansaoDigital.idRede, 'CHANGE_OUTPUT_STATE', (self.numero, 1))
+        #log('SDG01.0',"Ligando saida: " + str(self.numero))
+
+    def desligar(self):
+        #desliga a saida digital
+        from central.placaBase.placaBase import PlacaBase
+        from central.log import log
+        PlacaBase.enviaComando(self.placaExpansaoDigital.idRede, 'CHANGE_OUTPUT_STATE', (self.numero, 0))
+        #log('SDG01.1',"Desligando saida: " + str(self.numero))
+
+    class Meta:
+        unique_together = ('placaExpansaoDigital', 'numero',) #cria chave primaria composta
+        verbose_name = 'Saida digital'
+        verbose_name_plural = 'Saidas digitais'
+
+    def __str__(self):
+        return str(self.placaExpansaoDigital.descricao) + " [ " + str(self.numero) + " ]"
+
+
 class Grandeza(models.Model):
     codigo = models.IntegerField(primary_key=True)
     nome = models.CharField(max_length=255, null=False, unique=True)
@@ -141,12 +182,18 @@ class Sensor(models.Model):
     descricao = models.CharField(max_length=255, unique=True, default='')
     intervaloAtualizacao = models.IntegerField(null=False, default=2)
     intervaloLeitura = models.IntegerField(null=False, default=2)
-    createdAt =  models.DateTimeField(auto_now=True)
+    createdAt =  models.DateTimeField()
     updatedAt =  models.DateTimeField(auto_now=True)
     sync = models.BooleanField(default=False, null=False)
 
     ambiente = models.ForeignKey(Ambiente, to_field='id', on_delete=models.PROTECT, default=0)
     grandezas = models.ManyToManyField(Grandeza, through='SensorGrandeza')
+
+    def __init__(self, *args, **kwargs):
+        super(Sensor, self).__init__(*args, **kwargs)
+        self.original_idRede = self.idRede
+        self.original_intervaloAtualizacao = self.intervaloAtualizacao
+        self.original_intervaloLeitura = self.intervaloLeitura
     
     def save(self, *args, **kwargs):
         from central.sensor import novoSensorFirebase, alteraSensorFirebase
@@ -172,18 +219,24 @@ class Sensor(models.Model):
 
             #altera os dados do sensor na placa física
             try:               
+                if(self.id != None):
+                    from central.placaBase.placaBase import PlacaBase
+                    if(original_intervaloAtualizacao != self.intervaloAtualizacao):
+                        PlacaBase.enviaComando(str(original_idRede),
+                        'CHANGE_SEND_TIME', str(self.intervaloAtualizacao))
 
-                from central.placaBase.placaBase import PlacaBase
-                if(original_intervaloAtualizacao != self.intervaloAtualizacao):
-                    PlacaBase.enviaComando(str(original_idRede),
-                    'CHANGE_SEND_TIME', str(self.intervaloAtualizacao))
-
-                if(original_intervaloLeitura != self.intervaloLeitura):
-                    PlacaBase.enviaComando(str(original_idRede),
-                    'CHANGE_READ_TIME', str(self.intervaloLeitura))
-                if(original_idRede != self.idRede):
-                    PlacaBase.enviaComando(str(original_idRede),
-                    'CHANGE_ID', str(self.idRede))
+                    if(original_intervaloLeitura != self.intervaloLeitura):
+                        PlacaBase.enviaComando(str(original_idRede),
+                        'CHANGE_READ_TIME', str(self.intervaloLeitura))
+                    if(original_idRede != self.idRede):
+                        PlacaBase.enviaComando(str(original_idRede),
+                        'CHANGE_ID', str(self.idRede))
+                        #altera os relacionamentos de grandezas
+                        sg = SensorGrandeza.objects.filter(sensor_id=self.original_idRede).all()
+                        for x in range(len(sg)):
+                            sg[x].sensor_id = self.idRede
+                            sg[x].save()
+                        
             except Exception as e:
                 from central.log import log
                 log('MOD02.0',str(e))
@@ -203,14 +256,6 @@ class SensorGrandeza(models.Model):
 
     grandeza = models.ForeignKey(Grandeza, to_field='codigo', on_delete=models.PROTECT)
     sensor = models.ForeignKey(Sensor, to_field='idRede', on_delete=models.PROTECT)
-
-    def save(self, *args, **kwargs):
-        # Call the "real" save() method.    
-        super(SensorGrandeza, self).save(*args, **kwargs)
-        from central.sensor import alteraSensorFirebase
-        self.sensor.updatedAt = datetime.fromtimestamp(time.time())
-        #salva insere no firebase o relaciomanento do sensor com a grandeza
-        alteraSensorFirebase(self.sensor)
         
     class Meta:
         #define combinacao unica   

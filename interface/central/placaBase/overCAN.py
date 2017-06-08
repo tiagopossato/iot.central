@@ -1,5 +1,6 @@
 from central.placaIO import alteraEstadoEntrada
 from central.sensor import newLeitura
+from central.log import log
 
 ovcComands = {
     'ONLINE' : 1,
@@ -31,6 +32,10 @@ def processaMensagem(mensagem):
     if(mensagem['codigo']==ovcComands['ANALOG_VALUE']):
         analogValue(_idRede=mensagem['id'],_mensagem=mensagem['msg'])
         return True
+
+    if(mensagem['codigo'] == ovcComands['ONLINE']):
+        log('ONLINE','Dispositivo ' + str(mensagem['id']) + ' esta online')
+
 """
 Recebe uma mensagem com os estados das entradas digitais
 """

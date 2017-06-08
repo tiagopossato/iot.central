@@ -24,9 +24,6 @@ if [ -d /opt/iot.central ]; then
 	if [ -d /opt/iot.central/interface/ ]; then
 		rm -r /opt/iot.central/interface
 	fi
-	# if [ -d /opt/iot.central/placaBase/ ]; then
-	# 	rm -r /opt/iot.central/placaBase
-	# fi
 else
 	mkdir /opt/iot.central
 fi
@@ -42,25 +39,23 @@ fi
 
 #Copia os novos arquivos
 echo ".Copiando arquivos"
-# mkdir /opt/iot.central/placaBase
-# mkdir /opt/iot.central/interface
 
-# cp -r placaBase/app /opt/iot.central/placaBase
 cp -r interface /opt/iot.central/
 
-# #
-# #copia arquivo do serviço
-# echo "...Instalando serviço"
-# cp servico/central.sh /etc/init.d/central
-# #altera dono e grupo
-# chown root:root /etc/init.d/central
-# #altera as permissoes
-# chmod 755 /etc/init.d/central
-# #coloca para inicializar junto ao sistema
-# update-rc.d central defaults
-# #
+#
+#copia arquivo do serviço
+echo "...Instalando serviço"
+cp servico/central.sh /etc/init.d/central
+#altera dono e grupo
+chown root:root /etc/init.d/central
+#altera as permissoes
+chmod 755 /etc/init.d/central
+#coloca para inicializar junto ao sistema
+update-rc.d central defaults
+#
 
-echo "...instalado o sincronizador de alarmes"
+echo "...instalando servico da central"
+cp servico/central.conf /etc/supervisor/conf.d/central.conf
 cp servico/sincronizaAlarmes.conf /etc/supervisor/conf.d/sincronizaAlarmes.conf
 
 sh $diretorio/atualizaBase.sh $diretorio

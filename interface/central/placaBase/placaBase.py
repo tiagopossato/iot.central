@@ -7,11 +7,14 @@ from central.placaBase.overCAN import ovcComands
 from time import sleep, time
 import signal
 import sys
+import redis
 
 try:
     import RPi.GPIO as gpio
 except RuntimeError as e:
     print(e)
+except ImportError as ie:
+    print(ie)
 
 CENTRAL_ID = 0
 
@@ -60,11 +63,34 @@ class PlacaBase():
             #inicia a thread que monitora se a placa está online
             PlacaBase._thMonitora = _MonitoraPlacaBase()
             PlacaBase._thMonitora.start()
+
+            PlacaBase.initDB()
+            p = PlacaBase._db.pubsub()
+            p.subscribe(**{'msg': PlacaBase._ipc})
+            thread = p.run_in_thread(sleep_time=0.01)
+
         except Exception as e:
             log("PLB01.2", str(e))
 
+    def _ipc(message):
+        PlacaBase._bufferEnvio.put(message['data'].decode("UTF-8"))
+        #verifica se a thread está ativa
+        if(PlacaBase._thEnvia.isAlive() == False):
+          PlacaBase._thEnvia.run()
+
+    def initDB():
+        try:
+            pool = redis.ConnectionPool(host='localhost', port=6379, db=0)
+            PlacaBase._db = redis.Redis(connection_pool=pool)
+        except Exception as e:
+            print(str(e))
+
     def enviaComando(id, comando, msg = ''):
         try:
+            try:
+                PlacaBase._db
+            except AttributeError:
+                PlacaBase.initDB()
             strComando = str(int(id))
             strComando += ':'
             strComando += str(ovcComands[comando])
@@ -77,10 +103,12 @@ class PlacaBase():
             else:
                 log("PLB02.0","O parâmetro msg deve ser uma única string ou uma tupla de strings")
                 return False
-            PlacaBase._bufferEnvio.put(strComando)
+#            print(strComando)
+            PlacaBase._db.publish('msg',strComando)
+            # PlacaBase._bufferEnvio.put(strComando)
             #verifica se a thread está ativa
-            if(PlacaBase._thEnvia.isAlive() == False):
-                PlacaBase._thEnvia.run()
+            # if(PlacaBase._thEnvia.isAlive() == False):
+            #     PlacaBase._thEnvia.run()
         except Exception as e:
             log("PLB02.1",str(e))
 

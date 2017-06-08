@@ -21,7 +21,7 @@ Verifica conexão com a Internet
 """
 
 def check_host():
-	confiaveis = ['firebase.google.com']
+	confiaveis = ['google.com']
 	for host in confiaveis:
 		a=socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 		a.settimeout(.5)
