@@ -23,17 +23,35 @@ ovcComands = {
     'ANALOG_VALUE' : 70,
 }
 
+tipoGrandeza = {
+    'entradaDigital' : 3200,
+    'saidaDigital' : 3201,
+    'entradaAnalogica' : 3202,
+    'especial' : 9999,
+}
+
+grandeza = {
+    'online' : 1,
+    'temperatura' : 3303,
+    'umidadeAr' : 3304,
+    'umidadeSolo' : 3320,
+}
+
 def processaMensagem(mensagem):
     # print(mensagem)
-    if(mensagem['codigo']==ovcComands['INPUT_1_STATE']):
-        inputState(_idRede=mensagem['id'], _estados=mensagem['msg'][0])
+    if(mensagem['tipoGrandeza'] == tipoGrandeza['entradaDigital']):
+        alteraEstadoEntrada(_codigoPlacaExpansaoDigital=int(mensagem['id']),
+                            _numero=mensagem['grandeza',
+                            _estado=int(mensagem['valor']))
         return True
 
-    if(mensagem['codigo']==ovcComands['ANALOG_VALUE']):
-        analogValue(_idRede=mensagem['id'],_mensagem=mensagem['msg'])
+    if(mensagem['tipoGrandeza'] == tipoGrandeza['entradaAnalogica']):
+         newLeitura(_idRedeSensor=int(mensagem['id']),
+                    _grandeza=mensagem['grandeza'],
+                    _valor=mensagem['valor'])
         return True
 
-    if(mensagem['codigo'] == ovcComands['ONLINE']):
+    if(mensagem['tipoGrandeza'] == tipoGrandeza['especial'] and mensagem['grandeza'] == grandeza['online']):
         log('ONLINE','Dispositivo ' + str(mensagem['id']) + ' esta online')
 
 """

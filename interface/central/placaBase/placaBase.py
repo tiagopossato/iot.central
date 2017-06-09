@@ -3,7 +3,7 @@ from queue import Queue
 import serial
 import simplejson
 from central.log import log
-from central.placaBase.overCAN import ovcComands
+from central.placaBase.overCAN import tipoGrandeza, grandeza
 from time import sleep, time
 import signal
 import sys
@@ -196,21 +196,29 @@ class _RecebeMensagens(Thread):
                 
                 try:
                     #extrai as informações da URI e transforma em um objeto
-                    j = simplejson.loads(inMsg)                    
+                    #retira a mensagem de dentro das chaves [mensagem]
+                    parcial = inMsg[inMsg.index('[')+1:inMsg.index(']')].split("/")
+                    
+                    msg['id'] = parcial[0]
+                    msg['tipoGrandeza'] = parcial[1]
+                    msg['grandeza'] = parcial[2]
+                    msg['valor'] = parcial[3]
+
                     try:
-                        if(j['id']==CENTRAL_ID and j['codigo'] == ovcComands['ONLINE']):
+                        if(msg['id'] == CENTRAL_ID and msg['tipoGrandeza'] == tipoGrandeza['especial']
+                            and msg['grandeza'] == grandeza['online']):
                             PlacaBase._isOnline = True
                             continue
                     except Exception as e:
-                        log("PLB04.2",str(e) + "["+inMsg+"]")
+                        log("PLB04.2",str(e) + "["+msg+"]")
                         continue
                     
-                    PlacaBase._bufferRecebimento.put(j)                    
+                    PlacaBase._bufferRecebimento.put(msg)                    
                     #verifica se a thread está ativa
                     if(PlacaBase._thCallback.isAlive() == False):
                         PlacaBase._thCallback.run()
 
-                except simplejson.scanner.JSONDecodeError as e:
+                except ValueError as e:
                     log("PLB04.3",str(e) + "["+inMsg+"]")
                     continue
                 except Exception as e:
