@@ -16,54 +16,39 @@ from central.placaBase.overCAN import processaMensagem
 from central.placaBase.placaBase import PlacaBase
 
 # PlacaBase = PlacaBase()
+
+
 def c(x):
     print(x)
 
+
 PlacaBase.iniciar(PlacaBase, porta='/dev/ttyACM0', taxa=115200, callback=c)
 tempo = 1
-
-# PlacaBase.enviaComando(PlacaBase,'3', 'CHANGE_OUTPUT_STATE', (256,))
-# PlacaBase.fechar(PlacaBase)
-# exit()
-
-while(False):
-    try:
-        PlacaBase.enviaComando(PlacaBase,'3', 'CHANGE_OUTPUT_STATE', (randint(0,255),))
-        # for x in range(8):
-        #     PlacaBase.enviaComando('3', 'CHANGE_OUTPUT_STATE', (x,1))
-        #     sleep(tempo)
-        # for x in range(8):
-        #     PlacaBase.enviaComando('3', 'CHANGE_OUTPUT_STATE', (x,0))
-        sleep(tempo)
-    except KeyboardInterrupt:
-        PlacaBase.enviaComando(PlacaBase,'3', 'CHANGE_OUTPUT_STATE', (0,))
-#        for x in range(8):
-#            PlacaBase.enviaComando('3', 'CHANGE_OUTPUT_STATE', (x,0))
-        print("saindo, aguarde!")
-        PlacaBase.fechar(PlacaBase)
-        exit()
 
 while(True):
     try:
         entrada = input()
 
         if(entrada == '1'):
-            PlacaBase.enviaComando(PlacaBase,'3', 'CHANGE_ID', '50')
+            PlacaBase.enviaComando(idRede='3', tipoGrandeza='ESPECIAL',
+                                   grandeza='ENDERECO', 4)
         if(entrada == '2'):
-            PlacaBase.enviaComando(PlacaBase,'3', 'CHANGE_OUTPUT_STATE', (0,))
+            PlacaBase.enviaComando(idRede='3', tipoGrandeza='ESPECIAL',
+                                   grandeza='ENDERECO', 3)
         if(entrada == '3'):
-            PlacaBase.enviaComando(PlacaBase,'3', 'CHANGE_SEND_TIME', "10")
+            PlacaBase.enviaComando(idRede='3', tipoGrandeza='ESPECIAL',
+                                   grandeza='INTERVALO_ENVIO', 10)
         if(entrada == '4'):
-            PlacaBase.enviaComando(PlacaBase,'50', 'CHANGE_SEND_TIME', "255")
-            PlacaBase.enviaComando(PlacaBase,'50', 'CHANGE_SEND_TIME', "255")
+            PlacaBase.enviaComando(idRede='3', tipoGrandeza='ESPECIAL',
+                                   grandeza='INTERVALO_ENVIO', 100)
         if(entrada == '5'):
-            PlacaBase.enviaComando(PlacaBase,'50', 'IS_ONLINE')
+        PlacaBase.enviaComando(idRede='3', tipoGrandeza='ESPECIAL',
+                               grandeza='ONLINE')
         if(entrada == '-'):
-            PlacaBase.resetPlacaBase(PlacaBase)
+            PlacaBase.resetPlacaBase()
 
     except (KeyboardInterrupt):
-        PlacaBase.enviaComando(PlacaBase,'3', 'CHANGE_OUTPUT_STATE', (0,))
         print("saindo, aguarde!")
         sleep(1)
-        PlacaBase.fechar(PlacaBase)
+        PlacaBase.fechar()
         exit()
