@@ -3,7 +3,7 @@ from queue import Queue
 import serial
 import simplejson
 from central.log import log
-from central.placaBase.overCAN import tipoGrandeza, grandeza
+from central.placaBase.overCAN import tipoGrandeza_CAN, grandeza_CAN, configuracoes_CAN
 from time import sleep, time
 import signal
 import sys
@@ -92,24 +92,33 @@ class PlacaBase():
             try:
                 PlacaBase._db
             except AttributeError:
+                print('Iniciando redis')
                 PlacaBase.initDB()
             strComando = '['
             strComando += str(int(idRede))
             strComando += '/'
             strComando += str(tipoGrandeza_CAN[tipoGrandeza])
             strComando += '/'
-            strComando += str(grandeza_CAN[tipoGrandeza])
+            try:
+                strComando += str(grandeza_CAN[grandeza])
+            except KeyError:
+                try:
+                    strComando += str(configuracoes_CAN[grandeza])
+                except KeyError:
+                    strComando += str(grandeza)
+
             strComando += '/'
-            strComando += str(msg)
+            strComando += str(valor)
             strComando += ']'
             #log("PLB02.0","O parâmetro msg deve ser uma única string ou uma tupla de strings")
-#            print(strComando)
+            print("enviaComando: " + strComando)
             PlacaBase._db.publish('msg', strComando)
             # PlacaBase._bufferEnvio.put(strComando)
             # verifica se a thread está ativa
             # if(PlacaBase._thEnvia.isAlive() == False):
             #     PlacaBase._thEnvia.run()
         except Exception as e:
+            print(e)
             log("PLB02.1", str(e))
 
     def resetPlacaBase():
@@ -192,7 +201,6 @@ class _RecebeMensagens(Thread):
 
                 try:
                     inMsg = inMsg.decode("UTF-8")
-                    print(inMsg)
                     if(len(inMsg) == 0):
                         continue
                 except Exception as e:
@@ -206,16 +214,16 @@ class _RecebeMensagens(Thread):
                         '[') + 1:inMsg.index(']')].split("/")
                     msg = {}
                     try:
-                        msg['id'] = parcial[0]
-                        msg['tipoGrandeza'] = parcial[1]
-                        msg['grandeza'] = parcial[2]
-                        msg['valor'] = parcial[3]
+                        msg['id'] = int(parcial[0])
+                        msg['tipoGrandeza'] = int(parcial[1])
+                        msg['grandeza'] = int(parcial[2])
+                        msg['valor'] = float(parcial[3])
                     except Exception as e:
                         log("PLB04.2", str(e) + "[" + msg + "]")
-
                     try:
-                        if(msg['id'] == CENTRAL_ID and msg['tipoGrandeza'] == tipoGrandeza['especial']
-                                and msg['grandeza'] == grandeza['online']):
+                        if(msg['id'] == CENTRAL_ID and msg['tipoGrandeza'] == tipoGrandeza_CAN['ESPECIAL']
+                                and msg['grandeza'] == configuracoes_CAN['ONLINE']):
+                            print("PlacaBase._isOnline")
                             PlacaBase._isOnline = True
                             continue
                     except Exception as e:
@@ -276,7 +284,7 @@ class _EnviaMensagens(Thread):
                 # print("--------------------------------------")
                 #print("PlacaBase._bufferEnvio: " + str(PlacaBase._bufferEnvio))
                 mensagem = PlacaBase._bufferEnvio.get() + '\n'
-                # print("Thread EnviaMensagens -> " + mensagem)
+                print("Thread EnviaMensagens -> " + mensagem)
                 # print("PlacaBase._bufferEnvio: " + str(PlacaBase._bufferEnvio))
                 # print("--------------------------------------")
                 while(PlacaBase._portaSerial.isOpen() == False):
@@ -309,8 +317,8 @@ class _MonitoraPlacaBase(Thread):
         while(True):
             try:
                 PlacaBase._isOnline = False
-                PlacaBase.enviaComando(idRede=self.CENTRAL_ID,
-                                       tipoGrandeza='ESPECIAL', grandeza='ONLINE', valor=True)
+                # PlacaBase.enviaComando(idRede=CENTRAL_ID,
+                #                        tipoGrandeza='ESPECIAL', grandeza='ONLINE', valor=1)
 
                 sleep(self._intervaloVerificacao)
                 if(self._count < self._tentativas and PlacaBase._isOnline == False):

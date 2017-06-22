@@ -21,7 +21,7 @@ try:
 except Exception as e:
     log('CEN01.0', str(e))
 
-log('START', 'Serviço da central iniciado')
+log('START', 'Servico da central iniciado')
 
 def triggerSaidasDigitais():
     #Consultar banco de dados (django.db)

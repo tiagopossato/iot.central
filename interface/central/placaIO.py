@@ -74,6 +74,8 @@ def alteraEstadoEntrada(_codigoPlacaExpansaoDigital, _numero, _estado):
             alarmeTrigger.off(_codigoAlarme=entrada.codigoAlarme)
 
         return True
-    except Exception as e:
-        log('PLI05.0',str(e))
+    except EntradaDigital.DoesNotExist:
+        log('PLI05.1','Nenhuma entrada com o numero ' + str(_numero)+  ', na placa ' + str(_codigoPlacaExpansaoDigital))    
+    # except Exception as e:
+    #     log('PLI05.0',str(e))
     return False

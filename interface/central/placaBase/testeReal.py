@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+﻿#!/usr/bin/python3
 import os
 import sys
 import django
@@ -22,28 +22,37 @@ def c(x):
     print(x)
 
 
-PlacaBase.iniciar(PlacaBase, porta='/dev/ttyACM0', taxa=115200, callback=c)
+PlacaBase.iniciar(porta='/dev/ttyUSB0', taxa=115200, callback=processaMensagem)
 tempo = 1
-
+s = 1
 while(True):
     try:
         entrada = input()
 
         if(entrada == '1'):
-            PlacaBase.enviaComando(idRede='3', tipoGrandeza='ESPECIAL',
-                                   grandeza='ENDERECO', 4)
+            PlacaBase.enviaComando(idRede='3', tipoGrandeza='ESPECIAL', grandeza='ENDERECO', valor=4)
         if(entrada == '2'):
-            PlacaBase.enviaComando(idRede='3', tipoGrandeza='ESPECIAL',
-                                   grandeza='ENDERECO', 3)
+            PlacaBase.enviaComando(idRede='4', tipoGrandeza='ESPECIAL',
+                                   grandeza='ENDERECO', valor=3)
         if(entrada == '3'):
             PlacaBase.enviaComando(idRede='3', tipoGrandeza='ESPECIAL',
-                                   grandeza='INTERVALO_ENVIO', 10)
+                                   grandeza='INTERVALO_ENVIO', valor=10)
         if(entrada == '4'):
             PlacaBase.enviaComando(idRede='3', tipoGrandeza='ESPECIAL',
-                                   grandeza='INTERVALO_ENVIO', 100)
+                                   grandeza='INTERVALO_ENVIO', valor=100)
         if(entrada == '5'):
-        PlacaBase.enviaComando(idRede='3', tipoGrandeza='ESPECIAL',
+            PlacaBase.enviaComando(idRede='3', tipoGrandeza='ESPECIAL',
                                grandeza='ONLINE')
+        if(entrada == '6'):
+            PlacaBase.enviaComando(idRede='3', tipoGrandeza='SAIDA_DIGITAL',
+                               grandeza='1', valor=int(s))
+            s = not s
+        if(entrada == '7'):
+            PlacaBase.enviaComando(idRede='3', tipoGrandeza='SAIDA_DIGITAL',
+                               grandeza='1', valor=-1)       
+        if(entrada == '8'):
+            PlacaBase.enviaComando(idRede='3', tipoGrandeza='ENTRADA_DIGITAL',
+                               grandeza='1', valor=0)                                                              
         if(entrada == '-'):
             PlacaBase.resetPlacaBase()
 

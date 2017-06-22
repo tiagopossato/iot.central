@@ -34,6 +34,7 @@ grandeza_CAN = {
     'TEMPERATURA': 3303,
     'UMIDADE_AR': 3304,
     'UMIDADE_SOLO': 3320,
+    'ONLINE': 9998,
 }
 
 configuracoes_CAN = {

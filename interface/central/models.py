@@ -108,8 +108,7 @@ class EntradaDigital(models.Model):
     nome = models.CharField(max_length=255, null=False)
     estado = models.BooleanField(default=False, null=False)
     # define em qual estado o alarme será disparado
-    triggerAlarme = models.BooleanField(
-        'Estado para alarme', default=False, null=False)
+    triggerAlarme = models.BooleanField('Estado para alarme', default=False, null=False)
     codigoAlarme = models.CharField(max_length=36, default=None)
     mensagemAlarme = models.CharField('Mensagem do alarme', max_length=255)
     prioridadeAlarme = models.IntegerField('Prioridade do alarme')
@@ -117,9 +116,9 @@ class EntradaDigital(models.Model):
     sync = models.BooleanField(default=False, null=False)
 
     placaExpansaoDigital = models.ForeignKey(PlacaExpansaoDigital,
-                                             to_field='idRede', on_delete=models.PROTECT, verbose_name='Placa de expansão digital')
-    ambiente = models.ForeignKey(
-        Ambiente, to_field='id', on_delete=models.PROTECT)
+                                             to_field='idRede', on_delete=models.PROTECT,
+                                             verbose_name='Placa de expansão digital')
+    ambiente = models.ForeignKey(Ambiente, to_field='id', on_delete=models.PROTECT)
 
     # sobrescreve o método save para adicionar o valor para o código do alarme
     def save(self, *args, **kwargs):
