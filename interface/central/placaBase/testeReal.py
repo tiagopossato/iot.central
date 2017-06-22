@@ -45,14 +45,14 @@ while(True):
                                grandeza='ONLINE')
         if(entrada == '6'):
             PlacaBase.enviaComando(idRede='3', tipoGrandeza='SAIDA_DIGITAL',
-                               grandeza='1', valor=int(s))
+                               grandeza='0', valor=int(s))
             s = not s
         if(entrada == '7'):
             PlacaBase.enviaComando(idRede='3', tipoGrandeza='SAIDA_DIGITAL',
-                               grandeza='1', valor=-1)       
+                               grandeza='1', valor=-1)
         if(entrada == '8'):
             PlacaBase.enviaComando(idRede='3', tipoGrandeza='ENTRADA_DIGITAL',
-                               grandeza='1', valor=0)                                                              
+                               grandeza='1', valor=0)                       
         if(entrada == '-'):
             PlacaBase.resetPlacaBase()
 

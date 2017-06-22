@@ -284,7 +284,7 @@ class _EnviaMensagens(Thread):
                 # print("--------------------------------------")
                 #print("PlacaBase._bufferEnvio: " + str(PlacaBase._bufferEnvio))
                 mensagem = PlacaBase._bufferEnvio.get() + '\n'
-                print("Thread EnviaMensagens -> " + mensagem)
+                #print("Thread EnviaMensagens -> " + mensagem)
                 # print("PlacaBase._bufferEnvio: " + str(PlacaBase._bufferEnvio))
                 # print("--------------------------------------")
                 while(PlacaBase._portaSerial.isOpen() == False):
