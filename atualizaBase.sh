@@ -9,9 +9,9 @@ fi
 
 # muda nome do arquivo para evitar conflitos
 mv central/admin.py central/2admin.py
-mv interface/urls.py interface/2urls.py
+#mv interface/urls.py interface/2urls.py
 # renomeia um arquivo vazio para evitar que inicie a aplicação
-mv interface/_urls.py interface/urls.py
+#mv interface/_urls.py interface/urls.py
 
 python3 manage.py makemigrations
 python3 manage.py migrate
@@ -33,5 +33,5 @@ sqlite3 /opt/iot.central/banco/db.sqlite3 < /tmp/tmp.sql
 rm /tmp/tmp.sql
 
 mv central/2admin.py central/admin.py
-mv interface/urls.py interface/_urls.py
-mv interface/2urls.py interface/urls.py
+#mv interface/urls.py interface/_urls.py
+#mv interface/2urls.py interface/urls.py
