@@ -8,10 +8,13 @@ from central.models import EntradaDigital
 from central.models import Ambiente
 from central.models import Configuracoes
 from central.models import SaidaDigital
+from central.models import Temporizador
 from central.models import Sensor
 from central.models import SensorGrandeza
 from central.models import Leitura
 from central.models import AlarmeAnalogico
+from central.models import Mqtt
+
 
 class LogAdmin(admin.ModelAdmin):
     def tempo_mod(self, obj):
@@ -64,6 +67,22 @@ class EntradaDigitalAdmin(admin.ModelAdmin):
     ordering = ('placaExpansaoDigital', 'numero',)
     list_per_page = 50
 
+class SaidaDigitalAdmin(admin.ModelAdmin):
+    list_display = ('nome','numero','placaExpansaoDigital','estado','ambiente','ultimoAcionamento',)
+    readonly_fields = ('sync','ultimoAcionamento',)
+    ordering = ('placaExpansaoDigital', 'numero',)
+    list_per_page = 50
+
+class TemporizadorAdmin(admin.ModelAdmin):
+    def horaDeLigar(self, obj):
+        return str(obj.horaLigar)
+
+    def horaDeDesligar(self, obj):
+        return str(obj.horaDesligar)
+
+    list_display = ('saidaDigital','horaDeLigar','horaDeDesligar',)
+    ordering = ('saidaDigital', 'horaLigar',)
+
 class AmbienteAdmin(admin.ModelAdmin):
     list_display = ('nome', 'uid','ativo',)
     ordering = ('nome',)
@@ -114,16 +133,27 @@ class AlarmeAnalogicoAdmin(admin.ModelAdmin):
     ordering = ('ambiente','mensagemAlarme',)
     list_filter = ('ambiente','grandeza',)
 
+class MqttAdmin(admin.ModelAdmin):
+    list_display = ('descricao','servidor','status',)
+    def has_add_permission(self, request):
+        num_objects = self.model.objects.count()
+        if num_objects >= 1:
+            return False
+        else:
+            return True   
+
 admin.site.register(Log, LogAdmin)
 admin.site.register(Alarme, AlarmeAdmin)
 admin.site.register(PlacaExpansaoDigital, PlacaExpansaoDigitalAdmin)
 admin.site.register(EntradaDigital, EntradaDigitalAdmin)
 admin.site.register(Ambiente, AmbienteAdmin)
 admin.site.register(Configuracoes, ConfiguracoesAdmin)
-admin.site.register(SaidaDigital)
+admin.site.register(SaidaDigital, SaidaDigitalAdmin)
+admin.site.register(Temporizador, TemporizadorAdmin)
 admin.site.register(Sensor, SensorAdmin)
 admin.site.register(SensorGrandeza, SensorGrandezaAdmin)
 admin.site.register(Leitura, LeituraAdmin)
 admin.site.register(AlarmeAnalogico, AlarmeAnalogicoAdmin)
+admin.site.register(Mqtt, MqttAdmin)
 admin.site.site_header = 'Administração da Central'
 admin.site.site_title = 'Central'

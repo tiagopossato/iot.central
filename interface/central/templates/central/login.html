@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+  <meta http-equiv="Content-Language" content="pt-br">
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <!-- Meta, title, CSS, favicons, etc. -->
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Administração da central</title>
+
+  <!-- Bootstrap -->
+  <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Font Awesome -->
+  <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+  <!-- NProgress -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/nprogress/0.2.0/nprogress.min.css" rel="stylesheet">
+
+  <!-- Animate.css -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.min.css" rel="stylesheet">
+
+  <!-- Custom Theme Style -->
+  {% load static %}
+  <link href="{% static 'gentelella/css/custom.css' %}" rel="stylesheet">
+</head>
+
+<body class="login">
+  <div>
+    <div class="login_wrapper">
+      <div class="animate form login_form">
+        <section class="login_content" role="main">
+          <form id="login-form" method="post" action="/login" class="form-horizontal form-label-left">
+            <h1>Administração da Central</h1>
+            <div class="form-group">
+              <label class="control-label col-xs-12 col-sm-12 col-md-3 col-lg-3" style="text-align:left;" for="id_username">Usuário<span class="required">*</span>
+                        </label>
+              <div class="col-xs-12 col-sm-12 col-md-9 col-lg-9">
+                <input id="id_username" name="username" type="text" class="form-control input-text" placeholder="Usuario" required="required"
+                  accesskey="u" tabindex="1" autofocus/>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="control-label col-xs-12 col-sm-12 col-md-3 col-lg-3" style="text-align:left;" for="md-mqtt-descricao">Senha<span class="required">*</span>
+                        </label>
+              <div class="col-xs-12 col-sm-12 col-md-9 col-lg-9">
+                <input id="id_password" name="password" type="password" class="form-control" placeholder="Senha" required="required" accesskey="s"
+                  tabindex="2" />
+              </div>
+            </div>
+            <div>
+              <input type="submit" value="Login" class="btn btn-lg submit col-md-12 col-sm-12 col-xs-12 col-lg-12" tabindex="3" />
+            </div>
+            {% csrf_token %}
+            <input type="hidden" name="next" value="{{ next }}" />
+            <div class="clearfix"></div>
+          </form>
+          {% if error %}
+          <div class="alert alert-danger" role="">
+            <h4>Usuário ou senha incorretos. Tente novamente</h4>
+          </div>
+          {% endif %}
+        </section>
+      </div>
+    </div>
+  </div>
+</body>
+
+</html>

@@ -441,3 +441,18 @@ class AlarmeAnalogico(models.Model):
 
     def __str__(self):
         return str(self.mensagemAlarme) + " [on:" + str(self.valorAlarmeOn) + ", off:" + str(self.valorAlarmeOff) + "]"
+
+class Mqtt(models.Model):
+    STATUS = (
+        (0, 'Não configurado'),
+        (1, 'Funcionando'),
+        (2, 'Falha na comunicação'),
+        (3, 'Erro'),
+    )
+    id =  models.AutoField(primary_key=True)
+    status = models.IntegerField('Estado da comunicação', default=0, choices=STATUS)
+    descricao = models.CharField('Descrição', null=True, blank=True, max_length=255)
+    servidor = models.CharField('Endereço do servidor', null=True, blank=True, max_length=255)
+
+    class Meta:
+        verbose_name = 'Configurações da comunicação MQTT'
