@@ -13,7 +13,7 @@ django.setup()
 from central.log import log
 
 from central.placaBase.overCAN import processaMensagem
-from central.placaBase.placaBase import PlacaBase
+from central.placaBase.novoDrive import PlacaBase
 
 # PlacaBase = PlacaBase()
 
@@ -22,7 +22,7 @@ def c(x):
     print(x)
 
 
-PlacaBase.iniciar(porta='/dev/ttyUSB0', taxa=115200, callback=processaMensagem)
+# PlacaBase.iniciar(porta='/dev/ttyUSB0', taxa=115200, callback=processaMensagem)
 tempo = 1
 s = 1
 while(True):
