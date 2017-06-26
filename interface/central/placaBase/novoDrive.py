@@ -32,7 +32,7 @@ class PlacaBase():
                 #conecta no endereço
                 sock.connect(server_address)
                 #envia os dados
-                sock.send(bytes(saida, 'UTF-8'))
+                sock.send(bytes(strComando, 'UTF-8'))
             except socket.error as e:
                 log("NVD01.0", str(e))
             except OSError as e:

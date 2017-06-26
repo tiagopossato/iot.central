@@ -180,11 +180,10 @@ class PlacaBase():
             sys.exit(0)
 
 
+
 """
 Classe que será chamada via thread para receber as mensagens da porta serial
 """
-
-
 class _RecebeMensagens(Thread):
     def __init__(self):
         Thread.__init__(self, name="_RecebeMensagens")
@@ -248,8 +247,6 @@ class _RecebeMensagens(Thread):
 """
 Thread para processar as mensagens recebidas
 """
-
-
 class _CallbackRecebe(Thread):
     def __init__(self):
         Thread.__init__(self, name="_CallbackRecebe")
@@ -270,8 +267,6 @@ Classe que será chamada via thread para enviar as mensagens para porta serial
 Esta classe envia as mensagens do _bufferEnvio do objeto placaBase respeitando
 o tempo mínimo da placaBase
 """
-
-
 class _EnviaMensagens(Thread):
     def __init__(self):
         Thread.__init__(self, name="_EnviaMensagens")
@@ -302,8 +297,6 @@ class _EnviaMensagens(Thread):
 """
 Classe que será chamada via thread para monitorar a comunicação com a placa base
 """
-
-
 class _MonitoraPlacaBase(Thread):
 
     def __init__(self):

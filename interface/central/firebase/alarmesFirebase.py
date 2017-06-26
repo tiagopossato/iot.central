@@ -10,8 +10,8 @@ from central.firebase.conectaFirebase import ConectaFirebase
 from central.util import check_host
 
 class SincronizaAlarmes(Thread):
-    def __init__ (self):        
-        self.cfg = Configuracoes.objects.get()    
+    def __init__ (self):
+        self.cfg = Configuracoes.objects.get()
         ConectaFirebase()
         self.user = ConectaFirebase.getUser()
         self.db = ConectaFirebase.db
