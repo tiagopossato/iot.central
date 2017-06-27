@@ -108,8 +108,9 @@ class PlacaExpansaoDigital(models.Model):
             if(self.id != None):
                 from central.placaBase.novoDrive import PlacaBase
                 if(self.original_idRede != self.idRede):
-                    PlacaBase.enviaComando(str(self.original_idRede),
-                                           'CHANGE_ID', str(self.idRede))
+                     PlacaBase.enviaComando(idRede=str(self.original_idRede),
+                               tipoGrandeza='ESPECIAL', grandeza='ENDERECO', str(self.idRede))
+
                     # altera os relacionamentos das entradas digitais
                     ed = EntradaDigital.objects.filter(
                         placaExpansaoDigital_id=self.original_idRede).all()
