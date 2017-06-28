@@ -32,6 +32,8 @@ echo "update central_entradadigital set estado=0;" > /tmp/tmp.sql
 sqlite3 /opt/iot.central/banco/db.sqlite3 < /tmp/tmp.sql
 rm /tmp/tmp.sql
 
+sqlite3 /opt/iot.central/banco/db.sqlite3 < criaTriggers.sql
+
 mv central/2admin.py central/admin.py
 #mv interface/urls.py interface/_urls.py
 #mv interface/2urls.py interface/urls.py
