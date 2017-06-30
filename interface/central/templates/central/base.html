@@ -48,6 +48,13 @@
                                 <li><a href="/mqtt" tabindex="0"><i class="fa fa-podcast" aria-hidden="true"></i> MQTT </a>
                                 </li>
                             </ul>
+
+                            {% if user.is_superuser %}
+                            <ul class="nav side-menu">
+                                <li><a href="/admin" tabindex="0"><i class="fa fa-cogs" aria-hidden="true"></i> Admin </a>
+                                </li>
+                            </ul>
+                            {% endif %}
                         </div>
                     </div>
                     <!-- /sidebar menu -->
