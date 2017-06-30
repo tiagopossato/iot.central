@@ -66,7 +66,7 @@ class Ambiente(models.Model):
 
 class Alarme(models.Model):
     uid = models.CharField(max_length=48, null=True,
-                           blank=True)  # usado para o
+                           blank=True)
     # usado para controle entre alarmes digitais a analógicos
     codigoAlarme = models.CharField(max_length=36, null=False)
     mensagemAlarme = models.CharField(max_length=255, null=False)
@@ -163,6 +163,7 @@ class EntradaDigital(models.Model):
         super(EntradaDigital, self).save(*args, **kwargs)
 
     class Meta:
+        #simula uma chave composta
         unique_together = ('placaExpansaoDigital', 'numero',)
         verbose_name = 'Entrada digital'
         verbose_name_plural = 'Entradas digitais'
@@ -425,12 +426,11 @@ class AlarmeAnalogico(models.Model):
     grandeza = models.ForeignKey(
         Grandeza, to_field='codigo', on_delete=models.PROTECT)
 
-    # sobrescreve o método save para adicionar o valor para o código do alarme
-    def save(self, *args, **kwargs):
-        if(self.codigoAlarme == None):
+    #Gera uma uuid para o id do alarme
+    def __init__(self, *args, **kwargs):
+        super(AlarmeAnalogico, self).__init__(*args, **kwargs)
+        if(self.codigoAlarme == ''):
             self.codigoAlarme = str(uuid.uuid4())
-        # Call the "real" save() method.
-        super(AlarmeAnalogico, self).save(*args, **kwargs)
 
     class Meta:
         verbose_name = 'Alarme Analógico'
