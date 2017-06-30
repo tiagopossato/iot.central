@@ -68,7 +68,7 @@
                         <ul class="nav navbar-nav navbar-right">
                             <li class="">
                                 <a href="javascript:;" class="user-profile dropdown-toggle" data-toggle="dropdown" aria-expanded="false" tabindex="0">
-                    <span> Admin </span>
+                    <span> {% if user.get_full_name != '' %}{{user.get_full_name}}{%else%}{{user}}{%endif%} </span>
                     <span class=" fa fa-angle-down"></span>
                   </a>
                                 <ul class="dropdown-menu dropdown-usermenu pull-right">
