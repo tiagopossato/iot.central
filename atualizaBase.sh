@@ -36,6 +36,12 @@ cd ..
 
 sqlite3 /opt/iot.central/banco/db.sqlite3 < criaTriggers.sql
 
+if [ -z "$1" ]; then
+	cd interface
+else
+	cd $1/interface
+fi
+
 mv central/2admin.py central/admin.py
 #mv interface/urls.py interface/_urls.py
 #mv interface/2urls.py interface/urls.py
