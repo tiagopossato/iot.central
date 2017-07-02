@@ -14,17 +14,15 @@ from central.models import SaidaDigital
 from central.models import Temporizador
 from central.models import Configuracoes
 from central.placaBase.overCAN import processaMensagem
-#from central.placaBase.placaBase import PlacaBase
+from central.placaBase.placaBase import PlacaBase
 
-"""
 try:
     cfg = Configuracoes.objects.get()
     PlacaBase.iniciar(cfg.portaSerial, cfg.taxa, processaMensagem)
 except Exception as e:
     log('CEN01.0', str(e))
-"""
-log('START', 'Servico da central iniciado')
 
+log('START', 'Servico da central iniciado')
 
 def triggerSaidasDigitais():
     # Consultar banco de dados (django.db)
