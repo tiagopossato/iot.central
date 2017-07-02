@@ -110,13 +110,8 @@ class PlacaBase():
             strComando += '/'
             strComando += str(valor)
             strComando += ']'
-            #log("PLB02.0","O parâmetro msg deve ser uma única string ou uma tupla de strings")
             print("enviaComando: " + strComando)
             PlacaBase._db.publish('msg', strComando)
-            # PlacaBase._bufferEnvio.put(strComando)
-            # verifica se a thread está ativa
-            # if(PlacaBase._thEnvia.isAlive() == False):
-            #     PlacaBase._thEnvia.run()
         except Exception as e:
             print(e)
             log("PLB02.1", str(e))
