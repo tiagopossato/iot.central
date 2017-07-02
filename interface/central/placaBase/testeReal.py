@@ -13,7 +13,7 @@ django.setup()
 from central.log import log
 
 from central.placaBase.overCAN import processaMensagem
-from central.placaBase.novoDrive import PlacaBase
+from central.placaBase.placaBase import PlacaBase
 
 # PlacaBase = PlacaBase()
 

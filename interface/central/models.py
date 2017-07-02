@@ -106,7 +106,7 @@ class PlacaExpansaoDigital(models.Model):
         # altera os dados da placa na placa física
         try:
             if(self.id != None):
-                from central.placaBase.novoDrive import PlacaBase
+                from central.placaBase.placaBase import PlacaBase
                 if(self.original_idRede != self.idRede):
                     PlacaBase.enviaComando(idRede=str(self.original_idRede),tipoGrandeza='ESPECIAL', grandeza='ENDERECO', valor=str(self.idRede))
                     # altera os relacionamentos das entradas digitais
@@ -217,7 +217,7 @@ class SaidaDigital(models.Model):
         except Exception as e:
             print(e)
         # liga a saida digital
-        from central.placaBase.novoDrive import PlacaBase
+        from central.placaBase.placaBase import PlacaBase
         from central.log import log
         PlacaBase.enviaComando(idRede=self.placaExpansaoDigital.idRede,
                                tipoGrandeza='SAIDA_DIGITAL', grandeza=self.numero, valor=int(True))
@@ -228,7 +228,7 @@ class SaidaDigital(models.Model):
             self.estado = False
             self.save()
         # desliga a saida digital
-        from central.placaBase.novoDrive import PlacaBase
+        from central.placaBase.placaBase import PlacaBase
         from central.log import log
         PlacaBase.enviaComando(idRede=self.placaExpansaoDigital.idRede,
                                tipoGrandeza='SAIDA_DIGITAL', grandeza=self.numero, valor=int(False))
@@ -339,7 +339,7 @@ class Sensor(models.Model):
             # altera os dados do sensor na placa física
             try:
                 if(self.id != None):
-                    from central.placaBase.novoDrive import PlacaBase
+                    from central.placaBase.placaBase import PlacaBase
                     if(original_intervaloAtualizacao != self.intervaloAtualizacao):
                         PlacaBase.enviaComando(idRede=str(original_idRede),
                                                tipoGrandeza='ESPECIAL', grandeza='INTERVALO_ENVIO',
