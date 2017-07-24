@@ -4,7 +4,6 @@ from django.http import JsonResponse, HttpResponseNotAllowed
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 import requests
-
 from comunicacao.models import Mqtt
 from interface.decorators import ajax_login_required
 
@@ -95,9 +94,9 @@ def get_centrais_inativas(request):
         password = request.GET.get('password')
         if(password == None):
             raise KeyError('password')
-        url = request.GET.get('url')
-        if(url == None):
-            raise KeyError('url')
+        servidor = request.GET.get('servidor')
+        if(servidor == None):
+            raise KeyError('servidor')
     except KeyError as e:
         print(e)
         return JsonResponse({'erro': "Parâmetro " + str(e) + " não recebido"})
@@ -107,10 +106,63 @@ def get_centrais_inativas(request):
             'username': username,
             'password': password
         }
-        r = requests.get(
-            url+'/central/inativas', params=payload)
+        r = requests.get(servidor+'/central/inativas', params=payload)
         if(r.status_code == 200):
             return JsonResponse(r.json(), safe=False)
+        else:
+            return JsonResponse({'erro': r.status_code})
+    except requests.exceptions.ConnectionError as e:
+        return JsonResponse({'erro': 'Erro na conexão com o servidor'})
+    except Exception as e:
+        return JsonResponse({'erro': str(e)})
+
+@ajax_login_required
+@method_decorator(csrf_exempt, name='dispatch')
+def reativar_central(request):
+
+    if(request.method != 'POST'):
+        return HttpResponseNotAllowed(['POST'])
+    if(request.is_ajax() == False):
+        return JsonResponse({'erro': "Somente requisicoes AJAX!"})
+    try:
+        username = request.POST.get('username')
+        if(username == None):
+            raise KeyError('username')
+
+        password = request.POST.get('password')
+        if(password == None):
+            raise KeyError('password')
+
+        servidor = request.POST.get('servidor')        
+        if(servidor == None):
+            raise KeyError('servidor')
+
+        id = request.POST.get('id')
+        if(id == None):
+            raise KeyError('id')
+
+    except KeyError as e:
+        print(e)
+        return JsonResponse({'erro': "Parâmetro " + str(e) + " não recebido"})
+
+    try:
+        payload = {
+            'username': username,
+            'password': password
+        }
+        r = requests.post(servidor+'/central/' + id + '/reativar', data=payload)
+        if(r.status_code == 200):
+            dados = r.json()
+            try:
+                if(dados['erro']):
+                    print(dados['erro'])
+                    return JsonResponse(dados, safe=False)
+            except Exception as e:
+                print('ok')
+            # Prossegue com o salvamento da central
+            config = Mqtt(identificador=dados['id'], status=1, descricao=dados['descricao'], servidor=servidor, keyFile=dados['keyFile'], certFile=dados['certFile'])
+            config.save()
+            return redirect('/comunicacao')
         else:
             return JsonResponse({'erro': r.status_code})
     except requests.exceptions.ConnectionError as e:

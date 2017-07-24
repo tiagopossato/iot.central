@@ -60,7 +60,9 @@
         </div>
     </div>
 </div>
+
 <script type="text/javascript">
+    var _dados = {};
     $('#md-troca').on('shown.bs.modal', function () {
         $(".nav-sm .container.body .col-md-3.left_col").css('z-index', 1);
     });
@@ -80,13 +82,13 @@
         event.preventDefault();
         //serializa o form
         var unindexed_array = $(this).serializeArray();
-        var _dados = {};
+        // var _dados = {};
         $.map(unindexed_array, function (n, i) {
             _dados[n['name']] = n['value'];
         });
         // pegar os dados do form e enviar via ajax para a central retornar a lista de dentrais inativas
         getCentraisInativas({
-            'url': _dados['md-troca-servidor'],
+            'servidor': _dados['md-troca-servidor'],
             'username': _dados['md-troca-username'],
             'password': _dados['md-troca-password']
         }).then(function (centrais) {
@@ -113,27 +115,38 @@
 
             //preenche a tabela com os dados recebidos
             for (var i = 0; i < centrais.length; i++) {
-                newRow = '<tr id=\"' + centrais[i]['id'] + '\" class=\"text-center\">';
+                newRow = '<tr onclick="confirmaTroca(\'' + centrais[i]['id'] + '\')\" class=\"text-center\" style=\"cursor: pointer;\">';
                 var newRow = $(newRow);
                 var cols = "";
                 cols += '<td>' + centrais[i]['descricao'] + '</td>';
-                cols += '<td>' + centrais[i]['empresa'] + '</td>';
-
-                // cols += '<td>' +
-                //     '<a href="javascript:editar(' + listaUsuarios[i]['id'] + ')" title="Editar" class="btn btn-default">' +
-                //     '<i class="fa fa-edit fa-fw"></i></a>' +
-                //     '   <a href="javascript:alterarStatus(' + listaUsuarios[i]['id'] + ',' + !listaUsuarios[i]['active'] + ')" title="Editar" class="btn btn-default">' +
-                //     '<i class="fa ' + icone + ' fa-fw"></i></a>' +
-                //     '</td>';
+                cols += '<td>' + centrais[i]['empresa'] + '</td></tr>';
                 newRow.append(cols);
                 $("#tb-centrais-inativas").append(newRow);
             }
-
             $('#md-troca-seleciona').modal('show');
-            console.log(centrais)
         }).catch(function (err) {
             console.log(err);
         });
     });
+
+    var confirmaTroca = function (id) {
+        if (confirm('Confirma a associação do identificador ' + id + " à essa central?")) {
+            $('#md-troca-seleciona').modal('hide');
+            trocaCentral({
+                'id': id,
+                'servidor': _dados['md-troca-servidor'],
+                'username': _dados['md-troca-username'],
+                'password': _dados['md-troca-password']
+            }).then(function(dados){
+                console.log(dados);
+                delete _dados;
+            }).catch(function(err){
+                console.log(err);
+                delete _dados;
+            });
+        }
+        
+
+    };
 
 </script>
