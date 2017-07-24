@@ -13,6 +13,8 @@ class Mqtt(models.Model):
     status = models.IntegerField('Estado da comunicação', default=0, choices=STATUS)
     descricao = models.CharField('Descrição', null=True, blank=True, max_length=255)
     servidor = models.CharField('Endereço do servidor', null=True, blank=True, max_length=255)
+    keyFile = models.TextField('Chave privada',null=True, blank=True)
+    certFile = models.TextField('Chave pública',null=True, blank=True)
 
     class Meta:
         verbose_name = 'Configurações da comunicação MQTT'

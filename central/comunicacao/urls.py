@@ -1,7 +1,7 @@
-from django.conf.urls import include, url
-from django.contrib.auth import views as auth_views
+from django.conf.urls import url
 from . import views
 
 urlpatterns = [
-    url(r'', views.mqtt_view),
+    url(r'^$', views.mqtt_status),
+    url(r'^centrais_inativas', views.get_centrais_inativas)
 ]
