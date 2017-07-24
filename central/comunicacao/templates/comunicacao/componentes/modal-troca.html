@@ -1,0 +1,139 @@
+<div class="modal fade md-troca" id="md-troca" tabindex="-2" role="dialog" aria-hidden="true" data-backdrop="static">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" tabindex="8"><span aria-hidden="true">×</span>
+                          </button>
+                <h4 class="modal-title" id="">Substituir Central</h4>
+            </div>
+            <div class="modal-body">
+                <form id="form-troca" method="post" action="" data-parsley-validate class="form-horizontal form-label-left">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <label class="control-label col-md-3 col-sm-3 col-xs-12" for="md-troca-servidor">Endereço do Servidor <span class="required">*</span>
+                        </label>
+                        <div class="col-md-6 col-sm-6 col-xs-12">
+                            <input type="text" id="md-troca-servidor" name="md-troca-servidor" required="required" class="form-control col-md-7 col-xs-12"
+                                tabindex="2" value="">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="md-troca-username" class="control-label col-md-3 col-sm-3 col-xs-12">Login</label>
+                        <div class="col-md-6 col-sm-6 col-xs-12">
+                            <input id="md-troca-username" name="md-troca-username" class="form-control col-md-7 col-xs-12" type="text" placeholder="Nome de usuário do servidor"
+                                tabindex="3" autocomplete="off">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="md-troca-password" class="control-label col-md-3 col-sm-3 col-xs-12">Senha</label>
+                        <div class="col-md-6 col-sm-6 col-xs-12">
+                            <input id="md-troca-password" name="md-troca-password" class="form-control col-md-7 col-xs-12" type="password" placeholder="Senha do servidor"
+                                tabindex="4" autocomplete="off">
+                        </div>
+                    </div>
+                    <div class="ln_solid"></div>
+                    <div class="form-group">
+                        <div class="col-lg-offset-3 col-md-offset-3 col-sm-offset-1">
+                            <button class="btn btn-primary col-lg-3 col-md-3 col-sm-3 col-xs-12" type="button" data-dismiss="modal" tabindex="5">Cancelar</button>
+                            <div class="visible-xs-block">&nbsp</div>
+                            <button class="btn btn-success col-lg-3 col-md-3 col-sm-3 col-xs-12" type="submit" tabindex="7">Enviar</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade md-troca-seleciona" id="md-troca-seleciona" tabindex="-2" role="dialog" aria-hidden="true" data-backdrop="static">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" tabindex="8"><span aria-hidden="true">×</span>
+                          </button>
+                <h4 class="modal-title" id="">Substituir Central</h4>
+            </div>
+            <div class="modal-body">
+                <div id="conteudo-md-troca-seleciona">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    $('#md-troca').on('shown.bs.modal', function () {
+        $(".nav-sm .container.body .col-md-3.left_col").css('z-index', 1);
+    });
+    $('#md-troca').on('hidden.bs.modal', function () {
+        $(".nav-sm .container.body .col-md-3.left_col").css('z-index', 9999);
+    });
+
+    $('#md-troca-seleciona').on('shown.bs.modal', function () {
+        $(".nav-sm .container.body .col-md-3.left_col").css('z-index', 1);
+    });
+    $('#md-troca-seleciona').on('hidden.bs.modal', function () {
+        $(".nav-sm .container.body .col-md-3.left_col").css('z-index', 9999);
+    });
+
+    $('#form-troca').unbind('submit');
+    $('#form-troca').submit(function (event) {
+        event.preventDefault();
+        //serializa o form
+        var unindexed_array = $(this).serializeArray();
+        var _dados = {};
+        $.map(unindexed_array, function (n, i) {
+            _dados[n['name']] = n['value'];
+        });
+        // pegar os dados do form e enviar via ajax para a central retornar a lista de dentrais inativas
+        getCentraisInativas({
+            'url': _dados['md-troca-servidor'],
+            'username': _dados['md-troca-username'],
+            'password': _dados['md-troca-password']
+        }).then(function (centrais) {
+            $('#md-troca').modal('hide');
+
+            //limpa a tabela
+            $('#conteudo-md-troca-seleciona div').remove();
+            $("#tb-centrais-inativas").remove();
+            //cria nova estrutura da tabela
+            $('<tr>').attr({
+                id: 'tb-head'
+            }).appendTo($('<thead>').appendTo(
+                $('<table>').attr({
+                    class: 'table table-hover table-condensed',
+                    id: 'tb-centrais-inativas'
+                }).appendTo('#conteudo-md-troca-seleciona')));
+            $('<th>').attr({
+                class: 'text-center'
+            }).html('Descricao').appendTo('#tb-head');
+            $('<th>').attr({
+                class: 'text-center'
+            }).html('Empresa').appendTo('#tb-head');
+            $('<tboby>').appendTo('#conteudo-md-troca-seleciona');
+
+            //preenche a tabela com os dados recebidos
+            for (var i = 0; i < centrais.length; i++) {
+                newRow = '<tr id=\"' + centrais[i]['id'] + '\" class=\"text-center\">';
+                var newRow = $(newRow);
+                var cols = "";
+                cols += '<td>' + centrais[i]['descricao'] + '</td>';
+                cols += '<td>' + centrais[i]['empresa'] + '</td>';
+
+                // cols += '<td>' +
+                //     '<a href="javascript:editar(' + listaUsuarios[i]['id'] + ')" title="Editar" class="btn btn-default">' +
+                //     '<i class="fa fa-edit fa-fw"></i></a>' +
+                //     '   <a href="javascript:alterarStatus(' + listaUsuarios[i]['id'] + ',' + !listaUsuarios[i]['active'] + ')" title="Editar" class="btn btn-default">' +
+                //     '<i class="fa ' + icone + ' fa-fw"></i></a>' +
+                //     '</td>';
+                newRow.append(cols);
+                $("#tb-centrais-inativas").append(newRow);
+            }
+
+            $('#md-troca-seleciona').modal('show');
+            console.log(centrais)
+        }).catch(function (err) {
+            console.log(err);
+        });
+    });
+
+</script>

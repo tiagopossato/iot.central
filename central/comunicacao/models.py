@@ -10,6 +10,7 @@ class Mqtt(models.Model):
         (3, 'Erro'),
     )
     id =  models.AutoField(primary_key=True)
+    identificador = models.UUIDField("Identificador", default='')
     status = models.IntegerField('Estado da comunicação', default=0, choices=STATUS)
     descricao = models.CharField('Descrição', null=True, blank=True, max_length=255)
     servidor = models.CharField('Endereço do servidor', null=True, blank=True, max_length=255)

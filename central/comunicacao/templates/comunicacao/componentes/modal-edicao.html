@@ -7,8 +7,9 @@
                 <h4 class="modal-title" id="">Configurações</h4>
             </div>
             <div class="modal-body">
-                <form id="form-mqtt" method="post" action="" data-parsley-validate class="form-horizontal form-label-left">
+                <form id="form-mqtt" method="post" action="mqtt-config" data-parsley-validate class="form-horizontal form-label-left">
                     {% csrf_token %}
+                    <input type="hidden" name="md-mqtt-identificador" value="{{ mqtt_identificador }}">
                     <div class="form-group">
                         <label class="control-label col-md-3 col-sm-3 col-xs-12" for="md-mqtt-descricao">Descrição<span class="required">*</span>
                         </label>
@@ -26,16 +27,16 @@
                         </div>
                     </div>
                     <div class="form-group">
-                        <label for="md-mqtt-login" class="control-label col-md-3 col-sm-3 col-xs-12">Login</label>
+                        <label for="md-mqtt-username" class="control-label col-md-3 col-sm-3 col-xs-12">Login</label>
                         <div class="col-md-6 col-sm-6 col-xs-12">
-                            <input id="md-mqtt-login" name="md-mqtt-login" class="form-control col-md-7 col-xs-12" type="text" 
+                            <input id="md-mqtt-username" name="md-mqtt-username" class="form-control col-md-7 col-xs-12" type="text" 
                             placeholder="Nome de usuário do servidor" tabindex="3" autocomplete="off">
                         </div>
                     </div>
                     <div class="form-group">
-                        <label for="md-mqtt-senha" class="control-label col-md-3 col-sm-3 col-xs-12">Senha</label>
+                        <label for="md-mqtt-password" class="control-label col-md-3 col-sm-3 col-xs-12">Senha</label>
                         <div class="col-md-6 col-sm-6 col-xs-12">
-                            <input id="md-mqtt-senha" name="md-mqtt-senha" class="form-control col-md-7 col-xs-12" type="password"
+                            <input id="md-mqtt-password" name="md-mqtt-password" class="form-control col-md-7 col-xs-12" type="password"
                             placeholder="Senha do servidor" tabindex="4" autocomplete="off">
                         </div>
                     </div>
