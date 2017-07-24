@@ -28,12 +28,3 @@ def logout_view(request):
 @login_required(login_url='/login')
 def index(request):
     return render(request, 'central/index.html', {})
-
-@login_required(login_url='/login')
-def mqtt_view(request):
-    m = models.Mqtt.objects.all().first()
-    return render(request, 'central/mqtt.html', {
-        'mqtt_descricao': m.descricao, 
-        'mqtt_status': m.status, 
-        'mqtt_servidor': m.servidor
-    })

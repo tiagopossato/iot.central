@@ -13,8 +13,6 @@ from central.models import Sensor
 from central.models import SensorGrandeza
 from central.models import Leitura
 from central.models import AlarmeAnalogico
-from central.models import Mqtt
-
 
 class LogAdmin(admin.ModelAdmin):
     def tempo_mod(self, obj):
@@ -133,15 +131,6 @@ class AlarmeAnalogicoAdmin(admin.ModelAdmin):
     ordering = ('ambiente','mensagemAlarme',)
     list_filter = ('ambiente','grandeza',)
 
-class MqttAdmin(admin.ModelAdmin):
-    list_display = ('descricao','servidor','status',)
-    def has_add_permission(self, request):
-        num_objects = self.model.objects.count()
-        if num_objects >= 1:
-            return False
-        else:
-            return True   
-
 admin.site.register(Log, LogAdmin)
 admin.site.register(Alarme, AlarmeAdmin)
 admin.site.register(PlacaExpansaoDigital, PlacaExpansaoDigitalAdmin)
@@ -154,6 +143,5 @@ admin.site.register(Sensor, SensorAdmin)
 admin.site.register(SensorGrandeza, SensorGrandezaAdmin)
 admin.site.register(Leitura, LeituraAdmin)
 admin.site.register(AlarmeAnalogico, AlarmeAnalogicoAdmin)
-admin.site.register(Mqtt, MqttAdmin)
 admin.site.site_header = 'Administração da Central'
 admin.site.site_title = 'Central'
