@@ -64,20 +64,27 @@ window.onload = function () {
     $('#btn-disable').on('click', function (e) {
         bootbox.confirm({
             title: "Confirmação",
-            message: "Desativar esta central?",
+            message: "Inativar esta central?",
             size: 'small',
             callback: function (result) {
                 if (result) {
-                    console.log("Desabilitar central");
+                    autenticacao().then(function (auth) {
+                        $.get('http://' + window.location.host + '/comunicacao/inativar', { username: auth.username, password: auth.password }, function (res) {
+                            console.log(res);
+                            location.reload();
+                        }).fail(function (err) {
+                            bootbox.alert({
+                                title: "Erro",
+                                message: err.responseJSON.erro
+                            });
+                            console.log(err);
+                        });
+                    }).catch(function (err) {
+                        console.log(err);
+                    });
                 }
             }
         });
-    });
-
-    autenticacao().then(function (auth) {
-        console.log(auth);
-    }).catch(function (err) {
-        console.log(err);
     });
 };
 

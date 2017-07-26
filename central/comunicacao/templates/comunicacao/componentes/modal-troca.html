@@ -130,23 +130,28 @@
     });
 
     var confirmaTroca = function (id) {
-        if (confirm('Confirma a associação do identificador ' + id + " à essa central?")) {
-            $('#md-troca-seleciona').modal('hide');
-            trocaCentral({
-                'id': id,
-                'servidor': _dados['md-troca-servidor'],
-                'username': _dados['md-troca-username'],
-                'password': _dados['md-troca-password']
-            }).then(function(dados){
-                console.log(dados);
-                delete _dados;
-            }).catch(function(err){
-                console.log(err);
-                delete _dados;
-            });
-        }
-        
-
+        bootbox.confirm({
+            title: "Confirmação",
+            message: 'Confirma a associação do identificador ' + id + ' à essa central?',
+            size: 'small',
+            callback: function (result) {
+                if (result) {
+                    $('#md-troca-seleciona').modal('hide');
+                    trocaCentral({
+                        'id': id,
+                        'servidor': _dados['md-troca-servidor'],
+                        'username': _dados['md-troca-username'],
+                        'password': _dados['md-troca-password']
+                    }).then(function (dados) {
+                        delete _dados;
+                        location.reload();
+                    }).catch(function (err) {
+                        console.log(err);
+                        delete _dados;
+                    });
+                }
+            }
+        });
     };
 
 </script>
