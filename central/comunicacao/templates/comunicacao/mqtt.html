@@ -22,9 +22,15 @@
             <!--<div class="">-->
             <button class="btn btn-primary col-lg-3 col-md-3 col-sm-3 col-xs-12" type="button" data-href="#" data-toggle="modal" data-target=".md-mqtt" autofocus tabindex="1">Configurar</button>
             <div class="visible-xs-block">&nbsp</div>
+            {% if mqtt_identificador == '' %}
             <button class="btn btn-info col-lg-3 col-md-3 col-sm-3 col-xs-12" type="button" data-href="#" data-toggle="modal" data-target=".md-troca">Substituir Central</button>
             <div class="visible-xs-block">&nbsp</div>
-            <button class="btn btn-danger col-lg-3 col-md-3 col-sm-3 col-xs-12" type="button" data-href="#" data-toggle="modal" data-target="#confirm-new-key">Gerar nova chave</button>
+            {% endif %}
+            {% if mqtt_identificador != '' %}
+            <button class="btn btn-info col-lg-3 col-md-3 col-sm-3 col-xs-12" type="button" id="btn-new-key">Gerar nova chave</button>
+            <div class="visible-xs-block">&nbsp</div>
+            <button class="btn btn-danger col-lg-3 col-md-3 col-sm-3 col-xs-12" type="button" id="btn-disable">Desativar Central</button>
+            {% endif %}
             <!--</div>-->
         </div>
         <!-- x_content-->
@@ -35,8 +41,8 @@
 <script src="{% static 'js/CentralController.js' %}"></script>
 {% endblock content %} 
 {% block components %} 
-    {% include "comunicacao/componentes/modal-confirmacao.html" %} 
-    {% include "comunicacao/componentes/modal-edicao.html"%} 
-    {% include "comunicacao/componentes/modal-troca.html"%} 
+    {% include "comunicacao/componentes/modal-edicao.html"%}
+    {% if mqtt_identificador == '' %}
+    {% include "comunicacao/componentes/modal-troca.html"%}
+    {% endif %}
 {% endblock components %}
-

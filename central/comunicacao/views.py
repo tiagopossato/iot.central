@@ -40,6 +40,7 @@ def mqtt_config(request):
         identificador = request.POST.get('md-mqtt-identificador')
         if(identificador == None):
             raise KeyError('identificador')
+
         if(identificador == ''):
             print('identificador vazio, configurar nova central')
             try:
@@ -72,8 +73,13 @@ def mqtt_config(request):
                 except Exception as e:
                     return JsonResponse({'erro': str(e)})
         else:
-            config = Mqtt.objects.get()
-            print(config)
+            # TODO: Chama método para alterar dados da central no servidor
+            try:
+                config = Mqtt.objects.get()
+                print(config)
+                return JsonResponse({'erro': "Alteracao de dados ainda nao implementado"})
+            except Mqtt.DoesNotExist:
+                return JsonResponse({'erro': 'Erro catastrófico, entre em contato com o fornecedor'})            
 
         return redirect('/comunicacao')
     except KeyError as e:
