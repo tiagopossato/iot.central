@@ -6,6 +6,11 @@
             <div class="clearfix"></div>
         </div>
         <div class="x_content">
+            {% if mqtt_descricao != '' %}
+            <div class="alert alert-success" role="contentinfo">
+                <h4 id="mqtt-descricao">{{ mqtt_descricao }}</h4>
+            </div>
+            {% endif %}
             {% if mqtt_status == 0 %}
             <div class="alert alert-warning" role="contentinfo">
                 <h4 id="mqtt-estado">Não configurado</h4>
@@ -27,9 +32,9 @@
             <div class="visible-xs-block">&nbsp</div>
             {% endif %}
             {% if mqtt_identificador != '' %}
-            <button class="btn btn-info col-lg-3 col-md-3 col-sm-3 col-xs-12" type="button" id="btn-new-key">Gerar nova chave</button>
+            <button class="btn btn-info col-lg-3 col-md-3 col-sm-3 col-xs-12" type="button" id="btn-nova-chave">Gerar nova chave</button>
             <div class="visible-xs-block">&nbsp</div>
-            <button class="btn btn-danger col-lg-3 col-md-3 col-sm-3 col-xs-12" type="button" id="btn-disable">Inativar Central</button>
+            <button class="btn btn-danger col-lg-3 col-md-3 col-sm-3 col-xs-12" type="button" id="btn-inativar">Inativar Central</button>
             {% endif %}
             <!--</div>-->
         </div>

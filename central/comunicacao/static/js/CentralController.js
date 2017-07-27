@@ -48,7 +48,7 @@ var trocaCentral = function (params) {
 };
 
 window.onload = function () {
-    $('#btn-new-key').on('click', function (e) {
+    $('#btn-nova-chave').on('click', function (e) {
         bootbox.confirm({
             title: "Confirmação",
             message: "Gerar nova chave?",
@@ -61,7 +61,7 @@ window.onload = function () {
         });
     });
 
-    $('#btn-disable').on('click', function (e) {
+    $('#btn-inativar').on('click', function (e) {
         bootbox.confirm({
             title: "Confirmação",
             message: "Inativar esta central?",

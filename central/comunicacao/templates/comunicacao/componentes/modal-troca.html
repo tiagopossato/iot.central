@@ -147,6 +147,10 @@
                         location.reload();
                     }).catch(function (err) {
                         console.log(err);
+                        bootbox.alert({
+                            title: "Erro",
+                            message: err.responseJSON.erro
+                        });
                         delete _dados;
                     });
                 }
