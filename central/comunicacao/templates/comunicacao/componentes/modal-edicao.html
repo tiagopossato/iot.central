@@ -1,69 +1,94 @@
-<div class="modal fade md-mqtt" id="md-mqtt" tabindex="-2" role="dialog" aria-hidden="true" data-backdrop="static">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" tabindex="8"><span aria-hidden="true">×</span>
-                          </button>
-                <h4 class="modal-title" id="">Configurações</h4>
-            </div>
-            <div class="modal-body">
-                <form id="form-mqtt" method="post" action="mqtt-config" data-parsley-validate class="form-horizontal form-label-left">
-                    {% csrf_token %}
-                    <input type="hidden" name="md-mqtt-identificador" value="{{ mqtt_identificador }}">
-                    <div class="form-group">
-                        <label class="control-label col-md-3 col-sm-3 col-xs-12" for="md-mqtt-descricao">Descrição<span class="required">*</span>
-                        </label>
-                        <div class="col-md-6 col-sm-6 col-xs-12">
-                            <input type="text" id="md-mqtt-descricao" name="md-mqtt-descricao" required="required" class="form-control col-md-7 col-xs-12"
-                                tabindex="1" value="{{ mqtt_descricao }}">
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label class="control-label col-md-3 col-sm-3 col-xs-12" for="md-mqtt-servidor">Endereço do Servidor <span class="required">*</span>
-                        </label>
-                        <div class="col-md-6 col-sm-6 col-xs-12">
-                            <input type="text" id="md-mqtt-servidor" name="md-mqtt-servidor" required="required" class="form-control col-md-7 col-xs-12"
-                                tabindex="2" value="{{ mqtt_servidor }}">
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label for="md-mqtt-username" class="control-label col-md-3 col-sm-3 col-xs-12">Login</label>
-                        <div class="col-md-6 col-sm-6 col-xs-12">
-                            <input id="md-mqtt-username" name="md-mqtt-username" class="form-control col-md-7 col-xs-12" type="text" placeholder="Nome de usuário do servidor"
-                                tabindex="3" autocomplete="off">
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label for="md-mqtt-password" class="control-label col-md-3 col-sm-3 col-xs-12">Senha</label>
-                        <div class="col-md-6 col-sm-6 col-xs-12">
-                            <input id="md-mqtt-password" name="md-mqtt-password" class="form-control col-md-7 col-xs-12" type="password" placeholder="Senha do servidor"
-                                tabindex="4" autocomplete="off">
-                        </div>
-                    </div>
-                    <div class="ln_solid"></div>
-                    <div class="form-group">
-                        <div class="col-lg-offset-3 col-md-offset-3 col-sm-offset-1">
-                            <button class="btn btn-primary col-lg-3 col-md-3 col-sm-3 col-xs-12" type="button" data-dismiss="modal" tabindex="5">Cancelar</button>
-                            <div class="visible-xs-block">&nbsp</div>
-                            <button class="btn btn-info col-lg-3 col-md-3 col-sm-4 col-xs-12" type="reset" tabindex="6">Limpar Campos</button>
-                            <div class="visible-xs-block">&nbsp</div>
-                            <button class="btn btn-success col-lg-3 col-md-3 col-sm-3 col-xs-12" type="submit" tabindex="7">Enviar</button>
-                        </div>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-</div>
-
 <script type="text/javascript">
-    $('#md-mqtt').on('shown.bs.modal', function () {
-        $('#md-mqtt-descricao').focus();
-        $(".nav-sm .container.body .col-md-3.left_col").css('z-index', 1);
+    $('#btn-configurar').on('click', function (e) {
+        edicao().then(function (dados) {
+            autenticacao().then(function (auth) {
+                $.post('http://' + window.location.host + '/comunicacao/mqtt-config', {
+                    username: auth.username,
+                    password: auth.password,
+                    servidor: dados.servidor,
+                    descricao: dados.descricao,
+                    identificador: dados.identificador
+                }, function (res) {
+                    console.log(res);
+                    location.reload();
+                }).fail(function (err) {
+                    bootbox.alert({
+                        title: "Erro",
+                        message: err.responseJSON.erro
+                    });
+                    console.log(err);
+                });
+            }).catch(function (err) {
+                console.log(err);
+            });
+
+        }).catch(function (err) {
+            bootbox.alert({
+                title: "Erro",
+                message: err
+            });
+            console.log(err);
+
+        });
     });
 
-    $('#md-mqtt').on('hidden.bs.modal', function () {
-        $(".nav-sm .container.body .col-md-3.left_col").css('z-index', 9999);
-    });
+    var edicao = function () {
+        return new Promise(
+            function (resolve, reject) {
+                bootbox.confirm({
+                    title: 'Dados da central',
+                    size: 'medium',
+                    message: '\
+                        <form id="form-mqtt" action="" data-parsley-validate class="form-horizontal form-label-left">\
+                            <input type="hidden" name="md-mqtt-identificador" value="{{ mqtt_identificador }}">\
+                            <div class="form-group">\
+                                <label class="control-label col-md-3 col-sm-3 col-xs-12" for="md-mqtt-descricao">Descrição<span class="required">*</span>\
+                                </label>\
+                                <div class="col-md-6 col-sm-6 col-xs-12">\
+                                    <input type="text" id="md-mqtt-descricao" name="md-mqtt-descricao" required="required" class="form-control col-md-7 col-xs-12"\
+                                        tabindex="1" value="{{ mqtt_descricao }}">\
+                                </div>\
+                            </div>\
+                            <div class="form-group">\
+                                <label class="control-label col-md-3 col-sm-3 col-xs-12" for="md-mqtt-servidor">Endereço do Servidor <span class="required">*</span>\
+                                </label>\
+                                <div class="col-md-6 col-sm-6 col-xs-12">\
+                                    <input type="text" id="md-mqtt-servidor" name="md-mqtt-servidor" required="required" class="form-control col-md-7 col-xs-12"\
+                                        tabindex="2" value="{{ mqtt_servidor }}">\
+                                </div>\
+                            </div>\
+                        </form>',
+                    callback: function (result) {
+                        if (result == false) {
+                            reject("Cancelado");
+                        }
+
+                        $('#form-mqtt').unbind('submit');
+                        $('#form-mqtt').submit(function (event) {
+                            event.preventDefault();
+                            //serializa o form
+                            var unindexed_array = $(this).serializeArray();
+                            var _dados = {};
+                            $.map(unindexed_array, function (n, i) {
+                                _dados[n['name']] = n['value'];
+                            });
+                            try {
+                                var dados = {
+                                    'identificador': _dados['md-mqtt-identificador'],
+                                    'descricao': _dados['md-mqtt-descricao'],
+                                    'servidor': _dados['md-mqtt-servidor']
+                                }
+                                resolve(dados);
+                            }
+                            catch (e) {
+                                reject(e);
+                            }
+
+                        });
+                        $('#form-mqtt').submit();
+                    }
+                });
+            });
+    };
 
 </script>

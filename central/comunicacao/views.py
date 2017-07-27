@@ -22,27 +22,34 @@ def mqtt_status(request):
     })
 
 
-@login_required(login_url='/login')
+@ajax_login_required
+@method_decorator(csrf_exempt, name='dispatch')
 def mqtt_config(request):
     if(request.method != 'POST'):
         return HttpResponseNotAllowed(['POST'])
+    if(request.is_ajax() == False):
+        return JsonResponse(status=400, data={'erro': "Somente requisicoes AJAX!"})
     try:
-        username = request.POST.get('md-mqtt-username')
+        username = request.POST.get('username')
         if(username == None):
             raise KeyError('username')
-        password = request.POST.get('md-mqtt-password')
+        password = request.POST.get('password')
         if(password == None):
             raise KeyError('password')
-        servidor = request.POST.get('md-mqtt-servidor')
+        servidor = request.POST.get('servidor')
         if(servidor == None):
             raise KeyError('servidor')
-        descricao = request.POST.get('md-mqtt-descricao')
+        descricao = request.POST.get('descricao')
         if(descricao == None):
             raise KeyError('descricao')
-        identificador = request.POST.get('md-mqtt-identificador')
+        identificador = request.POST.get('identificador')
         if(identificador == None):
             raise KeyError('identificador')
-
+    except KeyError as e:
+        print('KeyError:' + str(e))
+        return JsonResponse(status=400, data={'erro': "Parâmetro " + str(e) + " não recebido"})
+    
+    try:
         if(identificador == ''):
             print('identificador vazio, configurar nova central')
             try:
@@ -58,17 +65,22 @@ def mqtt_config(request):
                     }
                     r = requests.post(servidor + '/central/nova', data=payload)
                     if(r.status_code == 200):
-                        dados = r.json()
                         try:
+                            dados = r.json()
+                            # Prossegue com o salvamento da central
+                            config = Mqtt(identificador=dados['id'], status=1, descricao=dados['descricao'],
+                                        servidor=servidor, keyFile=dados['keyFile'], certFile=dados['certFile'])
+                            config.save()
+                        except Exception as e:
+                            return JsonResponse(status=400, data={'erro': str(e)})
+                    elif(r.status_code == 400):
+                        try:
+                            dados = r.json()
                             if(dados['erro']):
                                 print(dados['erro'])
                                 return JsonResponse(status=400, data=dados, safe=False)
                         except Exception as e:
-                            print('ok')
-                        # Prossegue com o salvamento da central
-                        config = Mqtt(identificador=dados['id'], status=1, descricao=dados['descricao'],
-                                      servidor=servidor, keyFile=dados['keyFile'], certFile=dados['certFile'])
-                        config.save()
+                            print(e)                        
                     else:
                         return JsonResponse(status=400, data={'erro': r.status_code})
                 except requests.exceptions.ConnectionError as e:
@@ -83,12 +95,9 @@ def mqtt_config(request):
                 return JsonResponse(status=400, data={'erro': "Alteracao de dados ainda nao implementado"})
             except Mqtt.DoesNotExist:
                 return JsonResponse(status=400, data={'erro': 'Erro catastrófico, entre em contato com o fornecedor'})
-
-        return redirect('/comunicacao')
-    except KeyError as e:
-        print('KeyError:' + str(e))
-        return redirect('/comunicacao')
-
+        return JsonResponse(status=200, data={})
+    except Exception as e:
+        return JsonResponse(status=400, data={'erro':str(e)})
 
 @ajax_login_required
 def get_centrais_inativas(request):
