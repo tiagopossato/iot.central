@@ -48,7 +48,7 @@ def mqtt_config(request):
     except KeyError as e:
         print('KeyError:' + str(e))
         return JsonResponse(status=400, data={'erro': "Parâmetro " + str(e) + " não recebido"})
-    
+
     try:
         if(identificador == ''):
             print('identificador vazio, configurar nova central')
@@ -69,7 +69,7 @@ def mqtt_config(request):
                             dados = r.json()
                             # Prossegue com o salvamento da central
                             config = Mqtt(identificador=dados['id'], status=1, descricao=dados['descricao'],
-                                        servidor=servidor, keyFile=dados['keyFile'], certFile=dados['certFile'])
+                                          servidor=servidor, keyFile=dados['keyFile'], certFile=dados['certFile'])
                             config.save()
                         except Exception as e:
                             return JsonResponse(status=400, data={'erro': str(e)})
@@ -80,7 +80,7 @@ def mqtt_config(request):
                                 print(dados['erro'])
                                 return JsonResponse(status=400, data=dados, safe=False)
                         except Exception as e:
-                            print(e)                        
+                            print(e)
                     else:
                         return JsonResponse(status=400, data={'erro': r.status_code})
                 except requests.exceptions.ConnectionError as e:
@@ -91,13 +91,41 @@ def mqtt_config(request):
             # TODO: Chama método para alterar dados da central no servidor
             try:
                 config = Mqtt.objects.get()
-                print(config)
-                return JsonResponse(status=400, data={'erro': "Alteracao de dados ainda nao implementado"})
+                payload = {
+                    'username': username,
+                    'password': password,
+                    'descricao': descricao
+                }
+                r = requests.post(servidor + '/central/' +
+                                  str(config.identificador) + '/editar', data=payload)
+                if(r.status_code == 200):
+                    try:
+                        # Prossegue com o salvamento da central
+                        config.descricao = descricao
+                        config.save()
+                    except Exception as e:
+                        return JsonResponse(status=400, data={'erro': str(e)})
+                elif(r.status_code == 400):
+                    try:
+                        dados = r.json()
+                        if(dados['erro']):
+                            print(dados['erro'])
+                            return JsonResponse(status=400, data=dados, safe=False)
+                    except Exception as e:
+                        print(e)
+                else:
+                    return JsonResponse(status=400, data={'erro': r.status_code})
+            except requests.exceptions.ConnectionError as e:
+                return JsonResponse(status=400, data={'erro': 'Erro na conexão com o servidor'})
+            except Exception as e:
+                return JsonResponse(status=400, data={'erro': str(e)})
             except Mqtt.DoesNotExist:
                 return JsonResponse(status=400, data={'erro': 'Erro catastrófico, entre em contato com o fornecedor'})
+        # Se tudo ocorreu certo, retorna 200
         return JsonResponse(status=200, data={})
     except Exception as e:
-        return JsonResponse(status=400, data={'erro':str(e)})
+        return JsonResponse(status=400, data={'erro': str(e)})
+
 
 @ajax_login_required
 def get_centrais_inativas(request):
@@ -181,7 +209,7 @@ def inativar_central(request):
             except Exception as e:
                 print(e)
         else:
-            return JsonResponse(status=400, data={'erro': r.status_code})        
+            return JsonResponse(status=400, data={'erro': r.status_code})
         if(r.status_code == 404):
             return JsonResponse(status=400, data={'erro': 'Servidor não encontrado'})
         else:
@@ -249,3 +277,57 @@ def reativar_central(request):
         return JsonResponse(status=400, data={'erro': 'Erro na conexão com o servidor'})
     except Exception as e:
         return JsonResponse(status=400, data={'erro': str(e)})
+
+
+@ajax_login_required
+def novo_certificado(request):
+    if(request.method != 'GET'):
+        return HttpResponseNotAllowed(['GET'])
+    if(request.is_ajax() == False):
+        return JsonResponse(status=400, data={'erro': "Somente requisicoes AJAX!"})
+    try:
+        username = request.GET.get('username')
+        if(username == None):
+            raise KeyError('username')
+        password = request.GET.get('password')
+        if(password == None):
+            raise KeyError('password')
+    except KeyError as e:
+        print(e)
+        return JsonResponse(status=400, data={'erro': "Parâmetro " + str(e) + " não recebido"})
+
+    try:
+        config = Mqtt.objects.get()
+
+        payload = {
+            'username': username,
+            'password': password,
+        }
+        r = requests.get(config.servidor + '/central/' +
+                         str(config.identificador) + '/novo-certificado', params=payload)
+        if(r.status_code == 200):
+            try:
+                dados = r.json()
+                # Prossegue com o salvamento da central
+                config.keyFile = keyFile=dados['keyFile']
+                config.certFile = certFile=dados['certFile']
+                config.save()
+                return JsonResponse(status=200, data={})
+            except Exception as e:
+                return JsonResponse(status=400, data={'erro': str(e)})
+        elif(r.status_code == 400):
+            try:
+                dados = r.json()
+                if(dados['erro']):
+                    print(dados['erro'])
+                    return JsonResponse(status=400, data=dados, safe=False)
+            except Exception as e:
+                return JsonResponse(status=400, data={'erro': str(e)})
+        else:
+            return JsonResponse(status=400, data={'erro': r.status_code})
+    except requests.exceptions.ConnectionError as e:
+        return JsonResponse(status=400, data={'erro': 'Erro na conexão com o servidor'})
+    except Exception as e:
+        return JsonResponse(status=400, data={'erro': str(e)})
+    except Mqtt.DoesNotExist:
+        return JsonResponse(status=400, data={'erro': "Não existe configuração na central"})

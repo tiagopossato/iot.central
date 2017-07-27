@@ -55,7 +55,21 @@ window.onload = function () {
             size: 'small',
             callback: function (result) {
                 if (result) {
-                    console.log("Gerar nova chave");
+                    autenticacao().then(function (auth) {
+                        $.get('http://' + window.location.host + '/comunicacao/novo-certificado', { username: auth.username, password: auth.password }, function (res) {
+                            console.log(res);
+                            location.reload();
+                        }).fail(function (err) {
+                            console.log(err);
+                            bootbox.alert({
+                                title: "Erro",
+                                message: err.responseJSON
+                            });
+                            console.log(err);
+                        });
+                    }).catch(function (err) {
+                        console.log(err);
+                    });
                 }
             }
         });
