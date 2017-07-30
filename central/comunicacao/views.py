@@ -69,7 +69,7 @@ def mqtt_config(request):
                             dados = r.json()
                             # Prossegue com o salvamento da central
                             config = Mqtt(identificador=dados['id'], status=1, descricao=dados['descricao'],
-                                          servidor=servidor, keyFile=dados['keyFile'], certFile=dados['certFile'])
+                                          servidor=servidor, keyFile=dados['keyFile'], certFile=dados['certFile'], caFile=dados['caFile'])
                             config.save()
                         except Exception as e:
                             return JsonResponse(status=400, data={'erro': str(e)})
@@ -181,12 +181,7 @@ def inativar_central(request):
         return JsonResponse(status=400, data={'erro': "Parâmetro " + str(e) + " não recebido"})
 
     try:
-        config = None
-        try:
-            config = Mqtt.objects.get()
-        except Mqtt.DoesNotExist:
-            return JsonResponse(status=400, data={'erro': "Não existe configuração na central"})
-
+        config = Mqtt.objects.get()
         payload = {
             'username': username,
             'password': password
@@ -214,6 +209,8 @@ def inativar_central(request):
             return JsonResponse(status=400, data={'erro': 'Servidor não encontrado'})
         else:
             return JsonResponse(status=400, data={'erro': r.status_code})
+    except Mqtt.DoesNotExist:
+        return JsonResponse(status=400, data={'erro': "Não existe configuração na central"})
     except requests.exceptions.ConnectionError as e:
         return JsonResponse(status=400, data={'erro': 'Erro na conexão com o servidor'})
     except Exception as e:
@@ -260,7 +257,7 @@ def reativar_central(request):
             dados = r.json()
             # Prossegue com o salvamento da central
             config = Mqtt(identificador=dados['id'], status=1, descricao=dados['descricao'],
-                          servidor=servidor, keyFile=dados['keyFile'], certFile=dados['certFile'])
+                          servidor=servidor, keyFile=dados['keyFile'], certFile=dados['certFile'], caFile=dados['caFile'])
             config.save()
             return JsonResponse(status=200, data={})
         if(r.status_code == 400):
@@ -309,8 +306,9 @@ def novo_certificado(request):
             try:
                 dados = r.json()
                 # Prossegue com o salvamento da central
-                config.keyFile = keyFile=dados['keyFile']
-                config.certFile = certFile=dados['certFile']
+                config.keyFile = dados['keyFile']
+                config.certFile = dados['certFile']
+                config.caFile = dados['caFile']
                 config.save()
                 return JsonResponse(status=200, data={})
             except Exception as e:

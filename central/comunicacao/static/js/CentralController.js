@@ -28,7 +28,6 @@ var getCentraisInativas = function (params) {
  */
 var trocaCentral = function (params) {
     // TODO: Validar os parâmetros recebidos
-    console.log(params);
     return new Promise(
         function (resolve, reject) {
             $.post('http://' + window.location.host + '/comunicacao/reativar', { username: params.username, password: params.password, servidor: params.servidor, id: params.id }, function (res) {
@@ -63,11 +62,14 @@ window.onload = function () {
                             console.log(err);
                             bootbox.alert({
                                 title: "Erro",
-                                message: err.responseJSON
+                                message: err.responseJSON.erro
                             });
-                            console.log(err);
                         });
                     }).catch(function (err) {
+                        bootbox.alert({
+                            title: "Erro",
+                            message: err.responseJSON.erro
+                        });
                         console.log(err);
                     });
                 }
@@ -84,7 +86,6 @@ window.onload = function () {
                 if (result) {
                     autenticacao().then(function (auth) {
                         $.get('http://' + window.location.host + '/comunicacao/inativar', { username: auth.username, password: auth.password }, function (res) {
-                            console.log(res);
                             location.reload();
                         }).fail(function (err) {
                             bootbox.alert({
