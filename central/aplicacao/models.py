@@ -400,26 +400,21 @@ class Leitura(models.Model):
         verbose_name_plural = 'Leituras'
 
 
-# class AlarmeAnalogico(models.Model):
-#     codigoAlarme = models.CharField(primary_key=True, max_length=36)
-#     mensagemAlarme = models.CharField('Mensagem do alarme', max_length=255)
-#     prioridadeAlarme = models.IntegerField('Prioridade do alarme')
-#     valorAlarmeOn = models.FloatField('Valor para ativar o alarme')
-#     valorAlarmeOff = models.FloatField('Valor para desativar o alarme')
-#     ambiente = models.ForeignKey(
-#         Ambiente, to_field='id', on_delete=models.PROTECT)
-#     grandeza = models.ForeignKey(
-#         Grandeza, to_field='codigo', on_delete=models.PROTECT)
+class AlarmeAnalogico(models.Model):
+    codigoAlarme = models.UUIDField('Coódigo', primary_key=True, default=uuid.uuid4)
+    mensagemAlarme = models.CharField('Mensagem do alarme', max_length=255)
+    prioridadeAlarme = models.IntegerField('Prioridade do alarme')
+    valorAlarmeOn = models.FloatField('Valor para ativar o alarme')
+    valorAlarmeOff = models.FloatField('Valor para desativar o alarme')
+    
+    ambiente = models.ForeignKey(
+        Ambiente, to_field='id', on_delete=models.PROTECT)
+    grandeza = models.ForeignKey(
+        Grandeza, to_field='codigo', on_delete=models.PROTECT)
 
-#     # Gera uma uuid para o id do alarme
-#     def __init__(self, *args, **kwargs):
-#         super(AlarmeAnalogico, self).__init__(*args, **kwargs)
-#         if(self.codigoAlarme == ''):
-#             self.codigoAlarme = str(uuid.uuid4())
+    class Meta:
+        verbose_name = 'Alarme Analógico'
+        verbose_name_plural = 'Alarmes Analógicos'
 
-#     class Meta:
-#         verbose_name = 'Alarme Analógico'
-#         verbose_name_plural = 'Alarmes Analógicos'
-
-#     def __str__(self):
-#         return str(self.mensagemAlarme) + " [on:" + str(self.valorAlarmeOn) + ", off:" + str(self.valorAlarmeOff) + "]"
+    def __str__(self):
+        return str(self.mensagemAlarme) + " [on:" + str(self.valorAlarmeOn) + ", off:" + str(self.valorAlarmeOff) + "]"
