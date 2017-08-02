@@ -1,7 +1,7 @@
 import datetime
 import time
-from central.models import Log
-from central.util import salvaArquivo
+from aplicacao.models import Log
+from aplicacao.util import salvaArquivo
 
 """
 Salva um log na tabela de logs

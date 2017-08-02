@@ -23,6 +23,7 @@
             });
 
         }).catch(function (err) {
+            if(err == 'Cancelado') return;
             bootbox.alert({
                 title: "Erro",
                 message: err

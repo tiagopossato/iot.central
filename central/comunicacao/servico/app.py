@@ -100,7 +100,7 @@ except IndexError as e:
     exit(-1)
 
 try:
-    client.connect('mqtt-hub.nectar.videira.ifc.edu.br', 8883, 60)
+    client.connect(urlServidor, 8883, 60)
 except SSLError as e:
     if(e.reason == 'SSLV3_ALERT_CERTIFICATE_REVOKED'):
         print('O certificado usado foi revogado!')
