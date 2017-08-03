@@ -87,9 +87,9 @@ class AlarmeAdmin(admin.ModelAdmin):
 
 
 class AmbienteAdmin(admin.ModelAdmin):
-    list_display = ('nome', 'id', 'ativo',)
+    list_display = ('nome', 'ativo',)
     ordering = ('nome',)
-    readonly_fields = ('id', 'createdAt', 'updatedAt',)
+    readonly_fields = ('uid', 'createdAt', 'updatedAt',)
 
 
 class ConfiguracoesAdmin(admin.ModelAdmin):
@@ -109,18 +109,24 @@ class GrandezaAdmin(admin.ModelAdmin):
     ordering = ('codigo',)
 
 
+class SensorGrandezaInline(admin.StackedInline):
+    readonly_fields = ('sync','createdAt','updatedAt')
+    model = SensorGrandeza
+    can_delete = True
+    verbose_name_plural = 'Grandezas do Sensor'
+    extra = 0
+
 class SensorAdmin(admin.ModelAdmin):
     readonly_fields = ('sync', 'uid',)
+    inlines = (SensorGrandezaInline,)
     list_display = ('descricao', 'idRede', 'ambiente', 'intervaloLeitura',)
     ordering = ('idRede',)
-
 
 class SensorGrandezaAdmin(admin.ModelAdmin):
     readonly_fields = ('sync',)
     list_display = ('sensor', 'grandeza', 'curvaCalibracao', 'obs',)
     ordering = ('sensor',)
     list_filter = ('sensor', 'grandeza',)
-
 
 class LeituraAdmin(admin.ModelAdmin):
     readonly_fields = ('valor', 'createdAt', 'sync',

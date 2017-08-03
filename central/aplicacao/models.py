@@ -4,6 +4,7 @@ from datetime import datetime
 from time import time
 import uuid
 
+
 class Log(models.Model):
     tipo = models.CharField(max_length=6)
     mensagem = models.CharField(max_length=255)
@@ -31,7 +32,7 @@ class Configuracoes(models.Model):
 
 
 class Ambiente(models.Model):
-    id = models.UUIDField(
+    uid = models.UUIDField(
         'Identificador', primary_key=True, default=uuid.uuid4)
     nome = models.CharField('Nome', max_length=255, null=False)
     createdAt = models.DateTimeField('Criado em', default=now)
@@ -57,29 +58,6 @@ class Ambiente(models.Model):
     class Meta:
         verbose_name = 'Ambiente'
         verbose_name_plural = 'Ambientes'
-
-
-class Alarme(models.Model):
-    uid = models.CharField(max_length=48, null=True,
-                           blank=True)
-    # usado para controle entre alarmes digitais a analógicos
-    codigoAlarme = models.UUIDField('Codigo', primary_key=True, default=uuid.uuid4)
-    mensagemAlarme = models.CharField(max_length=255, null=False)
-    prioridadeAlarme = models.IntegerField(null=False)
-    ativo = models.BooleanField(default=False, null=False)
-    tempoAtivacao = models.DateTimeField(null=False)
-    syncAtivacao = models.BooleanField(default=False, null=False)
-    tempoInativacao = models.DateTimeField(null=True)
-    syncInativacao = models.BooleanField(default=False, null=False)
-
-    ambiente = models.ForeignKey(Ambiente, on_delete=models.PROTECT)
-
-    def __str__(self):
-        return self.mensagemAlarme
-
-    class Meta:
-        verbose_name = 'Alarme'
-        verbose_name_plural = 'Alarmes'
 
 
 # class PlacaExpansaoDigital(models.Model):
@@ -297,16 +275,18 @@ class Grandeza(models.Model):
 
 class Sensor(models.Model):
     idRede = models.IntegerField('ID de rede', null=False, unique=True)
-    uid = models.UUIDField('Identificador', primary_key=True, default=uuid.uuid4)
-    descricao = models.CharField('Descrição', max_length=255, unique=True, default='')
-    intervaloLeitura = models.IntegerField('Intervalo de leitura', null=False, default=2)
+    uid = models.UUIDField(
+        'Identificador', primary_key=True, default=uuid.uuid4)
+    descricao = models.CharField(
+        'Descrição', max_length=255, unique=True, default='')
+    intervaloLeitura = models.IntegerField(
+        'Intervalo de leitura', null=False, default=2)
     createdAt = models.DateTimeField('Criado em', default=now)
     updatedAt = models.DateTimeField('Alterado em', auto_now=True)
     sync = models.BooleanField(default=False, null=False)
 
-    ambiente = models.ForeignKey(
-        Ambiente, to_field='id', on_delete=models.PROTECT, default=0)
-    
+    ambiente = models.ForeignKey(Ambiente, on_delete=models.PROTECT)
+
     grandezas = models.ManyToManyField(Grandeza, through='SensorGrandeza')
 
     def __init__(self, *args, **kwargs):
@@ -316,7 +296,7 @@ class Sensor(models.Model):
     def save(self, *args, **kwargs):
         # Call the "real" save() method.
         super(Sensor, self).save(*args, **kwargs)
-            # altera os dados do sensor na placa física
+        # altera os dados do sensor na placa física
         # try:
         #     if(self.id != None):
         #         from central.placaBase.placaBase import PlacaBase
@@ -358,12 +338,12 @@ class SensorGrandeza(models.Model):
     obs = models.CharField("Observação", max_length=255, blank=True, null=True)
     createdAt = models.DateTimeField('Criado em', default=now)
     updatedAt = models.DateTimeField('Alterado em', auto_now=True)
-    curvaCalibracao = models.CharField('Curva de calibração', max_length=255)
+    curvaCalibracao = models.CharField('Curva de calibração', max_length=255, default='x')
     sync = models.BooleanField(default=False, null=False)
 
     grandeza = models.ForeignKey(
         Grandeza, to_field='codigo', on_delete=models.PROTECT)
-    
+
     # TODO: Rever o campo da associação
     # sensor = models.ForeignKey(
     #     Sensor, to_field='idRede', on_delete=models.PROTECT)
@@ -384,16 +364,15 @@ class Leitura(models.Model):
     createdAt = models.DateTimeField('Criado em', default=now)
     sync = models.BooleanField(default=False, null=False)
 
-    ambiente = models.ForeignKey(
-        Ambiente, to_field='id', on_delete=models.PROTECT, default=0)
-    grandeza = models.ForeignKey(
-        Grandeza, to_field='codigo', on_delete=models.PROTECT)
+    ambiente = models.ForeignKey(Ambiente, on_delete=models.PROTECT, default=0)
+    grandeza = models.ForeignKey(Grandeza, to_field='codigo', on_delete=models.PROTECT)
     # TODO: Rever o campo da associação
-    sensor = models.ForeignKey(
-        Sensor, to_field='idRede', on_delete=models.PROTECT)
+    # sensor = models.ForeignKey(
+    #     Sensor, to_field='idRede', on_delete=models.PROTECT)
+    sensor = models.ForeignKey(Sensor, on_delete=models.PROTECT)
 
     def __str__(self):
-        return str(self.valor) + " " + str(self.grandeza.unidade) + " Sensor:" + str(self.sensor_id)
+        return str(self.valor) + " " + str(self.grandeza.unidade) + " Sensor:" + str(self.sensor.idRede)
 
     class Meta:
         verbose_name = 'Leitura'
@@ -401,20 +380,42 @@ class Leitura(models.Model):
 
 
 class AlarmeAnalogico(models.Model):
-    codigoAlarme = models.UUIDField('Coódigo', primary_key=True, default=uuid.uuid4)
+    codigoAlarme = models.UUIDField(
+        'Código', primary_key=True, default=uuid.uuid4)
     mensagemAlarme = models.CharField('Mensagem do alarme', max_length=255)
     prioridadeAlarme = models.IntegerField('Prioridade do alarme')
     valorAlarmeOn = models.FloatField('Valor para ativar o alarme')
     valorAlarmeOff = models.FloatField('Valor para desativar o alarme')
-    
-    ambiente = models.ForeignKey(
-        Ambiente, to_field='id', on_delete=models.PROTECT)
+
+    ambiente = models.ForeignKey(Ambiente, on_delete=models.PROTECT)
     grandeza = models.ForeignKey(
         Grandeza, to_field='codigo', on_delete=models.PROTECT)
 
     class Meta:
         verbose_name = 'Alarme Analógico'
-        verbose_name_plural = 'Alarmes Analógicos'
+        verbose_name_plural = 'Cadastro de Alarmes Analógicos'
 
     def __str__(self):
         return str(self.mensagemAlarme) + " [on:" + str(self.valorAlarmeOn) + ", off:" + str(self.valorAlarmeOff) + "]"
+
+class Alarme(models.Model):
+    uid = models.CharField(max_length=48, null=True, blank=True)
+    # usado para controle entre alarmes digitais a analógicos
+    codigoAlarme = models.UUIDField(
+        'Codigo', primary_key=True, default=uuid.uuid4)
+    mensagemAlarme = models.CharField(max_length=255, null=False)
+    prioridadeAlarme = models.IntegerField(null=False)
+    ativo = models.BooleanField(default=False, null=False)
+    tempoAtivacao = models.DateTimeField(null=False)
+    syncAtivacao = models.BooleanField(default=False, null=False)
+    tempoInativacao = models.DateTimeField(null=True)
+    syncInativacao = models.BooleanField(default=False, null=False)
+
+    ambiente = models.ForeignKey(Ambiente, on_delete=models.PROTECT)
+
+    def __str__(self):
+        return self.mensagemAlarme
+
+    class Meta:
+        verbose_name = 'Alarme'
+        verbose_name_plural = 'Alarmes'

@@ -63,7 +63,7 @@ def mqtt_config(request):
                         'password': password,
                         'descricao': descricao
                     }
-                    r = requests.post(servidor + '/central/nova', data=payload)
+                    r = requests.post(servidor + '/central/nova', data=payload, verify=False)
                     if(r.status_code == 200):
                         try:
                             dados = r.json()
@@ -97,7 +97,7 @@ def mqtt_config(request):
                     'descricao': descricao
                 }
                 r = requests.post(servidor + '/central/' +
-                                  str(config.identificador) + '/editar', data=payload)
+                                  str(config.identificador) + '/editar', data=payload, verify=False)
                 if(r.status_code == 200):
                     try:
                         # Prossegue com o salvamento da central
@@ -152,7 +152,7 @@ def get_centrais_inativas(request):
             'username': username,
             'password': password
         }
-        r = requests.get(servidor + '/central/inativas', params=payload)
+        r = requests.get(servidor + '/central/inativas', params=payload, verify=False)
         if(r.status_code == 200):
             return JsonResponse(data=r.json(), safe=False)
         else:
@@ -187,7 +187,7 @@ def inativar_central(request):
             'password': password
         }
         r = requests.post(config.servidor + '/central/' +
-                          str(config.identificador) + '/inativar', data=payload)
+                          str(config.identificador) + '/inativar', data=payload, verify=False)
         if(r.status_code == 200):
             dados = r.json()
             # Apaga as configurações da central
@@ -252,7 +252,7 @@ def reativar_central(request):
             'password': password
         }
         r = requests.post(servidor + '/central/' +
-                          id + '/reativar', data=payload)
+                          id + '/reativar', data=payload, verify=False)
         if(r.status_code == 200):
             dados = r.json()
             # Prossegue com o salvamento da central
@@ -301,7 +301,7 @@ def novo_certificado(request):
             'password': password,
         }
         r = requests.get(config.servidor + '/central/' +
-                         str(config.identificador) + '/novo-certificado', params=payload)
+                         str(config.identificador) + '/novo-certificado', params=payload, verify=False)
         if(r.status_code == 200):
             try:
                 dados = r.json()
