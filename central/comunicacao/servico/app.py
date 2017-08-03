@@ -13,6 +13,8 @@ os.environ["DJANGO_SETTINGS_MODULE"] = "central.settings"
 django.setup()
 
 from comunicacao.models import Mqtt
+from aplicacao.models import Leitura
+
 try:
     config = Mqtt.objects.get()
 except Mqtt.DoesNotExist:
@@ -20,19 +22,18 @@ except Mqtt.DoesNotExist:
     exit(-1)
 
 
-def enviaMensagemVelho(client):
-    message = {
-        "ambiente": "8cb54a24-a51e-4ac8-8113-12f12c9596da",
-        "sensor": 1,
-        "createdAt": 1496918500,
-        "grandeza": 3303,
-        "valor": random.uniform(15.5, 31.9)
-    }
-    client.publish("/central/" + str(config.identificador) +
-                   "/ambiente/b8b35b7f79c447748ac456e08de34a50/grandeza/3303/sensor/4", payload=str(message), qos=0, retain=True)
+def enviaMensagem(client):
+    leituras = Leitura.objects.filter(sync=False)
 
-# The callback for when the client receives a CONNACK response from the server.
-
+    for leitura in leituras:
+        message = leitura.valor
+        r = client.publish("/central/" + str(config.identificador) +
+                    "/ambiente/" + str(leitura.ambiente.uid) +
+                    "/grandeza/" + str(leitura.grandeza_id) +
+                    "/sensor/" + str(leitura.sensor.uid), payload=str(message), qos=0, retain=True)
+        if(r[0]==0):
+            leitura.sync = True
+            leitura.save()
 
 def on_connect(client, userdata, flags, rc):
     print("Connected with result code " + str(rc))
@@ -41,13 +42,10 @@ def on_connect(client, userdata, flags, rc):
         # client.disconnect()
         exit()
         return
-    enviaMensagemVelho(client)
-
-# The callback for when a PUBLISH message is received from the server.
+    enviaMensagem(client)
 
 
 def on_message(client, userdata, msg):
-    # print(dir(msg))
     try:
         print(msg.topic + ": " + msg.payload.decode('utf-8'))
     except Exception as e:
@@ -55,10 +53,9 @@ def on_message(client, userdata, msg):
 
 
 def on_publish(client, userdata, mid):
-    # client.disconnect()
-    sleep(5)
-    enviaMensagemVelho(client)
-
+    print(mid)
+    sleep(1)
+    enviaMensagem(client)
 
 def on_disconnect(client, userdata, rc):
     client.reconnect()
@@ -71,10 +68,11 @@ client.tls_set(ca_certs=config.caFile, certfile=config.certFile,
                keyfile=config.keyFile, cert_reqs=CERT_REQUIRED, tls_version=PROTOCOL_TLSv1_2)
 
 client.on_connect = on_connect
-#client.on_message = on_message
+client.on_message = on_message
 
 client.on_publish = on_publish
 client.on_disconnect = on_disconnect
+
 # Extrai o endereço do servidor, excluindo um possível 'http(s)://' e porta
 try:
     # http(s)://
@@ -83,7 +81,7 @@ try:
         # tinha 'http(s)://'
         sp = sp[1]
 
-    if(type(sp)==list):
+    if(type(sp) == list):
         sp = sp[0]
     # :porta
     sp = sp.split(':')
@@ -91,9 +89,9 @@ try:
         # tinha ':porta'
         sp = sp[0]
 
-    if(type(sp)==list):
+    if(type(sp) == list):
         sp = sp[0]
-    
+
     urlServidor = sp
 except IndexError as e:
     print(e)
