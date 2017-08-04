@@ -24,7 +24,8 @@ while(True):
             print(l)
         except Exception:
             continue
-        sleep(random.uniform(5.5, 10.1))
+        # sleep(random.uniform(1.5, 5.1))
+        sleep(1)
     except KeyboardInterrupt:
         break
 

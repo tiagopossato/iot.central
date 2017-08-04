@@ -23,17 +23,26 @@ except Mqtt.DoesNotExist:
 
 
 def enviaMensagem(client):
+    # while(True):
     leituras = Leitura.objects.filter(sync=False)
-
     for leitura in leituras:
-        message = leitura.valor
-        r = client.publish("/central/" + str(config.identificador) +
+        message = {
+            'valor':leitura.valor,
+            'createdAt': str(leitura.createdAt.timestamp())
+        }
+        try:
+            r = client.publish("/central/" + str(config.identificador) +
                     "/ambiente/" + str(leitura.ambiente.uid) +
                     "/grandeza/" + str(leitura.grandeza_id) +
-                    "/sensor/" + str(leitura.sensor.uid), payload=str(message), qos=0, retain=True)
-        if(r[0]==0):
-            leitura.sync = True
-            leitura.save()
+                    "/sensor/" + str(leitura.sensor.uid), payload=str(message), qos=2, retain=True)
+            print(r)
+            if(r[0]==0):
+                leitura.sync = True
+                leitura.save()
+        except Exception as e:
+            print("Aqui")
+            print(e)
+        # sleep(.001)
 
 def on_connect(client, userdata, flags, rc):
     print("Connected with result code " + str(rc))
@@ -53,11 +62,13 @@ def on_message(client, userdata, msg):
 
 
 def on_publish(client, userdata, mid):
-    print(mid)
-    sleep(1)
-    enviaMensagem(client)
+    # print(mid)
+    # sleep(1)
+    # enviaMensagem(client)
+    pass
 
 def on_disconnect(client, userdata, rc):
+    # exit(-1)
     client.reconnect()
 
 
@@ -105,7 +116,8 @@ except SSLError as e:
         exit(-1)
 except ConnectionRefusedError:
     print('Falha na conexao com o servidor')
-    exit(-1)
+    sleep(1)
+    client.reconnect()
 except Exception as e:
     print('Erro: ' + str(e))
     exit(-1)
@@ -116,7 +128,10 @@ except Exception as e:
 # manual interface.
 
 try:
-    client.loop_forever()
+    while(True):
+    # client.loop_forever()
+        enviaMensagem(client)
+        client.loop(1)
 except SSLError as e:
     if(e.reason == 'SSLV3_ALERT_CERTIFICATE_REVOKED'):
         print('O certificado usado foi revogado!')
