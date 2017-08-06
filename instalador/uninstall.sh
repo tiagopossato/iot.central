@@ -25,6 +25,8 @@ fi
 rm /etc/supervisor/conf.d/centralWeb.conf
 supervisorctl reload
 
+rm -rf /var/www/static
+
 rm /etc/nginx/sites-enabled/central_nginx.conf
 ln -s /etc/nginx/sites-available/default /etc/nginx/sites-enabled/
 systemctl restart nginx

@@ -83,19 +83,28 @@ sed -i '/DEBUG = True/c\DEBUG = False' /opt/iot.central/central/settings.py
 echo "..Colentando arquivos estaticos"
 python3 /opt/iot.central/central/manage.py collectstatic
 
-echo "...Alterando permissoes"
-chown central:www-data /opt/iot.central -R
-chmod 0750 /opt/iot.central/central -R
+# Cria pasta para os certificados
+mkdir /opt/iot.central/central/certs
 
-chown central:nogroup /opt/iot.central/banco -R
+echo "...Alterando permissoes"
+
+# Tudo pertence ao usuario da central
+chown central:nogroup /opt/iot.central -R
+# Todos podem acessar o primeiro nivel de pastas
+chmod 0755 /opt/iot.central
+
+# Somente root e o usuario da central podem acessar a pasta e subpastas
+#  da aplicacao e do banco
+chmod 0700 /opt/iot.central/central -R
 chmod 0700 /opt/iot.central/banco -R
 
-mkdir /opt/iot.central/central/certs
-chown central:nogroup /opt/iot.central/central/certs -R
-chmod 0700 /opt/iot.central/central/certs -R
+# Os usuarios do grupo www-data também podem escrever na pasta de log
+chown central:www-data /opt/iot.central/log -R
+# Todos os usuarios podem visualizar os arquivos de log
+chmod 0775 /opt/iot.central/log -R
+# Somente o usuario www-data pode acessar a pasta de arquivos estaticos
+chown www-data:www-data /var/www/static
 
-chown central /opt/iot.central/log -R
-chmod 0666 /opt/iot.central/log -R
 
 cp centralWeb.conf /etc/supervisor/conf.d/centralWeb.conf
 supervisorctl reload
