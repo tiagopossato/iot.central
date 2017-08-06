@@ -10,7 +10,8 @@ fi
 
 #para o servico caso estiver rodando
 echo ".Parando o serviço"
-service central stop
+supervisorctl stop centralWeb
+killall gunicorn
 
 #verifica se existe uma instalação
 if [ -d /opt/iot.central ]; then
@@ -21,12 +22,11 @@ if [ -d /opt/iot.central ]; then
 fi
 
 #remove servicos no supervisord
-rm /etc/supervisor/conf.d/central.conf
+rm /etc/supervisor/conf.d/centralWeb.conf
 supervisorctl reload
 
-echo "..Desinstalando serviço"
-update-rc.d -f central remove
-#remove arquivo
-rm /etc/init.d/central
+rm /etc/nginx/sites-enabled/central_nginx.conf
+ln -s /etc/nginx/sites-available/default /etc/nginx/sites-enabled/
+systemctl restart nginx
 
 echo "...Encerrado"
