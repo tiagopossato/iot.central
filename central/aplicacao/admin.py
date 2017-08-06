@@ -43,11 +43,11 @@ class AlarmeAdmin(admin.ModelAdmin):
         if(obj.tempoInativacao):
             return obj.tempoInativacao.strftime("%d %b %Y %H:%M:%S")
 
-    readonly_fields = ('uid', 'codigoAlarme', 'ativo', 'mensagemAlarme', 'prioridadeAlarme', 'ambiente', 'tempoAtivacao',
-                       'syncAtivacao', 'tempoInativacao',)
+    readonly_fields = ('uid','codigoAlarme', 'ativo', 'mensagemAlarme', 'prioridadeAlarme', 'ambiente', 'grandeza', 'tempoAtivacao',
+                       'syncAtivacao','syncInativacao', 'tempoInativacao',)
     list_display = ('mensagemAlarme', 'ativo', 'prioridadeAlarme',
-                    'ambiente', 'tempoAtivacao_mod', 'tempoInativacao_mod',)
-    list_filter = ('ativo', 'tempoAtivacao', 'ambiente', 'mensagemAlarme',)
+                    'ambiente', 'grandeza', 'tempoAtivacao_mod', 'tempoInativacao_mod',)
+    list_filter = ('ativo', 'tempoAtivacao', 'ambiente','grandeza', 'mensagemAlarme',)
     ordering = ('-ativo', '-tempoAtivacao',)
     # list_per_page = EntradaDigital.objects.count() + AlarmeAnalogico.objects.count()
 
@@ -132,7 +132,7 @@ class LeituraAdmin(admin.ModelAdmin):
     readonly_fields = ('valor', 'createdAt', 'sync',
                        'ambiente', 'grandeza', 'sensor',)
     list_display = ('sensor', 'valor', 'grandeza', 'createdAt', 'ambiente',)
-    list_filter = ('createdAt', 'sensor', 'ambiente',)
+    list_filter = ('createdAt', 'sensor', 'ambiente','sync',)
     ordering = ('-createdAt', '-sensor')
     list_per_page = 20
 

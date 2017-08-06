@@ -9,23 +9,19 @@ sys.path.insert(0, os.path.abspath(os.path.join(__file__, "../../..")))
 os.environ["DJANGO_SETTINGS_MODULE"] = "central.settings"
 django.setup()
 
-from comunicacao.models import Mqtt
-from aplicacao.models import Leitura
+from aplicacao.leitura import novaLeitura
 
+grandezas = (3303, 3304)
 
 while(True):
     try:
-        l = Leitura(valor=random.uniform(15.5, 31.9), grandeza_id=3302, 
-                    ambiente_id='7f6a02a4-2bd1-4f87-a31b-69e0447a67b6',
-                    sensor_id='1cd0aed1-68e5-481c-9fb7-d1fcf3f78aa1'
-                    )
-        l.save()
-        try:
-            print(l)
-        except Exception:
-            continue
+        idRede = random.randint(1, 2)
+        grandeza = grandezas[random.randint(0, 1)]
+        valor = random.uniform(15.5, 31.9) if grandeza == 3303 else random.uniform(75.5, 99.9)
+        # Simula chegada de leitura analogica atraves da rede
+        novaLeitura(_grandeza=grandeza, _idRede=idRede, _valor=valor)
         # sleep(random.uniform(1.5, 5.1))
-        sleep(1)
+        sleep(3)
     except KeyboardInterrupt:
         break
 

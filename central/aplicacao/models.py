@@ -3,7 +3,7 @@ from django.utils.timezone import now
 from datetime import datetime
 from time import time
 import uuid
-
+from aplicacao.alarmes import triggerAlarmeAnalogico
 
 class Log(models.Model):
     tipo = models.CharField(max_length=6)
@@ -371,6 +371,14 @@ class Leitura(models.Model):
     #     Sensor, to_field='idRede', on_delete=models.PROTECT)
     sensor = models.ForeignKey(Sensor, on_delete=models.PROTECT)
 
+    def save(self, *args, **kwargs):
+        # Call the "real" save() method.
+        id = self.id
+        self.valor = format(self.valor, '.2f')
+        super(Leitura, self).save(*args, **kwargs)
+        if(id is None):
+            print(self)
+            triggerAlarmeAnalogico(_grandeza=self.grandeza, _ambiente=self.ambiente)
     def __str__(self):
         return str(self.valor) + " " + str(self.grandeza.unidade) + " Sensor:" + str(self.sensor.idRede)
 
@@ -399,19 +407,20 @@ class AlarmeAnalogico(models.Model):
         return str(self.mensagemAlarme) + " [on:" + str(self.valorAlarmeOn) + ", off:" + str(self.valorAlarmeOff) + "]"
 
 class Alarme(models.Model):
-    uid = models.CharField(max_length=48, null=True, blank=True)
+    uid = models.UUIDField(primary_key=True, default=uuid.uuid4)
     # usado para controle entre alarmes digitais a analógicos
-    codigoAlarme = models.UUIDField(
-        'Codigo', primary_key=True, default=uuid.uuid4)
-    mensagemAlarme = models.CharField(max_length=255, null=False)
-    prioridadeAlarme = models.IntegerField(null=False)
-    ativo = models.BooleanField(default=False, null=False)
-    tempoAtivacao = models.DateTimeField(null=False)
+    codigoAlarme = models.UUIDField('Codigo')
+    mensagemAlarme = models.CharField('Mensagem',max_length=255, null=False)
+    prioridadeAlarme = models.IntegerField('Prioridade',null=False)
+    ativo = models.BooleanField('Ativo',default=False, null=False)
+    tempoAtivacao = models.DateTimeField('Ativado em',null=False)
     syncAtivacao = models.BooleanField(default=False, null=False)
-    tempoInativacao = models.DateTimeField(null=True)
+    tempoInativacao = models.DateTimeField('Desativado em',null=True)
     syncInativacao = models.BooleanField(default=False, null=False)
 
     ambiente = models.ForeignKey(Ambiente, on_delete=models.PROTECT)
+    grandeza = models.ForeignKey(
+        Grandeza, to_field='codigo', on_delete=models.PROTECT)
 
     def __str__(self):
         return self.mensagemAlarme
