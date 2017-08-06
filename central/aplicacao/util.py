@@ -8,7 +8,7 @@ def salvaArquivo(_tipo, _mensagem):
 	Salva no arquivo de log csv
 	"""
 	try:
-		arquivo = open("/opt/iot.central/banco/logs.csv","+a")
+		arquivo = open("/opt/iot.central/log/logs.csv","+a")
 		arquivo.write('[')
 		arquivo.write(datetime.datetime.fromtimestamp(time.time()).strftime('%d-%m-%Y %H:%M:%S'))
 		arquivo.write('] [')

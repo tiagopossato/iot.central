@@ -70,7 +70,7 @@ def mqtt_config(request):
                             # Prossegue com o salvamento da central
                             config = Mqtt(identificador=dados['id'], status=1, descricao=dados['descricao'],
                                           servidor=servidor, keyFile=dados['keyFile'], certFile=dados['certFile'], caFile=dados['caFile'])
-                            config.save()
+                            config.save(trocarCertificados=True)
                         except Exception as e:
                             return JsonResponse(status=400, data={'erro': str(e)})
                     elif(r.status_code == 400):
@@ -258,7 +258,7 @@ def reativar_central(request):
             # Prossegue com o salvamento da central
             config = Mqtt(identificador=dados['id'], status=1, descricao=dados['descricao'],
                           servidor=servidor, keyFile=dados['keyFile'], certFile=dados['certFile'], caFile=dados['caFile'])
-            config.save()
+            config.save(trocarCertificados=True)
             return JsonResponse(status=200, data={})
         if(r.status_code == 400):
             try:
@@ -309,7 +309,7 @@ def novo_certificado(request):
                 config.keyFile = dados['keyFile']
                 config.certFile = dados['certFile']
                 config.caFile = dados['caFile']
-                config.save()
+                config.save(trocarCertificados=True)
                 return JsonResponse(status=200, data={})
             except Exception as e:
                 return JsonResponse(status=400, data={'erro': str(e)})

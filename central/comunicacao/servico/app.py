@@ -139,6 +139,8 @@ def on_disconnect(client, userdata, rc):
                 # print(dir(e))
                 print(e)
             sleep(1)
+        except KeyboardInterrupt as e:
+            exit(-1)
 
 client = mqtt.Client(clean_session=True, userdata="None",
                         protocol="MQTTv311", transport="tcp")
@@ -176,19 +178,30 @@ except IndexError as e:
     print(e)
     exit(-1)
 
-try:
-    client.connect(urlServidor, 8883, 60)
-except SSLError as e:
-    if(e.reason == 'SSLV3_ALERT_CERTIFICATE_REVOKED'):
-        print('O certificado usado foi revogado!')
+conectado = False
+while(conectado==False):
+    print('Conectando em ' + str(urlServidor))
+    try:
+        client.connect(urlServidor, 8883, 60)
+        config.status = 1
+        config.save()
+        conectado = True
+    except SSLError as e:
+        if(e.reason == 'SSLV3_ALERT_CERTIFICATE_REVOKED'):
+            print('O certificado usado foi revogado!')
+            config.status = 2
+            config.save()
+    except ConnectionRefusedError:
+        print('Falha na conexao com o servidor')
+        config.status = 2
+        config.save()
+    except Exception as e:
+        print('Erro: ' + str(e))
+        config.status = 2
+        config.save()
+    except KeyboardInterrupt as e:
         exit(-1)
-except ConnectionRefusedError:
-    print('Falha na conexao com o servidor')
     sleep(1)
-    client.reconnect()
-except Exception as e:
-    print('Erro: ' + str(e))
-    exit(-1)
 
 try:
     while(True):
@@ -197,6 +210,8 @@ try:
 except SSLError as e:
     if(e.reason == 'SSLV3_ALERT_CERTIFICATE_REVOKED'):
         print('O certificado usado foi revogado!')
+        config.status = 2
+        config.save()        
         exit(-1)
 except ConnectionRefusedError:
     print('Falha na conexao com o servidor')
@@ -205,4 +220,4 @@ except Exception as e:
     print('Erro no loop: ' + str(e))
 except KeyboardInterrupt as e:
     print("\nDesconectando...")
-    client.disconnect()
+    client.disconnect()    

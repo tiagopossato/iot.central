@@ -1,7 +1,7 @@
 from time import sleep, time
 import random
 
-# Configurações para usar os models do django
+# Configuracoes para usar os models do django
 import os
 import sys
 import django

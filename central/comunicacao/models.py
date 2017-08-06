@@ -1,7 +1,8 @@
 from django.db import models
 from os.path import abspath
 from os import remove
-
+import os
+import errno
 
 class Mqtt(models.Model):
     STATUS = (
@@ -25,23 +26,25 @@ class Mqtt(models.Model):
     class Meta:
         verbose_name = 'Configurações da comunicação MQTT'
 
-    def save(self, *args, **kwargs):
+    def save(self, trocarCertificados = False, *args, **kwargs):
         """
         Método sobrescrito para criar o certificado antes de salvar
         """
         try:
-            # Salva os certificados no HD e troca
-            f = open('keyFile.key', 'w')
-            f.write(self.keyFile)
-            self.keyFile = abspath(f.name)
+            if(trocarCertificados):
+                print("Trocando certificados")
+                # Salva os certificados no HD e troca
+                f = open('certs/keyFile.key', 'w')
+                f.write(self.keyFile)
+                self.keyFile = abspath(f.name)
 
-            f = open('certFile.crt', 'w')
-            f.write(self.certFile)
-            self.certFile = abspath(f.name)
+                f = open('certs/certFile.crt', 'w')
+                f.write(self.certFile)
+                self.certFile = abspath(f.name)
 
-            f = open('ca.crt', 'w')
-            f.write(self.caFile)
-            self.caFile = abspath(f.name)
+                f = open('certs/ca.crt', 'w')
+                f.write(self.caFile)
+                self.caFile = abspath(f.name)
 
             super(Mqtt, self).save(*args, **kwargs)
         except Exception as e:
