@@ -12,8 +12,8 @@ diretorio=$(pwd)
 
 #instala as dependencias
 
-apt install python3 python3-pip nginx
-pip3 install virtualenvwrapper
+apt install python3 python-pip python3-pip nginx supervisor
+pip install virtualenvwrapper
 
 linha=("export WORKON_HOME=/opt/.envs")
 cat /etc/profile | grep "$linha"
@@ -90,6 +90,7 @@ chmod 0750 /opt/iot.central/central -R
 chown central:nogroup /opt/iot.central/banco -R
 chmod 0700 /opt/iot.central/banco -R
 
+mkdir /opt/iot.central/central/certs
 chown central:nogroup /opt/iot.central/central/certs -R
 chmod 0700 /opt/iot.central/central/certs -R
 
