@@ -76,6 +76,7 @@ fi
 #Copia os novos arquivos
 echo ".Copiando arquivos"
 cp -r  ../central /opt/iot.central/
+cp  ../central/banco/db.sqlite3 /opt/iot.central/banco/
 
 # Altera a variavel de DEBUG para False
 sed -i '/DEBUG = True/c\DEBUG = False' /opt/iot.central/central/central/settings.py

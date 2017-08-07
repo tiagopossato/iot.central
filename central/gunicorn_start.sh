@@ -28,4 +28,4 @@ export PYTHONPATH=$DJANGODIR:$PYTHONPATH
 # Start your Django Unicorn
 # Programs meant to be run under supervisor should not daemonize themselves (do not use --daemon)
 killall gunicorn
-gunicorn ${DJANGO_WSGI_MODULE}:application --name $NAME --workers $NUM_WORKERS --user $USER --bind 127.0.0.1:8000 --bind [::1]:8000
+gunicorn ${DJANGO_WSGI_MODULE}:application --name $NAME --workers $NUM_WORKERS --user $USER --bind 127.0.0.1:8000 --bind [::1]:8000 --log-level debug

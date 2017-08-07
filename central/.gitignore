@@ -1,3 +1,2 @@
 migrations/*
-db.sqlite3
 static/*

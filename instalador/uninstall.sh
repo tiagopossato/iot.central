@@ -16,8 +16,8 @@ killall gunicorn
 #verifica se existe uma instalação
 if [ -d /opt/iot.central ]; then
 	#remove os arquivos do app existente
-	if [ -d /opt/iot.central/interface/ ]; then
-		rm -rf /opt/iot.central/interface
+	if [ -d /opt/iot.central/central/ ]; then
+		rm -rf /opt/iot.central/central
 	fi
 fi
 
