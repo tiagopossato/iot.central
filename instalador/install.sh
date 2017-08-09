@@ -78,6 +78,9 @@ echo ".Copiando arquivos"
 cp -r  ../central /opt/iot.central/
 cp  ../central/banco/db.sqlite3 /opt/iot.central/banco/
 
+# Popula o banco
+sqlite3 /opt/iot.central/banco/db.sqlite3 < default.sql
+
 # Altera a variavel de DEBUG para False
 sed -i '/DEBUG = True/c\DEBUG = False' /opt/iot.central/central/central/settings.py
 
@@ -106,8 +109,10 @@ chmod 0775 /opt/iot.central/log -R
 # Somente o usuario www-data pode acessar a pasta de arquivos estaticos
 chown www-data:www-data /var/www/static
 
-
 cp centralWeb.conf /etc/supervisor/conf.d/centralWeb.conf
+cp centralMQTT.conf /etc/supervisor/conf.d/centralMQTT.conf
+
+echo "central ALL=(ALL) NOPASSWD: /usr/bin/supervisorctl restart centralMQTT" > /etc/sudoers.d/central
 supervisorctl reload
 
 echo "....Configurando nginx para servir os arquivos estaticos"

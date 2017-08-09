@@ -11,6 +11,7 @@ fi
 #para o servico caso estiver rodando
 echo ".Parando o serviço"
 supervisorctl stop centralWeb
+supervisorctl stop centralMQTT
 killall gunicorn
 
 #verifica se existe uma instalação
