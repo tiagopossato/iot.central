@@ -20,6 +20,7 @@ try:
     config = Mqtt.objects.get()
 except Mqtt.DoesNotExist:
     print('erro: Nao existe configuracao na central')
+    sleep(1)
     exit(-1)
 
 def selecionaDados(client):
@@ -106,7 +107,7 @@ def enviaMensagem(client, topic, message):
         return False
 
 def on_connect(client, userdata, flags, rc):
-    print("Connected with result code " + str(rc))
+    log('MQTT', 'Conectado no servidor')
     if(rc == 5):
         print("Invalid user or pass")
         # client.disconnect()
@@ -127,6 +128,7 @@ def on_publish(client, userdata, mid):
     pass
 
 def on_disconnect(client, userdata, rc):
+    log('MQTT', 'Desconectado do servidor')
     error = True
     while(error):
         try:
@@ -188,7 +190,7 @@ while(conectado==False):
         conectado = True
     except SSLError as e:
         if(e.reason == 'SSLV3_ALERT_CERTIFICATE_REVOKED'):
-            print('O certificado usado foi revogado!')
+            log('MQTT', 'O certificado usado foi revogado!')
             config.status = 2
             config.save()
     except ConnectionRefusedError:
@@ -203,21 +205,23 @@ while(conectado==False):
         exit(-1)
     sleep(1)
 
-try:
-    while(True):
+loop = True
+while(loop):
+    try:
         selecionaDados(client)
         client.loop(1)
-except SSLError as e:
-    if(e.reason == 'SSLV3_ALERT_CERTIFICATE_REVOKED'):
-        print('O certificado usado foi revogado!')
-        config.status = 2
-        config.save()        
-        exit(-1)
-except ConnectionRefusedError:
-    print('Falha na conexao com o servidor')
-    client.reconnect()
-except Exception as e:
-    print('Erro no loop: ' + str(e))
-except KeyboardInterrupt as e:
-    print("\nDesconectando...")
-    client.disconnect()    
+    except SSLError as e:
+        if(e.reason == 'SSLV3_ALERT_CERTIFICATE_REVOKED'):
+            log('MQTT', 'O certificado usado foi revogado!')
+            config.status = 2
+            config.save()        
+            exit(-1)
+    except ConnectionRefusedError:
+        print('Falha na conexao com o servidor')
+        client.reconnect()
+    except Exception as e:
+        print('Erro no loop: ' + str(e))
+    except KeyboardInterrupt as e:
+        print("\nDesconectando...")
+        client.disconnect()
+        loop = False

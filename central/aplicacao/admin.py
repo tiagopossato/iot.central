@@ -27,11 +27,7 @@ class LogAdmin(admin.ModelAdmin):
     list_per_page = 50
 
     def has_add_permission(self, request):
-        num_objects = self.model.objects.count()
-        if num_objects >= 0:
-            return False
-        else:
-            return True
+        return False
 
 
 class AlarmeAdmin(admin.ModelAdmin):
@@ -43,11 +39,12 @@ class AlarmeAdmin(admin.ModelAdmin):
         if(obj.tempoInativacao):
             return obj.tempoInativacao.strftime("%d %b %Y %H:%M:%S")
 
-    readonly_fields = ('uid','codigoAlarme', 'ativo', 'mensagemAlarme', 'prioridadeAlarme', 'ambiente', 'grandeza', 'tempoAtivacao',
-                       'syncAtivacao','syncInativacao', 'tempoInativacao',)
+    readonly_fields = ('uid', 'codigoAlarme', 'ativo', 'mensagemAlarme', 'prioridadeAlarme', 'ambiente', 'grandeza', 'tempoAtivacao',
+                       'syncAtivacao', 'syncInativacao', 'tempoInativacao',)
     list_display = ('mensagemAlarme', 'ativo', 'prioridadeAlarme',
                     'ambiente', 'grandeza', 'tempoAtivacao_mod', 'tempoInativacao_mod',)
-    list_filter = ('ativo', 'tempoAtivacao', 'ambiente','grandeza', 'mensagemAlarme',)
+    list_filter = ('ativo', 'tempoAtivacao', 'ambiente',
+                   'grandeza', 'mensagemAlarme',)
     ordering = ('-ativo', '-tempoAtivacao',)
     # list_per_page = EntradaDigital.objects.count() + AlarmeAnalogico.objects.count()
 
@@ -104,23 +101,25 @@ class ConfiguracoesAdmin(admin.ModelAdmin):
 
 
 class GrandezaAdmin(admin.ModelAdmin):
-    readonly_fields = ('sync',)
+    readonly_fields = ('createdAt', 'updatedAt',)
     list_display = ('nome', 'unidade', 'codigo',)
     ordering = ('codigo',)
 
 
 class SensorGrandezaInline(admin.StackedInline):
-    readonly_fields = ('sync','createdAt','updatedAt')
+    readonly_fields = ('createdAt', 'updatedAt')
     model = SensorGrandeza
     can_delete = True
     verbose_name_plural = 'Grandezas do Sensor'
     extra = 0
 
+
 class SensorAdmin(admin.ModelAdmin):
-    readonly_fields = ('sync', 'uid',)
+    readonly_fields = ('sync', 'uid', 'createdAt', 'updatedAt',)
     inlines = (SensorGrandezaInline,)
     list_display = ('descricao', 'idRede', 'ambiente', 'intervaloLeitura',)
     ordering = ('idRede',)
+
 
 class SensorGrandezaAdmin(admin.ModelAdmin):
     readonly_fields = ('sync',)
@@ -128,20 +127,17 @@ class SensorGrandezaAdmin(admin.ModelAdmin):
     ordering = ('sensor',)
     list_filter = ('sensor', 'grandeza',)
 
+
 class LeituraAdmin(admin.ModelAdmin):
     readonly_fields = ('valor', 'createdAt', 'sync',
                        'ambiente', 'grandeza', 'sensor',)
     list_display = ('sensor', 'valor', 'grandeza', 'createdAt', 'ambiente',)
-    list_filter = ('createdAt', 'sensor', 'ambiente','sync',)
+    list_filter = ('createdAt', 'sensor', 'ambiente', 'sync',)
     ordering = ('-createdAt', '-sensor')
     list_per_page = 20
 
     def has_add_permission(self, request):
-        num_objects = self.model.objects.count()
-        if num_objects >= 0:
-            return False
-        else:
-            return True
+        return False
 
 
 class AlarmeAnalogicoAdmin(admin.ModelAdmin):

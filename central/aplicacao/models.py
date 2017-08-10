@@ -263,7 +263,6 @@ class Grandeza(models.Model):
     unidade = models.CharField(max_length=15, null=False, unique=True)
     createdAt = models.DateTimeField('Criado em', default=now)
     updatedAt = models.DateTimeField('Alterado em', auto_now=True)
-    sync = models.BooleanField(default=False, null=False)
 
     def __str__(self):
         return str(self.unidade) + ' (' + str(self.nome) + ')'
