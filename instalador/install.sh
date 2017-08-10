@@ -76,10 +76,17 @@ fi
 #Copia os novos arquivos
 echo ".Copiando arquivos"
 cp -r  ../central /opt/iot.central/
-cp  ../central/banco/db.sqlite3 /opt/iot.central/banco/
 
-# Popula o banco
-sqlite3 /opt/iot.central/banco/db.sqlite3 < default.sql
+read -p "Substituir o banco de dados? [s/N]:" -n 1 -r
+echo
+case "$REPLY" in 
+  s|S )
+		cp  ../central/banco/db.sqlite3 /opt/iot.central/banco/
+		# Popula o banco
+		sqlite3 /opt/iot.central/banco/db.sqlite3 < default.sql
+	;;
+    * );;
+esac
 
 # Altera a variavel de DEBUG para False
 sed -i '/DEBUG = True/c\DEBUG = False' /opt/iot.central/central/central/settings.py
@@ -111,8 +118,9 @@ chown www-data:www-data /var/www/static
 
 cp centralWeb.conf /etc/supervisor/conf.d/centralWeb.conf
 cp centralMQTT.conf /etc/supervisor/conf.d/centralMQTT.conf
+cp centralPlacaBase.conf /etc/supervisor/conf.d/centralPlacaBase.conf
 
-echo "central ALL=(ALL) NOPASSWD: /usr/bin/supervisorctl restart centralMQTT" > /etc/sudoers.d/central
+echo "central ALL=(ALL) NOPASSWD: /usr/bin/supervisorctl restart centralMQTT,  /usr/bin/supervisorctl restart centralPlacaBase" > /etc/sudoers.d/central
 supervisorctl reload
 
 echo "....Configurando nginx para servir os arquivos estaticos"
