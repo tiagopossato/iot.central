@@ -1,5 +1,7 @@
 #!/bin/bash
 
-source /home/tiago/centraltestenv/bin/activate
+source /etc/profile
+
+workon centralenv
 
 python3 app.py
