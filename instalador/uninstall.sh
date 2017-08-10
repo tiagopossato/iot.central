@@ -12,6 +12,8 @@ fi
 echo ".Parando o serviço"
 supervisorctl stop centralWeb
 supervisorctl stop centralMQTT
+supervisorctl stop centralPlacaBase
+
 killall gunicorn
 
 #verifica se existe uma instalação
@@ -24,6 +26,8 @@ fi
 
 #remove servicos no supervisord
 rm /etc/supervisor/conf.d/centralWeb.conf
+rm /etc/supervisor/conf.d/centralMQTT.conf
+rm /etc/supervisor/conf.d/centralPlacaBase.conf
 supervisorctl reload
 
 rm -rf /var/www/static
