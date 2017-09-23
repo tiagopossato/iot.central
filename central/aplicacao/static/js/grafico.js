@@ -1,7 +1,7 @@
 var initGrafico = function () {
     var data = [];
     var layout = {
-        legend:{
+        legend: {
             orientation: 'h',
             yanchor: 'top',
             xanchor: 'left'
@@ -9,8 +9,14 @@ var initGrafico = function () {
         showlegend: true
     };
 
+    var dialog = bootbox.dialog({
+        message: '<p class="text-center"><i class="fa fa-spin fa-spinner"></i></p><p class="text-center">Buscando dados...</p>',
+        closeButton: false,
+        size: 'small'
+    });
 
     $.get(location.protocol + "//" + location.host + "/app/leituras", function (data, status) {
+
         data.forEach(function (sensor) {
             // console.log(sensor)
             sensor.g.forEach(function (grandeza) {
@@ -28,6 +34,7 @@ var initGrafico = function () {
                 data.push(trace);
             }, this);
         }, this);
+        dialog.modal('hide');
         Plotly.newPlot('grafico', data, layout);
     });
 
