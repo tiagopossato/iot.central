@@ -7,6 +7,7 @@
 {% block components %} 
 <!-- ECharts -->
 <script src="{% static 'js/grafico.js' %}"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/3.7.1/echarts.min.js"  onload=initGrafico()></script>
+  <!-- Plotly.js -->
+  <script src="https://cdn.plot.ly/plotly-latest.min.js" onload=initGrafico()></script>
 <!-- <script src="{% static 'js/echarts.min.js' %}" onload=initGrafico()></script> -->
 {% endblock components %}
