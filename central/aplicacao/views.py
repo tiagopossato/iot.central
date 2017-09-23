@@ -14,8 +14,11 @@ from aplicacao.models import Ambiente, Sensor, Grandeza, SensorGrandeza, Leitura
 import json
 
 @login_required(login_url='/login')
+def grafico(request):
+    return render(request, 'aplicacao/leituras.html')
+
+@login_required(login_url='/login')
 def leituras(request):
-    print(timezone.now())   
     end_date = timezone.now()
     start_date = end_date - timedelta(hours=12)
 
@@ -72,8 +75,6 @@ def leituras(request):
             ss['g'].append(gg)
         saida.append(ss)
 
-
-    print(timezone.now())
     return HttpResponse(
                 json.dumps(saida),
                 content_type='application/json; charset=utf8'

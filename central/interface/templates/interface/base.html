@@ -44,7 +44,7 @@
                     <div id="sidebar-menu2" class="main_menu_side hidden-print main_menu">
                         <div class="menu_section">
                             <ul class="nav side-menu">
-                                <li><a href="/app/leituras" tabindex="0"><i class="fa fa-area-chart " aria-hidden="true"></i> Leituras </a>
+                                <li><a href="/app/grafico" tabindex="0"><i class="fa fa-area-chart " aria-hidden="true"></i> Leituras </a>
                                 </li>
                             </ul>
                                 
@@ -121,7 +121,8 @@
     </div>
 
     <!-- jQuery -->
-     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.3/jquery.js"></script>     
+     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.3/jquery.js"></script>    
+     <script src="{% static 'js/init.js' %}"></script> 
     <!-- Bootstrap -->
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
     <!-- Bootboxjs -->
@@ -132,8 +133,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/nprogress/0.2.0/nprogress.min.js"></script>
 
     <!-- Custom Theme Scripts -->
-    <script src="{% static 'gentelella/js/custom.js' %}"></script> 
-    <script src="{% static 'js/init.js' %}"></script>
+    <script src="{% static 'gentelella/js/custom.min.js' %}"></script> 
     {% block components %} {% endblock %}
 </body>
 
