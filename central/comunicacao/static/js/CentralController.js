@@ -6,20 +6,20 @@ var getCentraisInativas = function (params) {
     // TODO: Validar os parâmetros recebidos
     return new Promise(
         function (resolve, reject) {
-            $.get(window.location.origin + '/comunicacao/centrais-inativas', { username: params.username, password: params.password, servidor: params.servidor }, function (res) {
-                try {
-                    if (res.erro) {
-                        reject(res);
-                    }
-                    resolve(res);
+        $.get(window.location.origin + '/comunicacao/centrais-inativas', { username: params.username, password: params.password, servidor: params.servidor }, function (res) {
+            try {
+                if (res.erro) {
+                    reject(res);
                 }
-                catch (err) {
-                    reject(err);
-                }
-            }).fail(function (err) {
+                resolve(res);
+            }
+            catch (err) {
                 reject(err);
-            });
+            }
+        }).fail(function (err) {
+            reject(err);
         });
+    });
 };
 
 /**
@@ -30,7 +30,7 @@ var trocaCentral = function (params) {
     // TODO: Validar os parâmetros recebidos
     return new Promise(
         function (resolve, reject) {
-            $.post('http://' + window.location.host + '/comunicacao/reativar', { username: params.username, password: params.password, servidor: params.servidor, id: params.id }, function (res) {
+            $.post(window.location.origin + '/comunicacao/reativar', { username: params.username, password: params.password, servidor: params.servidor, id: params.id }, function (res) {
                 try {
                     if (res.erro) {
                         reject(res);
@@ -55,7 +55,7 @@ window.onload = function () {
             callback: function (result) {
                 if (result) {
                     autenticacao().then(function (auth) {
-                        $.get('http://' + window.location.host + '/comunicacao/novo-certificado', { username: auth.username, password: auth.password }, function (res) {
+                        $.get(window.location.origin + '/comunicacao/novo-certificado', { username: auth.username, password: auth.password }, function (res) {
                             console.log(res);
                             location.reload();
                         }).fail(function (err) {
@@ -85,7 +85,7 @@ window.onload = function () {
             callback: function (result) {
                 if (result) {
                     autenticacao().then(function (auth) {
-                        $.get('http://' + window.location.host + '/comunicacao/inativar', { username: auth.username, password: auth.password }, function (res) {
+                        $.get(window.location.origin + '/comunicacao/inativar', { username: auth.username, password: auth.password }, function (res) {
                             location.reload();
                         }).fail(function (err) {
                             bootbox.alert({
@@ -122,7 +122,7 @@ var autenticacao = function () {
                         <label for="password" class="control-label col-md-3 col-sm-3 col-xs-12">Senha</label>\
                         <div class="col-md-6 col-sm-6 col-xs-12">\
                             <input id="password" name="password" class="form-control col-md-7 col-xs-12" type="password" placeholder="Senha"\
-                                tabindex="1" autocomplete="off">\
+                                tabindex="0" autocomplete="off">\
                         </div>\
                     </div>\
                 </form>',
