@@ -1,5 +1,5 @@
 var initGrafico = function () {
-    var data = [];
+    var linhas = [];
     var layout = {
         legend: {
             orientation: 'h',
@@ -15,7 +15,7 @@ var initGrafico = function () {
         size: 'small'
     });
 
-    $.get(location.protocol + "//" + location.host + "/app/leituras", function (data, status) {
+    $.get(window.location.origin + "/app/leituras", function (data, status) {
 
         data.forEach(function (sensor) {
             // console.log(sensor)
@@ -31,11 +31,11 @@ var initGrafico = function () {
                     trace.y.push(leitura.v);
                     trace.x.push(leitura.c);
                 }, this);
-                data.push(trace);
+                linhas.push(trace);
             }, this);
         }, this);
         dialog.modal('hide');
-        Plotly.newPlot('grafico', data, layout);
+        Plotly.newPlot('grafico', linhas, layout);
     });
 
 }

@@ -87,13 +87,18 @@
             _dados[n['name']] = n['value'];
         });
         // pegar os dados do form e enviar via ajax para a central retornar a lista de dentrais inativas
+        var dialog = bootbox.dialog({
+            message: '<p class="text-center"><i class="fa fa-spin fa-spinner"></i></p><p class="text-center">Buscando dados...</p>',
+            closeButton: false,
+            size: 'small'
+        });
         getCentraisInativas({
             'servidor': _dados['md-troca-servidor'],
             'username': _dados['md-troca-username'],
             'password': _dados['md-troca-password']
         }).then(function (centrais) {
             $('#md-troca').modal('hide');
-
+            dialog.modal('hide');
             //limpa a tabela
             $('#conteudo-md-troca-seleciona div').remove();
             $("#tb-centrais-inativas").remove();
@@ -126,6 +131,7 @@
             $('#md-troca-seleciona').modal('show');
         }).catch(function (err) {
             console.log(err);
+            dialog.modal('hide');
             bootbox.alert({
                 title: "Erro",
                 message: err.responseJSON.erro
