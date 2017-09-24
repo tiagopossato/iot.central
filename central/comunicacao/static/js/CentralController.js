@@ -6,7 +6,7 @@ var getCentraisInativas = function (params) {
     // TODO: Validar os parâmetros recebidos
     return new Promise(
         function (resolve, reject) {
-            $.get('http://' + window.location.host + '/comunicacao/centrais-inativas', { username: params.username, password: params.password, servidor: params.servidor }, function (res) {
+            $.get(window.location.origin + '/comunicacao/centrais-inativas', { username: params.username, password: params.password, servidor: params.servidor }, function (res) {
                 try {
                     if (res.erro) {
                         reject(res);

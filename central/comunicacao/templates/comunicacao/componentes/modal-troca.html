@@ -126,6 +126,10 @@
             $('#md-troca-seleciona').modal('show');
         }).catch(function (err) {
             console.log(err);
+            bootbox.alert({
+                title: "Erro",
+                message: err.responseJSON.erro
+            });
         });
     });
 

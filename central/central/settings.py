@@ -23,7 +23,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = 'cor)tf-v-u-k42%duu6wen$=l)(75(8jr$s951gca_4a)nyk(&'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = [
     '.dataplicity.io',
@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'corsheaders',
     'interface',
     'comunicacao',
     'aplicacao',
@@ -54,6 +55,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
+    'django.middleware.common.CommonMiddleware',
 ]
 
 ROOT_URLCONF = 'central.urls'
@@ -77,6 +80,26 @@ TEMPLATES = [
 WSGI_APPLICATION = 'central.wsgi.application'
 
 
+# CORS_ORIGIN_ALLOW_ALL = True
+CORS_ALLOW_CREDENTIALS = True
+
+CORS_ORIGIN_WHITELIST = [
+    '127.0.0.1:8000',
+    '127.0.0.1'
+]
+
+CSRF_TRUSTED_ORIGINS = [
+    '127.0.0.1:8000',
+    '127.0.0.1'
+]
+
+from corsheaders.defaults import default_headers
+
+CORS_ALLOW_HEADERS = default_headers + (
+    'sessionid',
+    'csrftoken',
+)
+
 # Database
 # https://docs.djangoproject.com/en/1.11/ref/settings/#databases
 
@@ -84,7 +107,7 @@ if(DEBUG==True):
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+            'NAME': '/opt/iot.central/banco/db.sqlite3',
             'OPTIONS': {
                 'timeout': 30,
             },

@@ -118,7 +118,7 @@ chown www-data:www-data /var/www/static
 
 cp centralWeb.conf /etc/supervisor/conf.d/centralWeb.conf
 cp centralMQTT.conf /etc/supervisor/conf.d/centralMQTT.conf
-cp centralPlacaBase.conf /etc/supervisor/conf.d/centralPlacaBase.conf
+#cp centralPlacaBase.conf /etc/supervisor/conf.d/centralPlacaBase.conf
 
 echo "central ALL=(ALL) NOPASSWD: /usr/bin/supervisorctl restart centralMQTT,  /usr/bin/supervisorctl restart centralPlacaBase" > /etc/sudoers.d/central
 
