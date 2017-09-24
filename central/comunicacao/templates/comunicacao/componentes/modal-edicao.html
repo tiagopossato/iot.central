@@ -2,7 +2,7 @@
     $('#btn-configurar').on('click', function (e) {
         edicao().then(function (dados) {
             autenticacao().then(function (auth) {
-                $.post('http://' + window.location.host + '/comunicacao/mqtt-config', {
+                $.post(window.location.origin + '/comunicacao/mqtt-config', {
                     username: auth.username,
                     password: auth.password,
                     servidor: dados.servidor,

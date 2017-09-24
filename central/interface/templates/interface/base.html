@@ -43,17 +43,25 @@
                     <!-- sidebar menu -->
                     <div id="sidebar-menu2" class="main_menu_side hidden-print main_menu">
                         <div class="menu_section">
+                            <ul class="nav side-menu">
+                                <li><a href="/app/grafico" tabindex="0"><i class="fa fa-area-chart " aria-hidden="true"></i> Leituras </a>
+                                </li>
+                            </ul>
+                                
+                        </div>
+                        {% if user.is_staff %}
+                        <div class="menu_section">
                             <h3>Configurações</h3>
                             <ul class="nav side-menu">
                                 <li><a href="/comunicacao" tabindex="0"><i class="fa fa-podcast" aria-hidden="true"></i> Config </a>
                                 </li>
                             </ul>
-
-                            {% if user.is_staff %}
                             <ul class="nav side-menu">
                                 <li><a href="/admin" tabindex="0"><i class="fa fa-cogs" aria-hidden="true"></i> Admin </a></li>
-                            </ul>
-                            {% endif %}
+                            </ul>                            
+                        </div>
+                        {% endif %}
+                        <div class="menu_section">
                             <ul class="nav side-menu">
                                 <li><a href="/logout" tabindex="0"><i class="fa fa-sign-out" aria-hidden="true"></i>Sair</a></li>
                                 </li>
@@ -113,7 +121,8 @@
     </div>
 
     <!-- jQuery -->
-     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.3/jquery.js"></script>     
+     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.3/jquery.js"></script>    
+     <script src="{% static 'js/init.js' %}"></script> 
     <!-- Bootstrap -->
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
     <!-- Bootboxjs -->
@@ -124,8 +133,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/nprogress/0.2.0/nprogress.min.js"></script>
 
     <!-- Custom Theme Scripts -->
-    <script src="{% static 'gentelella/js/custom.js' %}"></script> 
-    <script src="{% static 'js/init.js' %}"></script>
+    <script src="{% static 'gentelella/js/custom.min.js' %}"></script> 
     {% block components %} {% endblock %}
 </body>
 

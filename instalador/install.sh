@@ -118,14 +118,14 @@ chown www-data:www-data /var/www/static
 
 cp centralWeb.conf /etc/supervisor/conf.d/centralWeb.conf
 cp centralMQTT.conf /etc/supervisor/conf.d/centralMQTT.conf
-cp centralPlacaBase.conf /etc/supervisor/conf.d/centralPlacaBase.conf
+#cp centralPlacaBase.conf /etc/supervisor/conf.d/centralPlacaBase.conf
 
 echo "central ALL=(ALL) NOPASSWD: /usr/bin/supervisorctl restart centralMQTT,  /usr/bin/supervisorctl restart centralPlacaBase" > /etc/sudoers.d/central
-supervisorctl reload
 
 echo "....Configurando nginx para servir os arquivos estaticos"
 cp central_nginx.conf /etc/nginx/sites-available
 rm /etc/nginx/sites-enabled/default
 ln -s /etc/nginx/sites-available/central_nginx.conf /etc/nginx/sites-enabled/
-systemctl restart nginx
 
+systemctl restart nginx
+supervisorctl reload

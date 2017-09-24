@@ -20,4 +20,5 @@ urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'', include('interface.urls')),
     url(r'^comunicacao/', include('comunicacao.urls')),
+    url(r'^app/', include('aplicacao.urls')),
 ]
