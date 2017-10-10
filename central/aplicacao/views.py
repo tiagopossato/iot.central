@@ -12,6 +12,7 @@ from interface.decorators import ajax_login_required
 from datetime import datetime, timedelta, time
 from aplicacao.models import Ambiente, Sensor, Grandeza, SensorGrandeza, Leitura
 import json
+from django.utils.dateformat import format
 
 @login_required(login_url='/login')
 def grafico(request):
@@ -20,9 +21,9 @@ def grafico(request):
 @login_required(login_url='/login')
 def leituras(request):
     end_date = timezone.now()
-    start_date = end_date - timedelta(hours=12)
+    start_date = end_date - timedelta(hours=72)
 
-    leituras = Leitura.objects.filter(createdAt__range=(start_date, end_date))
+    leituras = Leitura.objects.filter(createdAt__range=(start_date, end_date), sensor_id='7e0f933d-75a9-42f3-bb98-207a2ad4d13a')
 
     # ambientes = leituras.values('ambiente').distinct()
     # grandezas = leituras.values('grandeza').distinct()
@@ -68,7 +69,8 @@ def leituras(request):
                 for l in leituras.filter(ambiente=sen.ambiente, sensor=sen, grandeza=g.grandeza):
                     k = {}
                     k['v'] = l.valor
-                    k['c'] = str(l.createdAt)
+                    k['c'] = int(format(l.createdAt, 'U'))-(3600*3)
+                    # k['c'] = str(l.createdAt)
                     gg['l'].append(k)
             except Exception as e:
                 print(e)

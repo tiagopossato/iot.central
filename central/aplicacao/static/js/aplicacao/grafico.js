@@ -24,14 +24,33 @@ var initGrafico = function () {
                     x: [],
                     y: [],
                     type: 'scatter',
-                    name: sensor.d + ' [' + grandeza.n + ']'
+                    name: sensor.d + ' [' + grandeza.n + ']'                }
+                var traceMV = {
+                    x: [],
+                    y: [],
+                    type: 'scatter',
+                    name: 'Media movel'
+                }
+
+                var traceFR = {
+                    x: [],
+                    y: [],
+                    type: 'bar',
+                    name: 'intervalo de leitura'
                 }
                 grandeza.l.forEach(function (leitura) {
-                    // console.log(leitura)
+                    // console.log(leitura);
+                    valuePush(leitura.v, leitura.c);
+                    var media = avgCalc();
+                    traceMV.y.push(media);
+                    traceMV.x.push(new Date(leitura.c * 1000));
+                    var diferenca = Math.abs(leitura.v - media);
+                    pcMovingAverage(diferenca);
                     trace.y.push(leitura.v);
-                    trace.x.push(leitura.c);
+                    trace.x.push(new Date(leitura.c * 1000));
                 }, this);
                 linhas.push(trace);
+                linhas.push(traceMV);
             }, this);
         }, this);
         dialog.modal('hide');
