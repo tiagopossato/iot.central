@@ -109,18 +109,23 @@ var pcMovingAverage = function (value) {
 /**
  * Calcula a pertinência da frequencia de leitura dos sensores
  * conforme as regras de pertinência
- * @param {*} value 
+ * 
+ * @param {*} minValue Frequencia mínima
+ * @param {*} maxValue Frequencia máxima
+ * @param {*} value Frequencia atual de leitura dos sensores
  */
-var pcReadFrequency = function (value) {
+var pcReadFrequency = function (minValue, maxValue, value) {
     //verifica se é um número
     if (isNaN(value)) {
-        throw "The value must be a number";
+        throw "The value must be a number.";
+    }
+    if (value > maxValue || value < minValue) {
+        throw "The value is out of range.";
     }
 
-    // Limita a valores menores que 1
-    if (value > 1) {
-        value = 1;
-    }
+    // normaliza entrada
+    value = interpolate(value, minValue, maxValue, 0, 1);
+
     //calcula valor baixo
     var low = 0;
     if (value < 0.75) {
@@ -176,8 +181,83 @@ var interpolate = function (input, inMin, inMax, outMin, outMax) {
     return (outMax - outMin) * (input - inMin) / (inMax - inMin) + outMin;
 };
 
+//Regras 
+class Rules {
+    /**
+     * 
+     * @param {*} diffMvAvg 
+     * @param {*} readFrequency 
+     */
+    constructor(diffMvAvg, readFrequency) {
+        this.diffMvAvg = diffMvAvg;
+        this.readFrequency = readFrequency;
+    };
+    r1() {
+        if (this.diffMvAvg.high < this.readFrequency.low)
+            return this.diffMvAvg.high;
+        return this.readFrequency.low;
+    };
+    r2() {
+        if (this.diffMvAvg.medium < this.readFrequency.low)
+            return this.diffMvAvg.medium;
+        return this.readFrequency.low;
+    };
+    r3() {
+        if (this.diffMvAvg.low < this.readFrequency.low)
+            return this.diffMvAvg.low;
+        return this.readFrequency.low;
+    };
 
+    r4() {
+        if (this.diffMvAvg.high < this.readFrequency.medium)
+            return this.diffMvAvg.high;
+        return this.readFrequency.medium;
+    };
+    r5() {
+        if (this.diffMvAvg.medium < this.readFrequency.medium)
+            return this.diffMvAvg.medium;
+        return this.readFrequency.medium;
+    };
+    r6() {
+        if (this.diffMvAvg.low < this.readFrequency.medium)
+            return this.diffMvAvg.low;
+        return this.readFrequency.medium;
+    };
 
+    r7() {
+        if (this.diffMvAvg.high < this.readFrequency.high)
+            return this.diffMvAvg.high;
+        return this.readFrequency.high;
+    };
+    r8() {
+        if (this.diffMvAvg.medium < this.readFrequency.high)
+            return this.diffMvAvg.medium;
+        return this.readFrequency.high;
+    };
+    r9() {
+        if (this.diffMvAvg.low < this.readFrequency.high)
+            return this.diffMvAvg.low;
+        return this.readFrequency.high;
+    };
+    applyRules() {
+        //tentativa 1
+        var increase = this.r1() + this.r2() + this.r4() + this.r8();
+        var decrease = this.r3() + this.r5() + this.r5() + this.r7() + this.r9();        
+        //resultado 1.1
+        // var soma = decrease - increase;
+        // return soma;
+        //resultado 1.2
+        if (increase < decrease) return .5;
+        if (increase > decrease) return -.5;
+        return 0;
+
+        //tentativa 2
+        // var soma = this.diffMvAvg.low - this.diffMvAvg.high;
+        
+        // return soma;
+    };
+
+};
 
 /**
  * Fuzzifica Taxa de variacao
