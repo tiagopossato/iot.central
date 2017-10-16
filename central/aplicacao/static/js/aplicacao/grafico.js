@@ -24,7 +24,7 @@ var initGrafico = function () {
                     x: [],
                     y: [],
                     type: 'scatter',
-                    name: sensor.d + ' [' + grandeza.n + '](VALOR REAL)'
+                    name: sensor.d + ' [' + grandeza.n + '](Intervalo de 1 min)'
                 }
 
                 /** VARIÁVEIS DO SENSOR */
@@ -40,7 +40,7 @@ var initGrafico = function () {
                     x: [],
                     y: [],
                     type: 'scatter',
-                    name: sensor.d + ' [' + grandeza.n + '] (Intervalo fixo de ' + frequenciaLeitura + ' mins)'
+                    name: sensor.d + ' [' + grandeza.n + '] (Intervalo de ' + frequenciaLeitura + ' mins)'
                 };
                 /** FIM DAS VARIÁVEIS DE TESTE */
 
@@ -61,7 +61,7 @@ var initGrafico = function () {
                     x: [],
                     y: [],
                     type: 'scatter',
-                    name: sensor.d + ' [' + grandeza.n + '] (Valor lido)'
+                    name: sensor.d + ' [' + grandeza.n + '] (Intervalo variável)'
                 };
                 var traceFR = {
                     x: [],
