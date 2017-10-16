@@ -26,9 +26,32 @@ var initGrafico = function () {
                     type: 'scatter',
                     name: sensor.d + ' [' + grandeza.n + '](VALOR REAL)'
                 }
+
+                /** VARIÁVEIS DO SENSOR */
+                var frequenciaLeitura = 15;
+                var freqMin = 5;
+                var freqMax = 30;
+                /** FIM DAS VARIÁVEIS DO SENSOR */
+
+                /** VARIÁVEIS DE TESTE */
+                var c = 0;
+
+                var traceFixo = {
+                    x: [],
+                    y: [],
+                    type: 'scatter',
+                    name: sensor.d + ' [' + grandeza.n + '] (Intervalo fixo de ' + frequenciaLeitura + ' mins)'
+                };
+                /** FIM DAS VARIÁVEIS DE TESTE */
+
                 grandeza.l.forEach(function (leitura) {
                     // console.log(leitura);
                     //grafico do valor
+                    c = c + 1;
+                    if (c % frequenciaLeitura == 0) {
+                        traceFixo.y.push(leitura.v);
+                        traceFixo.x.push(new Date(leitura.c * 1000));
+                    }
                     trace.y.push(leitura.v);
                     trace.x.push(new Date(leitura.c * 1000));
                 }, this);
@@ -47,9 +70,8 @@ var initGrafico = function () {
                     name: 'intervalo de leitura',
                     width: []
                 };
-                var frequenciaLeitura = 5;
-                var freqMin = 5;
-                var freqMax = 20;
+                var total = grandeza.l.length;
+                var leiturasFeitas = 0;
                 for (var i = 0; i < grandeza.l.length;) {
                     var leitura = grandeza.l[i];
                     //insere valor para calcula média móvel
@@ -71,16 +93,21 @@ var initGrafico = function () {
                     frequenciaLeitura = frequenciaLeitura + new Rules(pcMediaMovel, pcFrequenciaLeitura).applyRules();
                     if (frequenciaLeitura > freqMax) frequenciaLeitura = freqMax;
                     if (frequenciaLeitura < freqMin) frequenciaLeitura = freqMin;
-                    console.log(frequenciaLeitura);
+                    // console.log(frequenciaLeitura);
                     //plota o intervalo de leitura
                     traceFR.y.push(frequenciaLeitura);
                     traceFR.x.push(new Date(leitura.c * 1000));
                     traceFR.width.push(3000);
                     i = i + Math.round(frequenciaLeitura);
+                    leiturasFeitas = leiturasFeitas + 1;
                 }
                 linhas.push(traceMV);
-                linhas.push(traceFR);
-
+                // linhas.push(traceFR);
+                linhas.push(traceFixo);
+                console.log('----------------------------------------');
+                console.log('Total do sensor ' + sensor.d + ' [' + grandeza.n + ']: ' + total);
+                console.log('Leituras feitas no método fixo: ' + traceFixo.y.length);
+                console.log('Leituras feitas no método variável: ' + leiturasFeitas);
             }, this);
         }, this);
         dialog.modal('hide');

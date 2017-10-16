@@ -282,6 +282,7 @@ class Sensor(models.Model):
         'Intervalo de leitura', null=False, default=2)
     createdAt = models.DateTimeField('Criado em', default=now)
     updatedAt = models.DateTimeField('Alterado em', auto_now=True)
+    active = models.BooleanField(default=True, null=False)
     sync = models.BooleanField(default=False, null=False)
 
     ambiente = models.ForeignKey(Ambiente, on_delete=models.PROTECT)
