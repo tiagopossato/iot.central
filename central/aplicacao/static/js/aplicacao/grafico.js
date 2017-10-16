@@ -24,7 +24,7 @@ var initGrafico = function () {
                     x: [],
                     y: [],
                     type: 'scatter',
-                    name: sensor.d + ' [' + grandeza.n + '](VALOR REAL)'
+                    name: sensor.d + ' [' + grandeza.n + ']'
                 }
                 grandeza.l.forEach(function (leitura) {
                     // console.log(leitura);
