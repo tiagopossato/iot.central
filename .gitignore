@@ -90,5 +90,5 @@ ENV/
 
 *.crt
 *.key
-central/aplicacao/migrations/
+
 .vscode/settings.json
