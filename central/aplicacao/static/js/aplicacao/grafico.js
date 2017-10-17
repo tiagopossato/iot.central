@@ -28,9 +28,9 @@ var initGrafico = function () {
                 }
 
                 /** VARIÁVEIS DO SENSOR */
-                var frequenciaLeitura = 15;
-                var freqMin = 5;
-                var freqMax = 30;
+                var frequenciaLeitura = 5;
+                var freqMin = 1;
+                var freqMax = 20;
                 /** FIM DAS VARIÁVEIS DO SENSOR */
 
                 /** VARIÁVEIS DE TESTE */
@@ -74,13 +74,10 @@ var initGrafico = function () {
                 var leiturasFeitas = 0;
                 for (var i = 0; i < grandeza.l.length;) {
                     var leitura = grandeza.l[i];
-                    //insere valor para calcula média móvel
+                    //insere valor para calcular média móvel
                     valuePush(leitura.v, leitura.c);
                     //calcula média
                     var media = avgCalc();
-                    //gráfico da média móvel
-                    traceMV.y.push(leitura.v);
-                    traceMV.x.push(new Date(leitura.c * 1000));
                     //calculo da pertinencia da diferença entre o valor atual 
                     // e a média móvel
                     var diferenca = Math.abs(leitura.v - media);
@@ -88,12 +85,16 @@ var initGrafico = function () {
                     var pcMediaMovel = pcMovingAverage(diferenca);
                     // console.log('pcReadFrequency:');
                     var pcFrequenciaLeitura = pcReadFrequency(freqMin, freqMax, frequenciaLeitura);
-                    //console.log(pcFrequenciaLeitura);
+                    // console.log(pcFrequenciaLeitura);
 
                     frequenciaLeitura = frequenciaLeitura + new Rules(pcMediaMovel, pcFrequenciaLeitura).applyRules();
                     if (frequenciaLeitura > freqMax) frequenciaLeitura = freqMax;
                     if (frequenciaLeitura < freqMin) frequenciaLeitura = freqMin;
-                    // console.log(frequenciaLeitura);
+                    console.log(frequenciaLeitura);
+
+                    //gráfico da média móvel
+                    traceMV.y.push(leitura.v);
+                    traceMV.x.push(new Date(leitura.c * 1000));
                     //plota o intervalo de leitura
                     traceFR.y.push(frequenciaLeitura);
                     traceFR.x.push(new Date(leitura.c * 1000));
