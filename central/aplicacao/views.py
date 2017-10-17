@@ -73,7 +73,7 @@ def leituras(request):
                 for l in leituras.filter(ambiente=sen.ambiente, sensor=sen, grandeza=g.grandeza):
                     k = {}
                     k['v'] = l.valor
-                    k['c'] = int(format(l.createdAt, 'U'))-(3600*3)
+                    k['c'] = int(format(l.createdAt, 'U'))
                     # k['c'] = str(l.createdAt)
                     gg['l'].append(k)
             except Exception as e:
