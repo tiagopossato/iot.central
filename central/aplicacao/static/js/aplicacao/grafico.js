@@ -28,9 +28,11 @@ var initGrafico = function () {
                 }
 
                 /** VARIÁVEIS DO SENSOR */
-                var frequenciaLeitura = 5;
-                var freqMin = 1;
+                var frequenciaLeitura = 10;
+                var freqMin = 10;
                 var freqMax = 20;
+                var seresta = new Seresta(freqMin, freqMax);
+
                 /** FIM DAS VARIÁVEIS DO SENSOR */
 
                 /** VARIÁVEIS DE TESTE */
@@ -74,24 +76,10 @@ var initGrafico = function () {
                 var leiturasFeitas = 0;
                 for (var i = 0; i < grandeza.l.length;) {
                     var leitura = grandeza.l[i];
-                    //insere valor para calcular média móvel
-                    valuePush(leitura.v, leitura.c);
-                    //calcula média
-                    var media = avgCalc();
-                    //calculo da pertinencia da diferença entre o valor atual 
-                    // e a média móvel
-                    var diferenca = Math.abs(leitura.v - media);
-                    // console.log('pcMovingAverage:');
-                    var pcMediaMovel = pcMovingAverage(diferenca);
-                    // console.log('pcReadFrequency:');
-                    var pcFrequenciaLeitura = pcReadFrequency(freqMin, freqMax, frequenciaLeitura);
-                    // console.log(pcFrequenciaLeitura);
-
-                    frequenciaLeitura = frequenciaLeitura + new Rules(pcMediaMovel, pcFrequenciaLeitura).applyRules();
+                    frequenciaLeitura = frequenciaLeitura + seresta.applyRules(leitura, frequenciaLeitura);
                     if (frequenciaLeitura > freqMax) frequenciaLeitura = freqMax;
                     if (frequenciaLeitura < freqMin) frequenciaLeitura = freqMin;
-                    console.log(frequenciaLeitura);
-
+                    // console.log(frequenciaLeitura);
                     //gráfico da média móvel
                     traceMV.y.push(leitura.v);
                     traceMV.x.push(new Date(leitura.c * 1000));
@@ -103,7 +91,7 @@ var initGrafico = function () {
                     leiturasFeitas = leiturasFeitas + 1;
                 }
                 linhas.push(traceMV);
-                // linhas.push(traceFR);
+                linhas.push(traceFR);
                 linhas.push(traceFixo);
                 console.log('----------------------------------------');
                 console.log('Total do sensor ' + sensor.d + ' [' + grandeza.n + ']: ' + total);
