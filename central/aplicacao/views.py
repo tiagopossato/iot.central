@@ -21,11 +21,11 @@ def grafico(request):
 @login_required(login_url='/login')
 def leituras(request):
     end_date = timezone.now()
-    start_date = end_date - timedelta(hours=24)
+    start_date = end_date - timedelta(hours=72)
 
-    leituras = Leitura.objects.filter(createdAt__range=(start_date, end_date), sensor_id='7e0f933d-75a9-42f3-bb98-207a2ad4d13a')
+    # leituras = Leitura.objects.filter(createdAt__range=(start_date, end_date), sensor_id='7e0f933d-75a9-42f3-bb98-207a2ad4d13a')
     # leituras = Leitura.objects.filter(createdAt__range=(start_date, end_date), sensor_id='8c5710ab-36b3-4f20-a9fc-798229983c80')
-    # leituras = Leitura.objects.filter(createdAt__range=(start_date, end_date), sensor__active=True)
+    leituras = Leitura.objects.filter(createdAt__range=(start_date, end_date), sensor__active=True)
 
     # ambientes = leituras.values('ambiente').distinct()
     # grandezas = leituras.values('grandeza').distinct()

@@ -35,6 +35,13 @@ ALLOWED_HOSTS = [
 # Application definition
 
 INSTALLED_APPS = [
+    # 'djangocms_admin_style',
+    # 'admin_interface',
+    # 'flat_responsive',
+    # 'flat',  # only if django version < 1.9
+    # 'colorfield',
+    'jet',
+    'jet.dashboard',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -86,7 +93,7 @@ WSGI_APPLICATION = 'central.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/1.11/ref/settings/#databases
 
-if(DEBUG==True):
+if(DEBUG == True):
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.sqlite3',
@@ -96,7 +103,7 @@ if(DEBUG==True):
             },
         }
     }
-else:   
+else:
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.sqlite3',
@@ -146,4 +153,4 @@ USE_TZ = True
 
 # STATIC_ROOT = os.path.join(BASE_DIR,'static')
 STATIC_ROOT = '/var/www/static'
-STATIC_URL =  "/static/"
+STATIC_URL = "/static/"

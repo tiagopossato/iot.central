@@ -16,6 +16,11 @@ class Seresta {
         this.bufferQtd = 0;
         this.bufferData = [];
     };
+    /**
+     * 
+     * @param {*} newValue 
+     * @param {*} timestamp 
+     */
     pushValue(newValue, timestamp) {
         let value = {
             v: newValue,
@@ -36,6 +41,9 @@ class Seresta {
         // console.log(this.bufferData);
     };
 
+    /**
+     * 
+     */
     mvAvg() {
         let sum = 0;
         for (let i = 0; i < this.bufferData.length; i++) {
@@ -49,7 +57,7 @@ class Seresta {
      * Calcula a pertinência entre o valor atual e 
      * a média móvel conforme as regras
      * @param {*} value 
-     */
+     */ 
     pcMovingAverage(value) {
         //verifica se é um número
         if (isNaN(value)) {
@@ -196,10 +204,11 @@ class Seresta {
         return this.readFrequency.high;
     };
     /**
-     * Recebe o valor atual e efetua os cálculos
+     * Recebe o valor atual e a frequencia de leitura atual e efetua os cálculos
      * value.v = leitura
      * value.c = timestamp (createdAt)
      * @param {*} value 
+     * @param {*} frequenciaLeitura 
      */
     applyRules(value, frequenciaLeitura) {
         //insere valor para calcular média móvel
@@ -218,20 +227,11 @@ class Seresta {
         //tentativa 1
         var increase = this.r1() + this.r2() + this.r4() + this.r8();
         var decrease = this.r3() + this.r5() + this.r5() + this.r7() + this.r9();
-        //resultado 1.1
-        // var soma = decrease - increase;
-        // return soma;
-        //resultado 1.2
         if (increase < decrease) return -.25;
         if (increase > decrease) return .5;
         return 0;
-
-        //tentativa 2
-        // var soma = this.diffMvAvg.low - this.diffMvAvg.high;
-
-        // return soma;
     };
-    
+
     /**
      * Calula interpolação linear
      * 
