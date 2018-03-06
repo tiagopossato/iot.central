@@ -1,14 +1,91 @@
-{% extends 'interface/base.html' %}
-{% block content %}
+{% extends 'interface/base.html' %} {% load static %} {% block styles %}
+<link rel="stylesheet" type="text/css" media="all" href="{% static 'js/bootstrap-daterangepicker/daterangepicker.css' %}"
+/> {% endblock styles %} {% block content %}
+<div class="col-12 col-sm-12 col-md-4 col-lg-3 col-xl-3 form-group">
+  <label for="selectAmbiente">Selecione um ambiente:</label>
+  <select class="form-control" id="selectAmbiente">
+    <option>Selecione</option>
+    {% for item in ambientes %}
+    <option id='{{ item.uid }}'>{{ item.nome }}</option>
+    {% endfor %}
+  </select>
+</div>
+<!-- <div class="col-12 col-sm-12 col-md-4 col-lg-3 col-xl-3">
+    <input type="text" id="config-demo" class="form-control">
+  </div> -->
 <!-- preparing a DOM with width and height for ECharts -->
 <div id="grafico" style="width: 100%; height: 600px;"></div>
-{% load static %}
-{% endblock content %} 
-{% block components %} 
+{% endblock content %} {% block components %}
 <!-- ECharts -->
 <script src="{% static 'js/aplicacao/grafico.js' %}"></script>
-<script src="{% static 'js/seresta/seresta.js' %}"></script>
-  <!-- Plotly.js -->
-  <script src="https://cdn.plot.ly/plotly-latest.min.js" onload=initGrafico()></script>
-<!-- <script src="{% static 'js/echarts.min.js' %}" onload=initGrafico()></script> -->
-{% endblock components %}
+<!-- Moment -->
+<script src="{% static 'js/bootstrap-daterangepicker/moment.min.js' %}"></script>
+
+<!-- Datarangepicker -->
+<script src="{% static 'js/bootstrap-daterangepicker/daterangepicker.js' %}"></script>
+
+<!-- Plotly.js -->
+<script src="https://cdn.plot.ly/plotly-latest.min.js" onload=initGrafico()></script>
+<script>
+
+  $('#config-demo').daterangepicker({
+    "showDropdowns": true,
+    "timePicker": true,
+    "timePicker24Hour": true,
+    "locale": {
+      "format": "DD/MM/YYYY HH:mm",
+      "separator": " - ",
+      "applyLabel": "Aplicar",
+      "cancelLabel": "Cancelar",
+      "fromLabel": "De",
+      "toLabel": "Até",
+      "customRangeLabel": "Personalizado",
+      "weekLabel": "S",
+      "daysOfWeek": [
+        "Dom",
+        "2ª",
+        "3ª",
+        "4ª",
+        "5ª",
+        "6ª",
+        "Sab"
+      ],
+      "monthNames": [
+        "Janeiro",
+        "Fevereiro",
+        "Março",
+        "Abril",
+        "Maio",
+        "Junho",
+        "Julho",
+        "Agosto",
+        "Setembro",
+        "Outubro",
+        "Novembro",
+        "Dezembro"
+      ],
+      "firstDay": 1
+    },
+    "linkedCalendars": false,
+    "showCustomRangeLabel": false,
+    "alwaysShowCalendars": true,
+    "startDate": "23/02/2018",
+    "endDate": "23/02/2018",
+    "opens": "center"
+  }, function (start, end, label) {
+    console.log('New date range selected: ' + start + ' to ' + end + ' (predefined range: ' + label + ')');
+  });
+
+  $('#selectAmbiente').change(function () {
+    let id = $("#selectAmbiente option:selected")[0].id;
+    $.get(window.location.origin + '/app/grandezas-lidas', { id: id }, function (res) {
+      console.log(res);
+    }).fail(function (err) {
+    console.log(err);
+      bootbox.alert({
+          title: "Erro",
+          message: err.responseJSON.erro
+      });
+    });
+  })
+</script> {% endblock components %}

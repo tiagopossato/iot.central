@@ -78,11 +78,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'central.wsgi.application'
 
-
-# CORS_ORIGIN_ALLOW_ALL = True
-# CORS_ALLOW_CREDENTIALS = True
-
-
 # Database
 # https://docs.djangoproject.com/en/1.11/ref/settings/#databases
 
@@ -131,6 +126,9 @@ AUTH_PASSWORD_VALIDATORS = [
 # https://docs.djangoproject.com/en/1.11/topics/i18n/
 
 LANGUAGE_CODE = 'pt_BR'
+import os
+print("Acertando problemas com acentuacao")
+os.system('export LANG="pt_BR.UTF-8"')
 
 TIME_ZONE = 'America/Sao_Paulo'
 
@@ -145,5 +143,5 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.11/howto/static-files/
 
 # STATIC_ROOT = os.path.join(BASE_DIR,'static')
-STATIC_ROOT = '/var/www/static'
+# STATIC_ROOT = '/var/www/static'
 STATIC_URL =  "/static/"

@@ -4,11 +4,7 @@ from django.conf.urls.static import static
 from . import views
 
 urlpatterns = [
-    # url(r'^$', views.mqtt_status),
     url(r'^grafico', views.grafico),
+    url(r'^grandezas-lidas', views.grandezasAmbienteLidas),
     url(r'^leituras', views.leituras),
-    # url(r'^novo-certificado', views.novo_certificado),
-    # url(r'^centrais-inativas', views.get_centrais_inativas),
-    # url(r'^inativar', views.inativar_central),
-    # url(r'^reativar', views.reativar_central)
 ]

@@ -23,6 +23,7 @@
     <!-- Custom Theme Style -->
 
     <link href="{% static 'gentelella/css/custom.min.css' %}" rel="stylesheet">
+    {% block styles %} {% endblock %}
 </head>
 
 <body class="nav-md">
@@ -44,7 +45,7 @@
                     <div id="sidebar-menu2" class="main_menu_side hidden-print main_menu">
                         <div class="menu_section">
                             <ul class="nav side-menu">
-                                <li><a href="/app/grafico" tabindex="0"><i class="fa fa-area-chart " aria-hidden="true"></i> Leituras </a>
+                                <li><a href="/app/leituras" tabindex="0"><i class="fa fa-area-chart " aria-hidden="true"></i> Leituras </a>
                                 </li>
                             </ul>
                                 

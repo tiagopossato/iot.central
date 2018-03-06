@@ -8,13 +8,15 @@ var initGrafico = function () {
         },
         showlegend: true
     };
+}
+
+var getLeituras = function () {
 
     var dialog = bootbox.dialog({
         message: '<p class="text-center"><i class="fa fa-spin fa-spinner"></i></p><p class="text-center">Buscando dados...</p>',
         closeButton: false,
         size: 'small'
     });
-
     $.get(window.location.origin + "/app/leituras", function (data, status) {
 
         data.forEach(function (sensor) {
@@ -38,5 +40,4 @@ var initGrafico = function () {
         dialog.modal('hide');
         Plotly.newPlot('grafico', linhas, layout);
     });
-
-}
+};
