@@ -30,7 +30,8 @@
 
 <!-- preparing a DOM with width and height for ECharts -->
 <div id="grafico" style="width: 100%; height: 600px;"></div>
-{% endblock content %} {% block components %}
+{% endblock content %} 
+{% block components %}
 <!-- Moment -->
 <script src="{% static 'js/bootstrap-daterangepicker/moment-with-locales.min.js' %}"></script>
 <!-- Datarangepicker -->
@@ -39,4 +40,5 @@
 <!--  -->
 <script src="{% static 'js/aplicacao/grafico.js' %}" onload=init()></script>
 <!-- Plotly.js -->
-<script src="https://cdn.plot.ly/plotly-latest.min.js"></script> {% endblock components %}
+<script src="{% static 'js/plotly/plotly-latest.min.js' %}"></script> 
+{% endblock components %}

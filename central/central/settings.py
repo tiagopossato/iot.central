@@ -26,7 +26,7 @@ SECRET_KEY = 'cor)tf-v-u-k42%duu6wen$=l)(75(8jr$s951gca_4a)nyk(&'
 DEBUG = True
 
 ALLOWED_HOSTS = [
-    '.dataplicity.io',
+    'nectar-central.local',
     'localhost',
     '127.0.0.1',
     '[::]'
@@ -143,5 +143,5 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.11/howto/static-files/
 
 # STATIC_ROOT = os.path.join(BASE_DIR,'static')
-# STATIC_ROOT = '/var/www/static'
+STATIC_ROOT = '/var/www/static'
 STATIC_URL =  "/static/"

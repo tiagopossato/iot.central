@@ -4,7 +4,7 @@ NAME="central"                              #Name of the application (*)
 DJANGODIR=/opt/iot.central/central             # Django project directory (*)  
 USER=central                                       # the user to run as (*)  
 GROUP=nogroup                                     # the group to run as (*)  
-NUM_WORKERS=1                                     # how many worker processes should Gunicorn spawn (*)  
+NUM_WORKERS=2                                     # how many worker processes should Gunicorn spawn (*)  
 DJANGO_SETTINGS_MODULE=central.settings             # which settings file should Django use (*)  
 DJANGO_WSGI_MODULE=central.wsgi                     # WSGI module name (*)
 
