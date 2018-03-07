@@ -5,6 +5,6 @@ from . import views
 
 urlpatterns = [
     url(r'^grafico', views.grafico),
-    url(r'^grandezas-lidas', views.grandezasAmbienteLidas),
+    url(r'^metadata', views.metadados),
     url(r'^leituras', views.leituras),
 ]
