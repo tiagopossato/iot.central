@@ -40,18 +40,16 @@ def metadados(request):
         return JsonResponse(status=400, data={'erro': "Parâmetro " + str(e) + " não recebido"})
     try:
 
-        leituras = Leitura.objects.filter(ambiente_id=id)
-        grandezasLidas = leituras.values('grandeza').distinct()
+        grandezasLidas = Leitura.objects.filter(ambiente_id=id).only('grandeza').values('grandeza').distinct()
         
         grandezas = []
         for g in grandezasLidas:
             grandeza = Grandeza.objects.get(codigo=g['grandeza'])
-            grandezaLeituras = leituras.filter(grandeza_id=grandeza.codigo)
-            sensoresLidos = grandezaLeituras.values('sensor').distinct()
+            sensoresLidos = Leitura.objects.filter(ambiente_id=id, grandeza_id=grandeza.codigo).only('sensor').values('sensor').distinct()
             sensores = []
             for s in sensoresLidos:
                 sensor = Sensor.objects.get(uid=s['sensor'])
-                sensorLeituras = grandezaLeituras.filter(sensor=sensor)
+                sensorLeituras = Leitura.objects.filter(ambiente_id=id, grandeza_id=grandeza.codigo, sensor=sensor).only('createdAt')
                 maxDate = sensorLeituras.aggregate(Max('createdAt'))
                 minDate = sensorLeituras.aggregate(Min('createdAt'))
                 sensores.append({'uid':sensor.uid,
