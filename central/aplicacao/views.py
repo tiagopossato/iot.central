@@ -39,23 +39,47 @@ def metadados(request):
     except KeyError as e:
         return JsonResponse(status=400, data={'erro': "Parâmetro " + str(e) + " não recebido"})
     try:
-
+        print("----grandezasLidas-----")
+        antes = datetime.utcnow()
         grandezasLidas = Leitura.objects.filter(ambiente_id=id).only('grandeza').values('grandeza').distinct()
+        print(datetime.utcnow()-antes)
         
         grandezas = []
         for g in grandezasLidas:
+            print("----grandeza-----")
+            antes = datetime.utcnow()
             grandeza = Grandeza.objects.get(codigo=g['grandeza'])
+            print(datetime.utcnow()-antes)
+            
+            print("----sensoresLidos-----")
+            antes = datetime.utcnow()
             sensoresLidos = Leitura.objects.filter(ambiente_id=id, grandeza_id=grandeza.codigo).only('sensor').values('sensor').distinct()
+            print(datetime.utcnow()-antes)
+            
             sensores = []
             for s in sensoresLidos:
+                print("----sensorLeituras-----")
+                antes = datetime.utcnow()
                 sensor = Sensor.objects.get(uid=s['sensor'])
-                sensorLeituras = Leitura.objects.filter(ambiente_id=id, grandeza_id=grandeza.codigo, sensor=sensor).only('createdAt')
-                maxDate = sensorLeituras.aggregate(Max('createdAt'))
-                minDate = sensorLeituras.aggregate(Min('createdAt'))
+                print(datetime.utcnow()-antes)
+                
+                # print("----sensorLeituras-----")
+                # antes = datetime.utcnow()
+                # sensorLeituras = Leitura.objects.filter(ambiente_id=id, grandeza_id=grandeza.codigo, sensor=sensor).only('createdAt')
+                # print(datetime.utcnow()-antes)
+                
+                # print("----maxDate-----")
+                # antes = datetime.utcnow()
+                # maxDate = Leitura.objects.filter(ambiente_id=id, grandeza_id=grandeza.codigo, sensor=sensor).aggregate(Max('createdAt'))
+                # print(datetime.utcnow()-antes)
+                # print("----minDate-----")
+                # antes = datetime.utcnow()
+                # minDate = Leitura.objects.filter(ambiente_id=id, grandeza_id=grandeza.codigo, sensor=sensor).aggregate(Min('createdAt'))
+                # print(datetime.utcnow()-antes)
                 sensores.append({'uid':sensor.uid,
                                 'descricao':sensor.descricao, 
-                                'maxDate':maxDate['createdAt__max'],
-                                'minDate':minDate['createdAt__min']
+                                # 'maxDate':maxDate['createdAt__max'],
+                                # 'minDate':minDate['createdAt__min']
                                 })
             grandezas.append({'codigo':grandeza.codigo, 'nome':grandeza.nome, 'sensores':sensores})
 
@@ -66,6 +90,43 @@ def metadados(request):
         return JsonResponse(status=200, data=grandezas, safe=False)
     except Exception as e:
         return JsonResponse(status=400, data={'erro': str(e)})
+
+@ajax_login_required
+def daterange(request):
+    if(request.method != 'GET'):
+        return HttpResponseNotAllowed(['GET'])
+    if(request.is_ajax() == False):
+        return JsonResponse(status=400, data={'erro': "Somente requisicoes AJAX!"})
+    try:
+        ambiente_id = request.GET.get('ambiente')
+        if(ambiente_id == None):
+            raise KeyError('ambiente_id')
+        grandeza_id = request.GET.get('grandeza')
+        if(grandeza_id == None):
+            raise KeyError('grandeza_id')
+        sensor_id = request.GET.get('sensor')
+        if(sensor_id == None):
+            raise KeyError('sensor_id')
+    except KeyError as e:
+        return JsonResponse(status=400, data={'erro': "Parâmetro " + str(e) + " não recebido"})
+
+    try:
+        print("----maxDate-----")
+        antes = datetime.utcnow()
+        maxDate = Leitura.objects.filter(ambiente_id=ambiente_id, grandeza_id=grandeza_id, sensor=sensor_id).aggregate(Max('createdAt'))
+        print(datetime.utcnow()-antes)
+        print("----minDate-----")
+        antes = datetime.utcnow()
+        minDate = Leitura.objects.filter(ambiente_id=ambiente_id, grandeza_id=grandeza_id, sensor=sensor_id).aggregate(Min('createdAt'))
+        print(datetime.utcnow()-antes)
+    except Exception as e:
+        return JsonResponse(status=400, data={'erro': str(e)})
+    
+    try:
+        return JsonResponse(status=200, data={'maxDate':maxDate['createdAt__max'],'minDate':minDate['createdAt__min']}, safe=False)
+    except Exception as e:
+        return JsonResponse(status=400, data={'erro': str(e)})
+
 
 @login_required(login_url='/login')
 def grafico(request):

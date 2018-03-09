@@ -6,5 +6,6 @@ from . import views
 urlpatterns = [
     url(r'^grafico', views.grafico),
     url(r'^metadata', views.metadados),
+    url(r'^daterange', views.daterange),
     url(r'^leituras', views.leituras),
 ]

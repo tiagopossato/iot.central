@@ -81,8 +81,26 @@ var fillSelectSensor = function(){
      $('#selectDateRange').addClass('hide');
      $('#btnDesenharGrafico').addClass('hide');
      $('#selectSensor').unbind("change");
-     $('#selectSensor').change(showSelectDateRange);
+     $('#selectSensor').change(getDateRange);
 }
+
+var getDateRange = function(){
+    let grandeza = parseInt($("#selectGrandeza option:selected")[0].value);
+    let sensorUid = dados['metadata'].get(grandeza)['sensores'][$("#selectSensor option:selected")[0].value]['uid'];
+
+    var dialog = dialogoBuscando("Buscando intervalor de medição");
+    $.get(window.location.origin + "/app/daterange",{
+        'ambiente': dados['ambiente']['id'],
+        'grandeza': grandeza,
+        'sensor': sensorUid
+        }, function (data, status) {
+            let sensor = dados['metadata'].get(grandeza)['sensores'][$("#selectSensor option:selected")[0].value];
+            sensor['minDate'] = data['minDate'];
+            sensor['maxDate'] = data['maxDate'];
+            showSelectDateRange();
+            dialog.modal('hide');
+    });
+};
 
 var showSelectDateRange = function(){
     let grandeza = parseInt($("#selectGrandeza option:selected")[0].value);
@@ -198,9 +216,9 @@ var getLeituras = function (start, end) {
     });
 };
 
-var dialogoBuscando = function(){
+var dialogoBuscando = function(msg="Buscando dados..."){
     return bootbox.dialog({
-        message: '<p class="text-center"><i class="fa fa-spin fa-spinner"></i></p><p class="text-center">Buscando dados...</p>',
+        message: '<p class="text-center"><i class="fa fa-spin fa-spinner"></i></p><p class="text-center">'+msg+'</p>',
         closeButton: false,
         size: 'small'
     });
